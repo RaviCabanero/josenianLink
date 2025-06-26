@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/employee-list"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Edit Employee</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label position="floating">Name</ion-label>
+    <ion-input [(ngModel)]="employee.name"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Position</ion-label>
+    <ion-input [(ngModel)]="employee.position"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Department</ion-label>
+    <ion-input [(ngModel)]="employee.department"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Email</ion-label>
+    <ion-input [(ngModel)]="employee.email"></ion-input>
+  </ion-item>
+  <ion-button expand="full" (click)="updateEmployee()">Update Employee</ion-button>
+</ion-content>

@@ -1,0 +1,39 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="warning">
+    <ion-title class="header-title">
+      <ion-icon name="people-circle" class="ion-margin-end"></ion-icon>
+      Employee Management
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="custom-content">
+  <ion-header collapse="condense">
+    <ion-toolbar color="warning">
+      <ion-title size="large" class="header-title">
+        <ion-icon name="people-circle" class="ion-margin-end"></ion-icon>
+        Employee Management
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="container" class="main-box">
+    <div class="welcome-card">
+      <ion-icon name="business" class="welcome-icon"></ion-icon>
+      <strong class="welcome-title">Welcome to Employee Management System</strong>
+      <p class="subtitle">Efficiently manage your workforce with our comprehensive solution</p>
+    </div>
+
+    <div class="action-buttons">
+      <ion-button expand="block" color="warning" class="action-button" routerLink="/employee-list">
+        <ion-icon name="list" slot="start"></ion-icon>
+        View Employees
+      </ion-button>
+      
+      <ion-button expand="block" fill="outline" color="medium" class="action-button" (click)="logout()">
+        <ion-icon name="log-out" slot="start"></ion-icon>
+        Logout
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

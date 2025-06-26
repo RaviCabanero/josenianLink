@@ -1,0 +1,24 @@
+/* Employee List Page Styles */
+
+.employee-item {
+  margin-bottom: 10px;
+}
+
+.employee-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px 0;
+}
+
+.employee-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.add-employee-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}

@@ -1,0 +1,102 @@
+/* Login page styling with yellow/white theme */
+.login-content {
+  --background: #f8f8f8;
+  --ion-item-background: white;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 16px rgba(255, 196, 0, 0.15);
+  text-align: center;
+}
+
+.login-icon {
+  font-size: 64px;
+  color: var(--ion-color-warning);
+  margin-bottom: 15px;
+}
+
+.login-heading {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.form-item {
+  --border-radius: 12px;
+  --padding-start: 0;
+  margin-bottom: 20px;
+  --background: rgb(30, 30, 24);
+}
+
+.input-label {
+  color: #666;
+  font-size: 14px;
+  transform-origin: left;
+}
+
+.custom-input {
+  --padding-start: 40px !important;
+}
+
+.input-icon {
+  color: var(--ion-color-warning);
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.action-buttons {
+  margin-top: 30px;
+}
+
+.login-button {
+  --border-radius: 12px;
+  height: 50px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.register-button {
+  --border-radius: 12px;
+  height: 50px;
+  font-weight: 500;
+}
+
+/* Focus styles for better UX */
+ion-item.item-has-focus .input-label {
+  color: var(--ion-color-warning);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 20px;
+  }
+  
+  .login-heading {
+    font-size: 20px;
+  }
+  
+  .login-icon {
+    font-size: 48px;
+  }
+}

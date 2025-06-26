@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/employee-list"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Add Employee</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="ion-padding">
+    <!-- Instructions -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Add New Employee</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        Fill in all required fields (*) to add a new employee to the system.
+        <br><br>
+        <strong>Troubleshooting:</strong> If you get an error when adding employees, it's likely due to Firestore security rules. 
+        Use the "Test Firestore Connection" button below to diagnose the issue.
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Form Fields -->
+    <ion-item>
+      <ion-label position="floating">Full Name *</ion-label>
+      <ion-input 
+        [(ngModel)]="employee.name" 
+        type="text" 
+        required
+        placeholder="e.g., John Doe">
+      </ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label position="floating">Job Position *</ion-label>
+      <ion-input 
+        [(ngModel)]="employee.position" 
+        type="text" 
+        required
+        placeholder="e.g., Software Developer">
+      </ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label position="floating">Department *</ion-label>
+      <ion-input 
+        [(ngModel)]="employee.department" 
+        type="text" 
+        required
+        placeholder="e.g., Information Technology">
+      </ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label position="floating">Email Address *</ion-label>
+      <ion-input 
+        [(ngModel)]="employee.email" 
+        type="email" 
+        required
+        placeholder="e.g., john.doe@company.com">
+      </ion-input>
+    </ion-item>
+
+    <!-- Action Buttons -->
+    <div class="ion-margin-top">
+      <ion-button expand="full" (click)="addEmployee()" color="primary">
+        <ion-icon name="person-add" slot="start"></ion-icon>
+        Add Employee
+      </ion-button>
+      
+      <ion-button expand="full" (click)="fillSampleData()" fill="outline" color="secondary">
+        <ion-icon name="copy" slot="start"></ion-icon>
+        Fill Sample Data
+      </ion-button>
+
+      <ion-button expand="full" (click)="testConnection()" fill="outline" color="tertiary">
+        <ion-icon name="wifi" slot="start"></ion-icon>
+        Test Firestore Connection
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

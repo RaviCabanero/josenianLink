@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Employees</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button expand="full" routerLink="/add-employee" color="primary">
+    <ion-icon name="person-add" slot="start"></ion-icon>
+    Add New Employee
+  </ion-button>
+  <ion-button expand="full" (click)="addTestEmployee()" fill="outline" color="secondary">
+    <ion-icon name="flash" slot="start"></ion-icon>
+    Quick Add Test Employee
+  </ion-button>
+  
+  <ion-list>
+    <ion-item *ngFor="let employee of employees">
+      <ion-label>
+        <h2>{{ employee.name }}</h2>
+        <p>{{ employee.position }}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button (click)="deleteEmployee(employee.id!)" [disabled]="!employee.id">Delete</ion-button>
+        <ion-button [routerLink]="['/edit-employee', employee.id]" [disabled]="!employee.id">Edit</ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-list>
+</ion-content>
