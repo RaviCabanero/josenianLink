@@ -1,20 +1,70 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Register</ion-title>
+  <ion-toolbar style="--background: #2c543f;">
+    <ion-title>
+      <ion-icon name="person-add" class="ion-margin-end"></ion-icon>
+      Register
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-item>
-    <ion-label position="floating">Email</ion-label>
-    <ion-input [(ngModel)]="email" type="email" required></ion-input>
-  </ion-item>
+<!-- Logo & Title -->
+<div class="logo-container">
+  <img src="assets/usjrlogo.png" alt="USJ-R Seal" class="logo-img" />
+  <h1 class="josenianlink-text">JOSENIAN<span class="link-text">LINK</span> 🟡</h1>
+</div>
 
-  <ion-item>
-    <ion-label position="floating">Password</ion-label>
-    <ion-input [(ngModel)]="password" type="password" required></ion-input>
-  </ion-item>
+<ion-content class="register-content">
+  <div class="register-container">
+    <div class="register-card">
 
-  <ion-button expand="full" (click)="register()">Register</ion-button>
-  <ion-button expand="full" fill="clear" routerLink="/login">Go to Login</ion-button>
+      <ion-item class="form-item" lines="none">
+        <ion-icon name="person-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-input [(ngModel)]="fullName" type="text" required placeholder="Full Name"></ion-input>
+      </ion-item>
+
+      <ion-item class="form-item" lines="none">
+        <ion-icon name="card-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-input [(ngModel)]="idNumber" type="text" required placeholder="ID Number"></ion-input>
+      </ion-item>
+
+      <ion-item class="form-item" lines="none">
+        <ion-icon name="calendar-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-input [(ngModel)]="yearGraduated" type="number" required placeholder="Year Graduated"></ion-input>
+      </ion-item>
+
+      <ion-item class="form-item" lines="none">
+        <ion-icon name="school-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-input [(ngModel)]="program" type="text" required placeholder="Program (e.g. BSIT)"></ion-input>
+      </ion-item>
+
+      <ion-item class="form-item" lines="none">
+        <ion-icon name="call-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-input [(ngModel)]="contactNumber" type="tel" required placeholder="Contact Number"></ion-input>
+      </ion-item>
+
+      <ion-item class="form-item" lines="none">
+        <ion-icon name="location-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-input [(ngModel)]="address" type="text" required placeholder="Address"></ion-input>
+      </ion-item>
+
+      <ion-item class="form-item" lines="none">
+        <ion-icon name="mail-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-input [(ngModel)]="email" type="email" required placeholder="Email"></ion-input>
+      </ion-item>
+
+      <ion-item class="form-item" lines="none">
+        <ion-icon name="lock-closed-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-input [(ngModel)]="password" type="password" required placeholder="Password"></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" class="register-button" (click)="register()">
+        <ion-icon name="person-add" slot="start"></ion-icon>
+        Register
+      </ion-button>
+
+      <ion-button expand="block" fill="clear" routerLink="/login" class="login-link">
+        Already have an account? Login
+      </ion-button>
+    </div>
+  </div>
 </ion-content>

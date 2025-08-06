@@ -1,0 +1,92 @@
+.register-content {
+  --background: #f5f5f5;
+  font-family: 'Avenir', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 0;
+}
+
+.logo-container {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 10px;
+}
+
+.logo-img {
+  width: 130px;
+  height: auto;
+}
+
+.josenianlink-text {
+  font-size: 22px;
+  font-weight: 900;
+  color: #2c543f;
+  margin-top: 6px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
+}
+
+.link-text {
+  color: #f4c014;
+  margin-left: 3px;
+}
+
+.register-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+.register-card {
+  background: #2c543f;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px 20px;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.form-item {
+  --background: #f4c014;
+  --border-radius: 12px;
+  --padding-start: 12px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+ion-input::part(native) {
+  color: #000000;
+}
+
+.input-icon {
+  color: #2c543f;
+  font-size: 20px;
+}
+
+ion-label {
+  color: #000000 !important;
+  font-weight: 500;
+}
+
+.register-button {
+  --background: #ffffff;
+  --color: #2c543f;
+  font-weight: bold;
+  height: 44px;
+  border-radius: 24px;
+  margin-top: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.login-link {
+  color: #f4c014;
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 14px;
+}

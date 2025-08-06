@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { IonicModule, ToastController } from '@ionic/angular';  // Import IonicModule for standalone component
-import { FormsModule } from '@angular/forms';  // Import FormsModule for ngModel binding
+import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding
 import { RouterModule } from '@angular/router';  // Import RouterModule for routerLink
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
@@ -10,11 +10,17 @@ import { Router } from '@angular/router';
   standalone: true,
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
-  imports: [IonicModule, FormsModule, RouterModule]  // Add RouterModule for routerLink directive
+  imports: [IonicModule, FormsModule, RouterModule]  // Add RouterModule for routerLink directive and FormsModule for ngModel
 })
 export class RegisterComponent {
-  email: string = '';
-  password: string = '';
+  fullName: string = '';
+idNumber: string = '';
+yearGraduated: number | null = null;
+program: string = '';
+contactNumber: string = '';
+address: string = '';
+email: string = '';
+password: string = '';
   
   private afAuth = inject(AngularFireAuth);
   private router = inject(Router);

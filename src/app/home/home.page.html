@@ -1,39 +1,40 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="warning">
-    <ion-title class="header-title">
-      <ion-icon name="people-circle" class="ion-margin-end"></ion-icon>
-      Employee Management
-    </ion-title>
-  </ion-toolbar>
+<ion-header class="custom-header">
+  <div class="header-bar">
+    <div class="logo-title">
+      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
+    </div>
+    <ion-icon name="search-outline" class="search-icon"></ion-icon>
+  </div>
+
+  <div class="user-post-bar">
+    <img src="assets/profile.jpg" alt="User Avatar" class="user-avatar" />
+    <div class="post-box">
+      <div class="user-name">Steven James Alas</div>
+      <ion-input placeholder="New Post" class="post-input"></ion-input>
+    </div>
+    
+  </div>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="custom-content">
-  <ion-header collapse="condense">
-    <ion-toolbar color="warning">
-      <ion-title size="large" class="header-title">
-        <ion-icon name="people-circle" class="ion-margin-end"></ion-icon>
-        Employee Management
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container" class="main-box">
-    <div class="welcome-card">
-      <ion-icon name="business" class="welcome-icon"></ion-icon>
-      <strong class="welcome-title">Welcome to Employee Management System</strong>
-      <p class="subtitle">Efficiently manage your workforce with our comprehensive solution</p>
-    </div>
-
-    <div class="action-buttons">
-      <ion-button expand="block" color="warning" class="action-button" routerLink="/employee-list">
-        <ion-icon name="list" slot="start"></ion-icon>
-        View Employees
+<ion-footer class="footer">
+  <ion-toolbar class="footer-toolbar">
+    <ion-buttons slot="start" class="footer-buttons">
+      <ion-button fill="clear" routerLink="/home">
+        <ion-icon name="home" slot="icon-only"></ion-icon>
       </ion-button>
-      
-      <ion-button expand="block" fill="outline" color="medium" class="action-button" (click)="logout()">
-        <ion-icon name="log-out" slot="start"></ion-icon>
-        Logout
+      <ion-button fill="clear" routerLink="/alumni">
+        <ion-icon name="people" slot="icon-only"></ion-icon>
       </ion-button>
-    </div>
-  </div>
-</ion-content>
+      <ion-button fill="clear" routerLink="/notifications">
+        <ion-icon name="notifications" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/profile">
+        <ion-icon name="card" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/messages">
+        <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+

@@ -1,102 +1,101 @@
-/* Login page styling with yellow/white theme */
 .login-content {
-  --background: #f8f8f8;
-  --ion-item-background: white;
+  --background: #ffffff;
+  font-family: 'Avenir', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+}
+
+.logo-container {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 20px 12px;
+}
+
+.logo-img {
+  width: 60%;
+  height: 100%;
+}
+
+.josenianlink-text {
+  font-family: 'Avenir', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  margin-top: 8px;
+  color: #2c543f;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+  letter-spacing: 1px;
+}
+.link-text {
+  color: #f4c014; // Yellow gold
+  margin-left: 2px;
 }
 
 .login-container {
+  width: 100%;
+  height: 100%;
+  padding: 0 16px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100%;
-  padding: 20px;
+  background: #2c543f; // USJ-R dark green
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  
 }
 
 .login-card {
-  background: white;
-  border-radius: 16px;
-  padding: 30px;
   width: 100%;
-  max-width: 500px;
-  box-shadow: 0 4px 16px rgba(255, 196, 0, 0.15);
+  max-width: 400px;
+  background: #2c543f; // USJ-R dark green
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  padding: 32px 24px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
   text-align: center;
 }
 
-.login-icon {
-  font-size: 64px;
-  color: var(--ion-color-warning);
-  margin-bottom: 15px;
-}
-
-.login-heading {
-  font-size: 22px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-.login-subtitle {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 30px;
-}
-
 .form-item {
+  
+  --background: #ffffff !important;
   --border-radius: 12px;
-  --padding-start: 0;
-  margin-bottom: 20px;
-  --background: rgb(30, 30, 24);
+  --padding-start: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .input-label {
-  color: #666;
-  font-size: 14px;
-  transform-origin: left;
-}
-
-.custom-input {
-  --padding-start: 40px !important;
+  font-weight: 500;
+  color: #2c543f;
 }
 
 .input-icon {
-  color: var(--ion-color-warning);
-  margin-right: 10px;
+  color: #2c543f;
   font-size: 20px;
 }
 
-.action-buttons {
-  margin-top: 30px;
+.custom-input {
+  font-size: 15px;
+  color: #000 !important;
+  background: transparent !important;
 }
 
 .login-button {
-  --border-radius: 12px;
-  height: 50px;
-  font-weight: 500;
-  margin-bottom: 15px;
+  --background: #2c543f;
+  --color: white;
+  font-weight: bold;
+  height: 44px;
+  border-radius: 24px;
+  margin-top: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .register-button {
-  --border-radius: 12px;
-  height: 50px;
-  font-weight: 500;
-}
-
-/* Focus styles for better UX */
-ion-item.item-has-focus .input-label {
-  color: var(--ion-color-warning);
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .login-card {
-    padding: 20px;
-  }
-  
-  .login-heading {
-    font-size: 20px;
-  }
-  
-  .login-icon {
-    font-size: 48px;
-  }
+ 
+  font-weight: bold;
+  margin-top: 12px;
+  text-transform: none;
 }
