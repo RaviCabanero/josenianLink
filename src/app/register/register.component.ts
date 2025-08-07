@@ -3,6 +3,7 @@ import { IonicModule, ToastController } from '@ionic/angular';  // Import IonicM
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding
 import { RouterModule } from '@angular/router';  // Import RouterModule for routerLink
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 
 @Component({
@@ -24,6 +25,7 @@ email: string = '';
 password: string = '';
   
   private afAuth = inject(AngularFireAuth);
+  private firestore = inject(AngularFirestore);
   private router = inject(Router);
   private toastController = inject(ToastController);
 
@@ -31,9 +33,24 @@ password: string = '';
 
   async register() {
     try {
-      if (this.email && this.password) {
+      if (this.email && this.password && this.fullName) {
         const userCredential = await this.afAuth.createUserWithEmailAndPassword(this.email, this.password);
         console.log('User registered successfully:', userCredential.user);
+        
+        // Store additional user profile data in Firestore
+        if (userCredential.user) {
+          await this.firestore.collection('users').doc(userCredential.user.uid).set({
+            fullName: this.fullName,
+            idNumber: this.idNumber,
+            yearGraduated: this.yearGraduated,
+            program: this.program,
+            contactNumber: this.contactNumber,
+            address: this.address,
+            email: this.email,
+            createdAt: new Date()
+          });
+          console.log('User profile saved to Firestore');
+        }
         
         // Show success message
         await this.presentToast('Registration successful! Please log in with your credentials.', 'success');
@@ -41,8 +58,8 @@ password: string = '';
         // Navigate to login page after successful registration
         this.router.navigate(['/login']);
       } else {
-        console.error('Please fill in all fields');
-        await this.presentToast('Please fill in all fields', 'warning');
+        console.error('Please fill in all required fields');
+        await this.presentToast('Please fill in all required fields (Full Name, Email, Password)', 'warning');
       }
     } catch (error: any) {
       console.error('Registration error:', error.message);

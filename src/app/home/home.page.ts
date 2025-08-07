@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -7,9 +7,19 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['home.page.scss'],
   standalone: false,
 })
-export class HomePage {
+export class HomePage implements OnInit {
+  userProfile: any = null;
+  userName: string = 'User';
 
   constructor(private authService: AuthService) {}
+
+  ngOnInit() {
+    this.authService.getUserProfile().subscribe(profile => {
+      console.log('User profile:', profile);
+      this.userProfile = profile;
+      this.userName = profile?.fullName || 'User';
+    });
+  }
 
   logout() {
     this.authService.logout();
