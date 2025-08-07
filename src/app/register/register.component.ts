@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule, ToastController } from '@ionic/angular';  // Import IonicModule for standalone component
 import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding
 import { RouterModule } from '@angular/router';  // Import RouterModule for routerLink
@@ -10,7 +10,8 @@ import { Router } from '@angular/router';
   standalone: true,
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
-  imports: [IonicModule, FormsModule, RouterModule]  // Add RouterModule for routerLink directive and FormsModule for ngModel
+  imports: [IonicModule, FormsModule, RouterModule],  // Add RouterModule for routerLink directive and FormsModule for ngModel
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class RegisterComponent {
   fullName: string = '';

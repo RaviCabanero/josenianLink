@@ -1,0 +1,56 @@
+<ion-content class="admin-layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <img src="assets/usjrlogo.png" class="sidebar-logo-img" />
+      <h1 class="logo-text">
+        <span class="green">JOSENIAN</span><span class="yellow">LINK</span> 🔗
+      </h1>
+    </div>
+
+    <div class="nav-links">
+      <div class="nav-item active"><ion-icon name="grid-outline"></ion-icon> Dashboard</div>
+      <div class="nav-item"><ion-icon name="people-outline"></ion-icon> Alumni</div>
+      <div class="nav-item"><ion-icon name="document-text-outline"></ion-icon> Reports</div>
+      <div class="nav-item"><ion-icon name="calendar-outline"></ion-icon> Events</div>
+      <div class="nav-item"><ion-icon name="chatbubbles-outline"></ion-icon> Freedom Wall</div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-panel">
+    <div class="panel-header">
+      <h2>Alumni</h2>
+      <p class="role-label">Alumni Officer</p>
+    </div>
+
+    <ion-searchbar placeholder="Search Alumni"></ion-searchbar>
+
+    <!-- Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>ID Number</th>
+            <th>Year Graduate</th>
+            <th>Program</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let alumni of alumniList">
+            <td class="avatar-cell">
+              <img [src]="alumni.photo" class="avatar" />
+              {{ alumni.name }}
+            </td>
+            <td>{{ alumni.id }}</td>
+            <td>{{ alumni.year }}</td>
+            <td>{{ alumni.program }}</td>
+            <td><span class="status verified">Verified</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ion-content>
