@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel 
 import { RouterModule } from '@angular/router';  // Import RouterModule for routerLink
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ export class LoginComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private toastController = inject(ToastController);
+  private authService = inject(AuthService);
 
   constructor() {
     // Get the return URL from query parameters
@@ -34,11 +36,24 @@ export class LoginComponent {
         const userCredential = await this.afAuth.signInWithEmailAndPassword(this.email, this.password);
         console.log('User logged in successfully:', userCredential.user);
         
-        // Show success message
-        await this.presentToast('Login successful! Welcome back.', 'success');
-        
-        // Navigate to return URL or home page after successful login
-        this.router.navigate([this.returnUrl]);
+        // Check if user is admin
+        if (userCredential.user) {
+          const isAdmin = this.authService.isAdmin(userCredential.user.email || '');
+          
+          if (isAdmin) {
+            // Show admin success message
+            await this.presentToast('Welcome Administrator! Redirecting to admin panel.', 'success');
+            
+            // Navigate to admin page for admin users
+            this.router.navigate(['/admin']);
+          } else {
+            // Show regular user success message
+            await this.presentToast('Login successful! Welcome back.', 'success');
+            
+            // Navigate to return URL or home page for regular users
+            this.router.navigate([this.returnUrl]);
+          }
+        }
       } else {
         console.error('Please fill in all fields');
         await this.presentToast('Please fill in all fields', 'warning');

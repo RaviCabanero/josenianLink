@@ -14,10 +14,15 @@ export class HomePage implements OnInit {
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.authService.getUserProfile().subscribe(profile => {
-      console.log('User profile:', profile);
-      this.userProfile = profile;
-      this.userName = profile?.fullName || 'User';
+    this.authService.checkUserRole().subscribe(result => {
+      console.log('User role check:', result);
+      this.userProfile = result.userProfile;
+      this.userName = result.userProfile?.fullName || 'User';
+      
+      // If user is admin, they can still access home page but will see their admin name
+      if (result.isAdmin) {
+        this.userName = 'Administrator';
+      }
     });
   }
 

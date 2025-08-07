@@ -1,56 +1,145 @@
 <ion-content class="admin-layout">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <img src="assets/usjrlogo.png" class="sidebar-logo-img" />
-      <h1 class="logo-text">
-        <span class="green">JOSENIAN</span><span class="yellow">LINK</span> 🔗
-      </h1>
+  <div class="layout-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/usjrlogo.png" class="sidebar-logo-img" />
+        <h1 class="logo-text">
+          <span class="green">JOSENIAN</span><span class="yellow">LINK</span> 🔗
+        </h1>
+      </div>
+
+      <div class="nav-links">
+        <div class="nav-item active">
+          <ion-icon name="grid-outline"></ion-icon>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Alumni</span>
+        </div>
+        <div class="nav-item">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <span>Reports</span>
+        </div>
+        <div class="nav-item">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>Events</span>
+        </div>
+        <div class="nav-item">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
+          <span>Freedom Wall</span>
+        </div>
+      </div>
     </div>
 
-    <div class="nav-links">
-      <div class="nav-item active"><ion-icon name="grid-outline"></ion-icon> Dashboard</div>
-      <div class="nav-item"><ion-icon name="people-outline"></ion-icon> Alumni</div>
-      <div class="nav-item"><ion-icon name="document-text-outline"></ion-icon> Reports</div>
-      <div class="nav-item"><ion-icon name="calendar-outline"></ion-icon> Events</div>
-      <div class="nav-item"><ion-icon name="chatbubbles-outline"></ion-icon> Freedom Wall</div>
-    </div>
-  </div>
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <div class="main-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Alumni</h2>
+            <p class="breadcrumb">Dashboard / Alumni Management</p>
+          </div>
+          <div class="header-actions">
+            <p class="role-label">Alumni Officer</p>
+            <ion-button fill="clear" class="notification-btn">
+              <ion-icon name="notifications-outline"></ion-icon>
+              <ion-badge color="danger">3</ion-badge>
+            </ion-button>
+          </div>
+        </div>
 
-  <!-- Main Content Area -->
-  <div class="main-panel">
-    <div class="panel-header">
-      <h2>Alumni</h2>
-      <p class="role-label">Alumni Officer</p>
-    </div>
+        <div class="search-filter-bar">
+          <ion-searchbar 
+            placeholder="Search by name, ID or program" 
+            class="search-bar"
+            animated
+            debounce="300"
+            (ionInput)="searchUsers($event)">
+          </ion-searchbar>
+          <ion-button class="filter-btn">
+            <ion-icon name="filter-outline" slot="start"></ion-icon>
+            Filters
+          </ion-button>
+          <ion-button color="primary" class="add-btn" routerLink="/register">
+            <ion-icon name="add-outline" slot="start"></ion-icon>
+            Add Alumni
+          </ion-button>
+        </div>
 
-    <ion-searchbar placeholder="Search Alumni"></ion-searchbar>
+        <div class="table-container">
+          <div *ngIf="loading" style="text-align: center; padding: 40px;">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Loading users...</p>
+          </div>
+          
+          <table *ngIf="!loading">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>ID Number</th>
+                <th>Graduation Year</th>
+                <th>Program</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let alumni of filteredAlumniList; trackBy: trackByUid">
+                <td class="avatar-cell">
+                  <img [src]="alumni.photo" class="avatar" alt="Profile" />
+                  <div class="user-info">
+                    <span class="name">{{ alumni.name }}</span>
+                    <span class="email">{{ alumni.email }}</span>
+                  </div>
+                </td>
+                <td>{{ alumni.id }}</td>
+                <td>{{ alumni.year }}</td>
+                <td>{{ alumni.program }}</td>
+                <td>{{ alumni.contact }}</td>
+                <td>
+                  <span class="status verified" *ngIf="alumni.verified">Verified</span>
+                  <span class="status pending" *ngIf="!alumni.verified">Pending</span>
+                </td>
+                <td class="action-cell">
+                  <ion-button fill="clear" size="small" (click)="editUser(alumni)">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" size="small" color="danger" (click)="deleteUser(alumni.uid)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </td>
+              </tr>
+              
+              <tr *ngIf="filteredAlumniList.length === 0 && !loading">
+                <td colspan="7" style="text-align: center; padding: 40px; color: #6c757d;">
+                  <ion-icon name="people-outline" style="font-size: 48px; margin-bottom: 16px;"></ion-icon>
+                  <p>No users found</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-    <!-- Table -->
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>ID Number</th>
-            <th>Year Graduate</th>
-            <th>Program</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let alumni of alumniList">
-            <td class="avatar-cell">
-              <img [src]="alumni.photo" class="avatar" />
-              {{ alumni.name }}
-            </td>
-            <td>{{ alumni.id }}</td>
-            <td>{{ alumni.year }}</td>
-            <td>{{ alumni.program }}</td>
-            <td><span class="status verified">Verified</span></td>
-          </tr>
-        </tbody>
-      </table>
+        <div class="table-footer">
+          <div class="showing-entries">
+            Showing {{ filteredAlumniList.length }} of {{ alumniList.length }} users
+          </div>
+          <ion-buttons class="pagination">
+            <ion-button fill="clear" disabled>
+              <ion-icon name="chevron-back-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" class="active">1</ion-button>
+            <ion-button fill="clear">2</ion-button>
+            <ion-button fill="clear">3</ion-button>
+            <ion-button fill="clear">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </div>
+      </div>
     </div>
   </div>
 </ion-content>

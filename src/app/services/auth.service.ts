@@ -40,4 +40,47 @@ export class AuthService {
       map(user => !!user)
     );
   }
+
+  // Admin role checking functionality
+  isAdmin(email: string): boolean {
+    const adminEmails = [
+      'admin@josenianlink.com',
+      'administrator@josenianlink.com',
+      'admin@usjr.edu.ph'
+    ];
+    return adminEmails.includes(email.toLowerCase());
+  }
+
+  // Check if current user is admin
+  checkUserRole(): Observable<{ isAdmin: boolean; userProfile: any }> {
+    return this.afAuth.authState.pipe(
+      switchMap(user => {
+        if (user) {
+          const isAdmin = this.isAdmin(user.email || '');
+          if (isAdmin) {
+            // For admin users, return basic profile info
+            return new Observable<{ isAdmin: boolean; userProfile: any }>(observer => 
+              observer.next({ 
+                isAdmin: true, 
+                userProfile: { 
+                  fullName: 'Administrator', 
+                  email: user.email,
+                  role: 'admin' 
+                } 
+              })
+            );
+          } else {
+            // For regular users, get full profile from Firestore
+            return this.firestore.collection('users').doc(user.uid).valueChanges().pipe(
+              map(profile => ({ isAdmin: false, userProfile: profile }))
+            );
+          }
+        } else {
+          return new Observable<{ isAdmin: boolean; userProfile: any }>(observer => 
+            observer.next({ isAdmin: false, userProfile: null })
+          );
+        }
+      })
+    );
+  }
 }
