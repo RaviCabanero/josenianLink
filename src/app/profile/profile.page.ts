@@ -14,6 +14,34 @@ export class ProfilePage implements OnInit {
 
   activeTab: string = 'post';
   isEditModalOpen: boolean = false;
+  isCreatePostModalOpen: boolean = false;
+  isEditPostModalOpen: boolean = false;
+  isAddJobModalOpen: boolean = false;
+  userPosts: any[] | undefined = undefined; // undefined = loading, [] = no posts
+  currentJobs: any[] = [];
+  pastJobs: any[] = [];
+
+  newPost = {
+    content: ''
+  };
+
+  editingPost = {
+    id: '',
+    content: ''
+  };
+
+  newJob = {
+    type: 'current',
+    companyName: '',
+    position: '',
+    startDate: '',
+    endDate: '',
+    address: '',
+    contactNumber: '',
+    email: ''
+  };
+
+  editingJob: any = null;
 
   // Define the user object with additional properties
   user = {
@@ -42,6 +70,10 @@ export class ProfilePage implements OnInit {
   ngOnInit() {
     // Load user profile from Firebase
     this.loadUserProfile();
+    // Load user posts
+    this.loadUserPosts();
+    // Load employment history
+    this.loadEmploymentHistory();
   }
 
   loadUserProfile() {
@@ -163,6 +195,291 @@ export class ProfilePage implements OnInit {
       console.error('Error updating profile:', error);
       this.presentToast('Failed to update profile. Please try again.', 'danger');
     }
+  }
+
+  // Load user posts
+  loadUserPosts() {
+    console.log('Loading user posts...'); // Debug log
+    this.userPosts = undefined; // Set to loading state
+
+    this.authService.getUserPosts().subscribe(posts => {
+      console.log('Loaded posts:', posts); // Debug log
+      this.userPosts = posts.sort((a, b) => {
+        const aTime = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp);
+        const bTime = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp);
+        return bTime.getTime() - aTime.getTime();
+      });
+      console.log('Sorted posts:', this.userPosts); // Debug log
+    }, error => {
+      console.error('Error loading posts:', error);
+      this.userPosts = []; // Set to empty array on error
+    });
+  }
+
+  // Open create post modal
+  openCreatePostModal() {
+    this.newPost.content = '';
+    this.isCreatePostModalOpen = true;
+  }
+
+  // Close create post modal
+  closeCreatePostModal() {
+    this.isCreatePostModalOpen = false;
+    this.newPost.content = '';
+  }
+
+  // Create new post
+  async createPost() {
+    if (!this.newPost.content.trim()) {
+      this.presentToast('Please enter some content for your post', 'warning');
+      return;
+    }
+
+    try {
+      const postData = {
+        content: this.newPost.content.trim(),
+        authorId: await this.authService.getCurrentUserId(),
+        authorName: this.user.name,
+        authorProgram: this.user.program,
+        authorPhoto: this.user.photo,
+        timestamp: new Date(),
+        likes: 0,
+        comments: []
+      };
+
+      await this.authService.createPost(postData);
+      this.presentToast('Post created successfully!', 'success');
+      this.closeCreatePostModal();
+      this.loadUserPosts(); // Refresh posts
+    } catch (error) {
+      console.error('Error creating post:', error);
+      this.presentToast('Failed to create post. Please try again.', 'danger');
+    }
+  }
+
+  // Edit post
+  editPost(post: any) {
+    this.editingPost = {
+      id: post.id,
+      content: post.content
+    };
+    this.isEditPostModalOpen = true;
+  }
+
+  // Close edit post modal
+  closeEditPostModal() {
+    this.isEditPostModalOpen = false;
+    this.editingPost = { id: '', content: '' };
+  }
+
+  // Update post
+  async updatePost() {
+    if (!this.editingPost.content.trim()) {
+      this.presentToast('Please enter post content', 'warning');
+      return;
+    }
+
+    try {
+      await this.authService.updatePost(this.editingPost.id, {
+        content: this.editingPost.content.trim(),
+        updatedAt: new Date()
+      });
+      this.presentToast('Post updated successfully!', 'success');
+      this.closeEditPostModal();
+      this.loadUserPosts(); // Refresh posts
+    } catch (error) {
+      console.error('Error updating post:', error);
+      this.presentToast('Failed to update post. Please try again.', 'danger');
+    }
+  }
+
+  // Delete post
+  async deletePost(post: any) {
+    const alert = await this.alertController.create({
+      header: 'Delete Post',
+      message: 'Are you sure you want to delete this post?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          handler: async () => {
+            try {
+              await this.authService.deletePost(post.id);
+              this.presentToast('Post deleted successfully!', 'success');
+              this.loadUserPosts(); // Refresh posts
+            } catch (error) {
+              console.error('Error deleting post:', error);
+              this.presentToast('Failed to delete post. Please try again.', 'danger');
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  // Track by function for ngFor performance
+  trackByPostId(index: number, post: any): any {
+    return post.id || index;
+  }
+
+  // Format timestamp for display
+  formatTimestamp(timestamp: any): string {
+    try {
+      if (timestamp?.toDate) {
+        return timestamp.toDate().toLocaleString();
+      } else if (timestamp) {
+        return new Date(timestamp).toLocaleString();
+      }
+      return '';
+    } catch (error) {
+      console.error('Error formatting timestamp:', error);
+      return '';
+    }
+  }
+
+  // Load employment history
+  loadEmploymentHistory() {
+    this.authService.getUserEmploymentHistory().subscribe(jobs => {
+      this.currentJobs = jobs.filter(job => job.type === 'current');
+      this.pastJobs = jobs.filter(job => job.type === 'past');
+    }, error => {
+      console.error('Error loading employment history:', error);
+    });
+  }
+
+  // Open add job modal
+  openAddJobModal() {
+    this.resetJobForm();
+    this.isAddJobModalOpen = true;
+  }
+
+  // Close add job modal
+  closeAddJobModal() {
+    this.isAddJobModalOpen = false;
+    this.editingJob = null;
+    this.resetJobForm();
+  }
+
+  // Reset job form
+  resetJobForm() {
+    this.newJob = {
+      type: 'current',
+      companyName: '',
+      position: '',
+      startDate: '',
+      endDate: '',
+      address: '',
+      contactNumber: '',
+      email: ''
+    };
+  }
+
+  // Validate job form
+  isJobFormValid(): boolean {
+    const required = !!(this.newJob.companyName.trim() &&
+                       this.newJob.position.trim() &&
+                       this.newJob.startDate.trim());
+
+    if (this.newJob.type === 'past') {
+      return required && !!this.newJob.endDate.trim();
+    }
+
+    return required;
+  }
+
+  // Add or update job
+  async addJob() {
+    if (!this.isJobFormValid()) {
+      this.presentToast('Please fill in all required fields', 'warning');
+      return;
+    }
+
+    try {
+      const jobData = {
+        type: this.newJob.type,
+        companyName: this.newJob.companyName.trim(),
+        position: this.newJob.position.trim(),
+        startDate: this.newJob.startDate.trim(),
+        endDate: this.newJob.type === 'past' ? this.newJob.endDate.trim() : '',
+        address: this.newJob.address.trim(),
+        contactNumber: this.newJob.contactNumber.trim(),
+        email: this.newJob.email.trim(),
+        userId: await this.authService.getCurrentUserId(),
+        userName: this.user.name, // Include user's name
+        userProgram: this.user.program, // Include user's program
+        userEmail: this.user.email, // Include user's email
+        createdAt: this.editingJob ? this.editingJob.createdAt : new Date(),
+        updatedAt: this.editingJob ? new Date() : undefined
+      };
+
+      if (this.editingJob) {
+        // Update existing job
+        console.log('Updating occupation data:', jobData); // Debug log
+        await this.authService.updateEmploymentHistory(this.editingJob, jobData);
+        this.presentToast('Employment history updated successfully!', 'success');
+      } else {
+        // Add new job
+        console.log('Adding occupation data:', jobData); // Debug log
+        await this.authService.addEmploymentHistory(jobData);
+        this.presentToast('Employment history added successfully!', 'success');
+      }
+
+      this.closeAddJobModal();
+      this.loadEmploymentHistory(); // Refresh employment history
+    } catch (error) {
+      console.error('Error saving employment history:', error);
+      this.presentToast('Failed to save employment history. Please try again.', 'danger');
+    }
+  }
+
+  // Edit job
+  editJob(job: any) {
+    this.editingJob = { ...job };
+    this.newJob = {
+      type: job.type,
+      companyName: job.companyName || '',
+      position: job.position || '',
+      startDate: job.startDate || '',
+      endDate: job.endDate || '',
+      address: job.address || '',
+      contactNumber: job.contactNumber || '',
+      email: job.email || ''
+    };
+    this.isAddJobModalOpen = true;
+  }
+
+  // Delete job
+  async deleteJob(job: any) {
+    const alert = await this.alertController.create({
+      header: 'Delete Employment',
+      message: 'Are you sure you want to delete this employment record?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          handler: async () => {
+            try {
+              await this.authService.deleteEmploymentHistory(job);
+              this.presentToast('Employment record deleted successfully!', 'success');
+              this.loadEmploymentHistory(); // Refresh employment history
+            } catch (error) {
+              console.error('Error deleting employment history:', error);
+              this.presentToast('Failed to delete employment record. Please try again.', 'danger');
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   // Present toast message

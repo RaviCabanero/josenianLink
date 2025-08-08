@@ -109,17 +109,44 @@
   text-transform: none;
   margin: 0;
   height: 48px;
+  --border-radius: 20px;
+  position: relative;
 }
 
 .tab-button.active {
-  --color: #2c543f;
-  border-bottom: 2px solid #2c543f;
+  --color: white;
+  --background: #2c543f;
+  border-radius: 20px;
+  margin: 4px;
+  height: 40px;
+  box-shadow: 0 2px 8px rgba(44, 84, 63, 0.3);
 }
 
 // Post Section
 .post-section {
   background: white;
   padding: 16px;
+}
+
+.create-post-container {
+  margin-bottom: 20px;
+}
+
+.create-post-btn {
+  --color: #2c543f;
+  --border-color: #2c543f;
+  --border-width: 2px;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+.posts-list {
+  margin-top: 16px;
 }
 
 .user-post {
@@ -130,6 +157,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   padding: 12px;
   margin: 8px 0;
+  background: #fafafa;
 }
 
 .post-avatar {
@@ -161,11 +189,193 @@
   font-size: 0.9rem;
   color: #333;
   line-height: 1.5;
-  margin: 0;
+  margin: 0 0 8px 0;
 }
 
-// Other sections
-.employment-section,
+.post-timestamp {
+  font-size: 0.7rem;
+  color: #999;
+  margin: 0;
+  font-style: italic;
+}
+
+.post-note {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 4px 0 0 0;
+  font-style: italic;
+}
+
+.loading-posts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  color: #666;
+
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+// Post and Job Action Buttons
+.post-actions,
+.job-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-self: flex-start;
+
+  ion-button {
+    --color: #666;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+
+    &:hover {
+      --color: #2c543f;
+    }
+
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Employment History Section
+.employment-section {
+  background: white;
+  padding: 16px;
+}
+
+.add-job-container {
+  margin-bottom: 20px;
+}
+
+.add-job-btn {
+  --color: #2c543f;
+  --border-color: #2c543f;
+  --border-width: 2px;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+.employment-category {
+  margin-bottom: 24px;
+}
+
+.category-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #2c543f;
+  margin: 0 0 16px 0;
+  padding-left: 8px;
+  border-left: 4px solid #2c543f;
+}
+
+.job-entry {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+.job-status {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 4px;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+
+  &.current {
+    background: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  }
+
+  &.past {
+    background: #9E9E9E;
+    box-shadow: 0 0 0 3px rgba(158, 158, 158, 0.2);
+  }
+}
+
+.job-details {
+  flex: 1;
+}
+
+.company-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.work-date {
+  font-size: 0.85rem;
+  color: #2c543f;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.job-position {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+  margin: 0 0 8px 0;
+}
+
+.job-address,
+.job-contact,
+.job-email {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.empty-employment {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+
+  .empty-icon {
+    font-size: 3rem;
+    color: #ccc;
+    margin-bottom: 16px;
+  }
+
+  .empty-text {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+  }
+
+  .empty-subtext {
+    font-size: 0.85rem;
+    margin: 0;
+  }
+}
+
+// Activities Section
 .activities-section {
   background: white;
   padding: 16px;
@@ -361,6 +571,185 @@
     &:not([fill="outline"]) {
       --background: #2c543f;
       --color: white;
+    }
+  }
+}
+
+// Create Post Modal Styles
+.create-post-modal-content {
+  --background: #f8f9fa;
+}
+
+.create-post-form {
+  padding: 20px;
+}
+
+.post-author-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.author-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #2c543f;
+}
+
+.author-details {
+  flex: 1;
+}
+
+.author-name {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.author-program {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+
+.post-input-section {
+  margin-bottom: 20px;
+}
+
+.post-textarea {
+  --background: white;
+  --color: #333;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.character-count {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 8px;
+  padding-right: 8px;
+}
+
+.post-modal-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+
+  ion-button {
+    flex: 1;
+    height: 48px;
+    font-weight: 600;
+    --border-radius: 12px;
+
+    &[fill="outline"] {
+      --color: #2c543f;
+      --border-color: #2c543f;
+    }
+
+    &:not([fill="outline"]) {
+      --background: #2c543f;
+      --color: white;
+    }
+
+    &[disabled] {
+      --background: #ccc;
+      --color: #666;
+    }
+  }
+}
+
+// Add Job Modal Styles
+.add-job-modal-content {
+  --background: #f8f9fa;
+}
+
+.add-job-form {
+  padding: 20px;
+}
+
+.job-type-section {
+  margin-bottom: 24px;
+}
+
+.job-type-segment {
+  --background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+  ion-segment-button {
+    --color: #666;
+    --color-checked: white;
+    --background-checked: #2c543f;
+    --indicator-color: transparent;
+    font-weight: 600;
+    margin: 4px;
+    border-radius: 8px;
+  }
+}
+
+.job-form-fields {
+  margin-bottom: 30px;
+
+  ion-item {
+    --background: white;
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+    ion-label {
+      color: #2c543f;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    ion-input, ion-textarea {
+      --color: #333;
+      font-size: 1rem;
+    }
+  }
+}
+
+.job-modal-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+
+  ion-button {
+    flex: 1;
+    height: 48px;
+    font-weight: 600;
+    --border-radius: 12px;
+
+    &[fill="outline"] {
+      --color: #2c543f;
+      --border-color: #2c543f;
+    }
+
+    &:not([fill="outline"]) {
+      --background: #2c543f;
+      --color: white;
+    }
+
+    &[disabled] {
+      --background: #ccc;
+      --color: #666;
     }
   }
 }

@@ -56,19 +56,130 @@
 
   <!-- Post Section -->
   <div class="post-section" *ngIf="activeTab === 'post'">
-    <div class="user-post">
-      <img [src]="user.photo" class="post-avatar" />
-      <div class="post-content">
-        <h4 class="post-author">{{ user.name }}</h4>
-        <p class="post-program">{{ user.program }}</p>
-        <p class="post-text">{{ user.postText || 'We have an opportunity for a software engineer at our company. Feel free to get in touch if you\'re interested.' }}</p>
+    <!-- Create Post Button -->
+    <div class="create-post-container">
+      <ion-button expand="block" fill="outline" class="create-post-btn" (click)="openCreatePostModal()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Create Post
+      </ion-button>
+
+      <!-- Debug: Refresh Posts Button -->
+      <ion-button expand="block" fill="clear" size="small" (click)="loadUserPosts()" style="margin-top: 8px;">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Refresh Posts
+      </ion-button>
+    </div>
+
+    <!-- User Posts -->
+    <div class="posts-list">
+      <!-- Loading state -->
+      <div *ngIf="userPosts === undefined" class="loading-posts">
+        <ion-spinner></ion-spinner>
+        <p>Loading posts...</p>
+      </div>
+
+      <!-- User created posts -->
+      <div class="user-post" *ngFor="let post of userPosts; trackBy: trackByPostId">
+        <img [src]="post.authorPhoto || user.photo" class="post-avatar" />
+        <div class="post-content">
+          <h4 class="post-author">{{ post.authorName || user.name }}</h4>
+          <p class="post-program">{{ post.authorProgram || user.program }}</p>
+          <p class="post-text">{{ post.content }}</p>
+          <p class="post-timestamp" *ngIf="post.timestamp">
+            {{ formatTimestamp(post.timestamp) }}
+          </p>
+        </div>
+        <div class="post-actions">
+          <ion-button fill="clear" size="small" (click)="editPost(post)">
+            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" (click)="deletePost(post)">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Default post if no posts exist -->
+      <div class="user-post" *ngIf="userPosts && userPosts.length === 0">
+        <img [src]="user.photo" class="post-avatar" />
+        <div class="post-content">
+          <h4 class="post-author">{{ user.name }}</h4>
+          <p class="post-program">{{ user.program }}</p>
+          <p class="post-text">{{ user.postText || 'We have an opportunity for a software engineer at our company. Feel free to get in touch if you\'re interested.' }}</p>
+          <p class="post-note">This is a sample post. Create your first post above!</p>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Employment History Section -->
   <div class="employment-section" *ngIf="activeTab === 'employment'">
-    <p class="section-placeholder">Employment history will be displayed here.</p>
+    <!-- Add New Job Button -->
+    <div class="add-job-container">
+      <ion-button expand="block" fill="outline" class="add-job-btn" (click)="openAddJobModal()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        New Job +
+      </ion-button>
+    </div>
+
+    <!-- Current Employment -->
+    <div class="employment-category" *ngIf="currentJobs.length > 0">
+      <h3 class="category-title">Current</h3>
+      <div class="job-entry" *ngFor="let job of currentJobs">
+        <div class="job-status">
+          <span class="status-indicator current"></span>
+        </div>
+        <div class="job-details">
+          <h4 class="company-name">{{ job.companyName }}</h4>
+          <p class="work-date">{{ job.startDate }}</p>
+          <p class="job-position">{{ job.position }}</p>
+          <p class="job-address">{{ job.address }}</p>
+          <p class="job-contact">Phone: {{ job.contactNumber }}</p>
+          <p class="job-email">{{ job.email }}</p>
+        </div>
+        <div class="job-actions">
+          <ion-button fill="clear" size="small" (click)="editJob(job)">
+            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" (click)="deleteJob(job)">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Past Employment -->
+    <div class="employment-category" *ngIf="pastJobs.length > 0">
+      <h3 class="category-title">Past</h3>
+      <div class="job-entry" *ngFor="let job of pastJobs">
+        <div class="job-status">
+          <span class="status-indicator past"></span>
+        </div>
+        <div class="job-details">
+          <h4 class="company-name">{{ job.companyName }}</h4>
+          <p class="work-date">{{ job.startDate }} - {{ job.endDate }}</p>
+          <p class="job-position">{{ job.position }}</p>
+          <p class="job-address">{{ job.address }}</p>
+          <p class="job-contact">Phone: {{ job.contactNumber }}</p>
+          <p class="job-email">{{ job.email }}</p>
+        </div>
+        <div class="job-actions">
+          <ion-button fill="clear" size="small" (click)="editJob(job)">
+            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" (click)="deleteJob(job)">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-employment" *ngIf="currentJobs.length === 0 && pastJobs.length === 0">
+      <ion-icon name="briefcase-outline" class="empty-icon"></ion-icon>
+      <p class="empty-text">No employment history added yet.</p>
+      <p class="empty-subtext">Add your current or past work experience above.</p>
+    </div>
   </div>
 
   <!-- Activities Section -->
@@ -143,6 +254,192 @@
           </ion-button>
           <ion-button expand="block" (click)="saveProfile()">
             Save Changes
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Create Post Modal -->
+<ion-modal [isOpen]="isCreatePostModalOpen" (didDismiss)="closeCreatePostModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Create Post</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeCreatePostModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="create-post-modal-content">
+      <div class="create-post-form">
+        <!-- User Info -->
+        <div class="post-author-info">
+          <img [src]="user.photo" class="author-avatar" />
+          <div class="author-details">
+            <h4 class="author-name">{{ user.name }}</h4>
+            <p class="author-program">{{ user.program }}</p>
+          </div>
+        </div>
+
+        <!-- Post Content -->
+        <div class="post-input-section">
+          <ion-textarea
+            [(ngModel)]="newPost.content"
+            placeholder="What's on your mind?"
+            rows="6"
+            maxlength="500"
+            class="post-textarea">
+          </ion-textarea>
+          <div class="character-count">
+            {{ newPost.content.length || 0 }}/500
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="post-modal-buttons">
+          <ion-button expand="block" fill="outline" (click)="closeCreatePostModal()">
+            Cancel
+          </ion-button>
+          <ion-button expand="block" (click)="createPost()" [disabled]="!newPost.content.trim()">
+            Post
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Add Job Modal -->
+<ion-modal [isOpen]="isAddJobModalOpen" (didDismiss)="closeAddJobModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ editingJob ? 'Edit Employment' : 'Add Employment' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeAddJobModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="add-job-modal-content">
+      <div class="add-job-form">
+        <!-- Job Type Selection -->
+        <div class="job-type-section">
+          <ion-segment [(ngModel)]="newJob.type" class="job-type-segment">
+            <ion-segment-button value="current">
+              <ion-label>Current Job</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="past">
+              <ion-label>Past Job</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="job-form-fields">
+          <ion-item>
+            <ion-label position="stacked">Company Name *</ion-label>
+            <ion-input [(ngModel)]="newJob.companyName" placeholder="Enter company name"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Position *</ion-label>
+            <ion-input [(ngModel)]="newJob.position" placeholder="Enter your job position"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Start Date *</ion-label>
+            <ion-input [(ngModel)]="newJob.startDate" placeholder="e.g., June 2019"></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="newJob.type === 'past'">
+            <ion-label position="stacked">End Date *</ion-label>
+            <ion-input [(ngModel)]="newJob.endDate" placeholder="e.g., May 2021"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Workplace Address</ion-label>
+            <ion-textarea [(ngModel)]="newJob.address" placeholder="Enter workplace address" rows="2"></ion-textarea>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Company Contact Number</ion-label>
+            <ion-input [(ngModel)]="newJob.contactNumber" type="tel" placeholder="Enter company contact number"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Company Email</ion-label>
+            <ion-input [(ngModel)]="newJob.email" type="email" placeholder="Enter company email"></ion-input>
+          </ion-item>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="job-modal-buttons">
+          <ion-button expand="block" fill="outline" (click)="closeAddJobModal()">
+            Cancel
+          </ion-button>
+          <ion-button expand="block" (click)="addJob()" [disabled]="!isJobFormValid()">
+            {{ editingJob ? 'Update' : 'Done' }}
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Edit Post Modal -->
+<ion-modal [isOpen]="isEditPostModalOpen" (didDismiss)="closeEditPostModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Edit Post</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEditPostModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="edit-post-modal-content">
+      <div class="edit-post-form">
+        <!-- User Info -->
+        <div class="post-author-info">
+          <img [src]="user.photo" class="author-avatar" />
+          <div class="author-details">
+            <h4 class="author-name">{{ user.name }}</h4>
+            <p class="author-program">{{ user.program }}</p>
+          </div>
+        </div>
+
+        <!-- Post Content -->
+        <div class="post-input-section">
+          <ion-textarea
+            [(ngModel)]="editingPost.content"
+            placeholder="What's on your mind?"
+            rows="6"
+            maxlength="500"
+            class="post-textarea">
+          </ion-textarea>
+          <div class="character-count">
+            {{ editingPost.content.length || 0 }}/500
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="post-modal-buttons">
+          <ion-button expand="block" fill="outline" (click)="closeEditPostModal()">
+            Cancel
+          </ion-button>
+          <ion-button expand="block" (click)="updatePost()" [disabled]="!editingPost.content.trim()">
+            Update Post
           </ion-button>
         </div>
       </div>
