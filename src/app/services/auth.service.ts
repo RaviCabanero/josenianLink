@@ -88,4 +88,14 @@ export class AuthService {
   getAllUsers(): Observable<any[]> {
     return this.firestore.collection('users').valueChanges();
   }
+
+  // Update user profile
+  async updateUserProfile(profileData: any): Promise<void> {
+    const user = await this.afAuth.currentUser;
+    if (user) {
+      return this.firestore.collection('users').doc(user.uid).update(profileData);
+    } else {
+      throw new Error('No authenticated user found');
+    }
+  }
 }

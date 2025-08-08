@@ -1,173 +1,366 @@
 .profile-content {
-  padding: 20px;
+  --background: #ffffff;
+  --padding-top: 0;
+  --padding-bottom: 60px;
+  padding: 0;
+}
+
+// Profile Card with USJR colors
+.profile-card {
+  background: #2c543f;
+  color: white;
+  margin: 0;
+  border-radius: 0 0 20px 20px;
+  padding: 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #f9f9f9;
-}
-
-.profile-container {
-  width: 100%;
-  max-width: 500px;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.profile-image {
-  margin-bottom: 20px;
+  align-items: flex-start;
+  gap: 15px;
+  position: relative;
+  z-index: 2;
 }
 
 .profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+}
+
+.profile-basic-info {
+  flex: 1;
+}
+
+.profile-name {
+  color: white;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+}
+
+.profile-id {
+  color: white;
+  font-size: 0.9rem;
+  margin: 0 0 4px 0;
+  opacity: 0.9;
+}
+
+.profile-program {
+  color: white;
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.edit-profile-button {
+  --color: white;
+  --border-color: white;
+  --border-width: 1px;
+  --border-radius: 6px;
+  font-size: 0.8rem;
+  height: 32px;
+  margin-left: auto;
+  margin-top: 8px;
+  min-width: 80px;
+}
+
+// User Details Section
+.user-details {
+  background: white;
+  padding: 16px;
+  margin: 0;
+}
+
+.detail-row {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #333;
+  font-size: 0.9rem;
+}
+
+// Tab Navigation
+.tab-navigation {
+  display: flex;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  margin: 0;
+  padding: 0 16px;
+}
+
+.tab-button {
+  flex: 1;
+  --color: #666;
+  --color-activated: #2c543f;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: none;
+  margin: 0;
+  height: 48px;
+}
+
+.tab-button.active {
+  --color: #2c543f;
+  border-bottom: 2px solid #2c543f;
+}
+
+// Post Section
+.post-section {
+  background: white;
+  padding: 16px;
+}
+
+.user-post {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 12px;
+  margin: 8px 0;
+}
+
+.post-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.post-content {
+  flex: 1;
+}
+
+.post-author {
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin: 0 0 2px 0;
+  color: #333;
+}
+
+.post-program {
+  font-size: 0.75rem;
+  color: #999;
+  margin: 0 0 8px 0;
+}
+
+.post-text {
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.5;
+  margin: 0;
+}
+
+// Other sections
+.employment-section,
+.activities-section {
+  background: white;
+  padding: 16px;
+}
+
+.section-placeholder {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+// Header Styles
+.custom-header {
+  --background: #2c543f;
+  --color: white;
+
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #2c543f;
+
+    .logo-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+
+      .logo-green {
+        color: #4cc9f0; /* USJR teal */
+      }
+
+      .logo-yellow {
+        color: #f8961e; /* USJR gold */
+      }
+    }
+
+    .logout-button {
+      --color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+}
+
+// Footer Styles
+.home-footer {
+  ion-toolbar {
+    --background: #2c543f;
+    --border-width: 0;
+    padding: 0;
+
+    .footer-buttons {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      padding: 8px 0;
+
+      ion-button {
+        --padding-start: 0;
+        --padding-end: 0;
+        margin: 0;
+        --color: rgba(255,255,255,0.7);
+        --color-activated: white;
+        position: relative;
+        height: 48px;
+        width: 48px;
+
+        ion-icon {
+          font-size: 1.4rem;
+        }
+
+        &.active {
+          --color: white;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: white;
+            border-radius: 3px 3px 0 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Edit Profile Modal Styles
+.edit-modal-content {
+  --background: #f8f9fa;
+}
+
+.edit-form {
+  padding: 20px;
+}
+
+.photo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.current-photo {
+  position: relative;
+  display: inline-block;
+}
+
+.edit-avatar {
   width: 120px;
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 10px;
-  border: 5px solid #f4c014; /* Yellow border for the profile picture */
+  border: 4px solid #2c543f;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.change-photo-button {
-  width: 200px;
-  font-weight: bold;
-  margin-top: 10px;
+.change-photo-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  --background: #2c543f;
+  --color: white;
+  --border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
 }
 
-.profile-info {
-  width: 100%;
-  margin-top: 20px;
-  text-align: left;
+.form-fields {
+  margin-bottom: 30px;
+
+  ion-item {
+    --background: white;
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+    ion-label {
+      color: #2c543f;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    ion-input, ion-textarea {
+      --color: #333;
+      font-size: 1rem;
+    }
+
+    ion-toggle {
+      --background: #e0e0e0;
+      --background-checked: #2c543f;
+      --handle-background: white;
+      --handle-background-checked: white;
+    }
+  }
 }
 
-.info-item {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 15px;
-}
-
-.info-item strong {
-  color: #2c543f;
-}
-
-.info-item span {
+.privacy-note {
+  font-size: 0.8rem;
   color: #666;
-  margin-left: 10px;
+  margin: -8px 16px 16px 16px;
+  font-style: italic;
 }
 
-.update-button {
-  margin-top: 30px;
-  width: 100%;
-  font-size: 16px;
-  border-radius: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Style for Button Hover Effect */
-.update-button:hover {
-  background-color: #2c543f !important;
-  color: #fff !important;
-}
-
-.footer-toolbar {
-  background: #2c543f;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  height: 64px;
-}
-
-.footer-buttons {
+.modal-buttons {
   display: flex;
-  justify-content: space-around;
-  width: 100%;
-}
+  gap: 12px;
+  margin-top: 20px;
 
-ion-button {
-  --padding-start: 0;
-  --padding-end: 0;
-}
+  ion-button {
+    flex: 1;
+    height: 48px;
+    font-weight: 600;
+    --border-radius: 12px;
 
-ion-icon {
-  font-size: 26px;
-  color: #000;
-  background: #fff;
-  padding: 10px;
-  border-radius: 50%;
-}
+    &[fill="outline"] {
+      --color: #2c543f;
+      --border-color: #2c543f;
+    }
 
-.custom-header {
-  background: #2c543f;
-  padding: 12px 14px 8px;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
-
-.header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo-title {
-  font-size: 22px;
-  font-weight: 900;
-  font-family: 'Avenir', sans-serif;
-}
-
-.logo-green {
-  color: #0d820d;
-}
-
-.logo-yellow {
-  color: #f4c014;
-}
-
-.search-icon {
-  font-size: 24px;
-  color: black;
-}
-
-.user-post-bar {
-  display: flex;
-  align-items: center;
-  margin-top: 12px;
-  background: #2c543f;
-  padding: 8px 10px;
-  border-radius: 16px;
-}
-
-.user-avatar {
-  width: 42px;
-  height: 42px; 
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-  border: 2px solid white;
-}
-
-.post-box {
-  flex: 1;
-}
-
-.user-name {
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 4px;
-  color: #000000;
-}
-
-.post-input {
-  background: #a8a8a8;
-  border-radius: 12px;
-  padding-left: 12px;
-  font-size: 14px;
-  height: 34px;
-  --padding-start: 0;
-}
-
-.post-image-icon {
-  font-size: 24px;
-  color: #ffffff;
-  margin-left: 8px;
+    &:not([fill="outline"]) {
+      --background: #2c543f;
+      --color: white;
+    }
+  }
 }

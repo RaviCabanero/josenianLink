@@ -3,48 +3,156 @@
     <div class="logo-title">
       <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
     </div>
-    <ion-icon name="search-outline" class="search-icon"></ion-icon>
-  </div>
-
-  <div class="profile-container">
-    <!-- Profile Image Section -->
-    <div class="profile-image">
-      <img src="assets/profile-placeholder.png" class="profile-avatar" />
-      <ion-button expand="block" color="primary" class="change-photo-button">Change Photo</ion-button>
-    </div>
-
-    <!-- Profile Information -->
-    <div class="profile-info">
-      <div class="info-item">
-        <strong>Full Name:</strong>
-        <span>{{ user.name }}</span>
-      </div>
-      <div class="info-item">
-        <strong>ID Number:</strong>
-        <span>{{ user.id }}</span>
-      </div>
-      <div class="info-item">
-        <strong>Program:</strong>
-        <span>{{ user.program }}</span>
-      </div>
-      <div class="info-item">
-        <strong>Year Graduated:</strong>
-        <span>{{ user.yearGraduated }}</span>
-      </div>
-    </div>
-
-    <!-- Update Button -->
-    <ion-button expand="block" color="success" class="update-button" (click)="updateProfile()">Update Profile</ion-button>
+    <ion-button fill="clear" class="logout-button" (click)="logout()">
+      Log Out
+    </ion-button>
   </div>
 </ion-header>
 
 <ion-content class="profile-content">
-  
+  <!-- Profile Card -->
+  <div class="profile-card">
+    <div class="profile-header">
+      <img [src]="user.photo" class="profile-avatar" />
+      <div class="profile-basic-info">
+        <h2 class="profile-name">{{ user.name }}</h2>
+        <p class="profile-id">{{ user.id }}</p>
+        <p class="profile-program">{{ user.program }}</p>
+      </div>
+      <ion-button fill="outline" class="edit-profile-button" (click)="updateProfile()">
+        Edit Profile
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- User Details Section -->
+  <div class="user-details">
+    <div class="detail-row">
+      <span class="detail-label">Graduated on {{ user.yearGraduated }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">{{ user.email }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">{{ user.address }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">{{ user.contactNumber }}</span>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <ion-button fill="clear" class="tab-button" [class.active]="activeTab === 'post'" (click)="setActiveTab('post')">
+      Post
+    </ion-button>
+    <ion-button fill="clear" class="tab-button" [class.active]="activeTab === 'employment'" (click)="setActiveTab('employment')">
+      Employment History
+    </ion-button>
+    <ion-button fill="clear" class="tab-button" [class.active]="activeTab === 'activities'" (click)="setActiveTab('activities')">
+      My Activities
+    </ion-button>
+  </div>
+
+  <!-- Post Section -->
+  <div class="post-section" *ngIf="activeTab === 'post'">
+    <div class="user-post">
+      <img [src]="user.photo" class="post-avatar" />
+      <div class="post-content">
+        <h4 class="post-author">{{ user.name }}</h4>
+        <p class="post-program">{{ user.program }}</p>
+        <p class="post-text">{{ user.postText || 'We have an opportunity for a software engineer at our company. Feel free to get in touch if you\'re interested.' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employment History Section -->
+  <div class="employment-section" *ngIf="activeTab === 'employment'">
+    <p class="section-placeholder">Employment history will be displayed here.</p>
+  </div>
+
+  <!-- Activities Section -->
+  <div class="activities-section" *ngIf="activeTab === 'activities'">
+    <p class="section-placeholder">Activities will be displayed here.</p>
+  </div>
 </ion-content>
 
-<ion-footer class="footer">
-  <ion-toolbar class="footer-toolbar">
-    <ion-buttons slot="start" class="footer-buttons">
+<!-- Edit Profile Modal -->
+<ion-modal [isOpen]="isEditModalOpen" (didDismiss)="closeEditModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Edit Profile</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEditModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="edit-modal-content">
+      <div class="edit-form">
+        <!-- Profile Photo Section -->
+        <div class="photo-section">
+          <div class="current-photo">
+            <img [src]="editUser.photo" class="edit-avatar" />
+            <ion-button fill="clear" class="change-photo-btn" (click)="selectPhoto()">
+              <ion-icon name="camera" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+          <input type="file" #fileInput accept="image/*" (change)="onPhotoSelected($event)" style="display: none;">
+        </div>
+
+        <!-- Form Fields -->
+        <div class="form-fields">
+          <ion-item>
+            <ion-label position="stacked">Full Name</ion-label>
+            <ion-input [(ngModel)]="editUser.name" placeholder="Enter your full name"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Email</ion-label>
+            <ion-input [(ngModel)]="editUser.email" type="email" placeholder="Enter your email"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Contact Number</ion-label>
+            <ion-input [(ngModel)]="editUser.contactNumber" type="tel" placeholder="Enter your contact number"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Address</ion-label>
+            <ion-textarea [(ngModel)]="editUser.address" placeholder="Enter your address" rows="3"></ion-textarea>
+          </ion-item>
+
+          <!-- Privacy Setting -->
+          <ion-item>
+            <ion-label>Profile Privacy</ion-label>
+            <ion-toggle [(ngModel)]="editUser.isPublic" slot="end"></ion-toggle>
+          </ion-item>
+          <p class="privacy-note">
+            {{ editUser.isPublic ? 'Your profile is public and visible to all users' : 'Your profile is private and only visible to you' }}
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-buttons">
+          <ion-button expand="block" fill="outline" (click)="closeEditModal()">
+            Cancel
+          </ion-button>
+          <ion-button expand="block" (click)="saveProfile()">
+            Save Changes
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-footer class="home-footer">
+  <ion-toolbar>
+    <div class="footer-buttons">
       <ion-button fill="clear" routerLink="/home">
         <ion-icon name="home" slot="icon-only"></ion-icon>
       </ion-button>
@@ -54,12 +162,12 @@
       <ion-button fill="clear" routerLink="/notifications">
         <ion-icon name="notifications" slot="icon-only"></ion-icon>
       </ion-button>
-      <ion-button fill="clear" routerLink="/profile">
-        <ion-icon name="card" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" routerLink="/profile" class="active">
+        <ion-icon name="person" slot="icon-only"></ion-icon>
       </ion-button>
       <ion-button fill="clear" routerLink="/messages">
         <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
       </ion-button>
-    </ion-buttons>
+    </div>
   </ion-toolbar>
 </ion-footer>
