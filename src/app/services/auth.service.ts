@@ -83,4 +83,9 @@ export class AuthService {
       })
     );
   }
+
+  // Get all registered users for featured alumni
+  getAllUsers(): Observable<any[]> {
+    return this.firestore.collection('users').valueChanges();
+  }
 }

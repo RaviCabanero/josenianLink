@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { AdminPage } from './admin/admin.page';
+import { FreedomWallPage } from './freedom-wall/freedom-wall.page';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 
@@ -48,6 +49,11 @@ const routes: Routes = [
     path: 'admin',
     component: AdminPage,
     canActivate: [AdminGuard]
+  },
+  {
+    path: 'freedom-wall',
+    component: FreedomWallPage,
+    canActivate: [AuthGuard]
   },
   {
     path: '**',

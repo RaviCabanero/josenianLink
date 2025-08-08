@@ -1,25 +1,83 @@
-<ion-header class="custom-header">
+<ion-header class="home-header">
   <div class="header-bar">
     <div class="logo-title">
       <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
     </div>
-    <ion-icon name="search-outline" class="search-icon"></ion-icon>
-  </div>
-
-  <div class="user-post-bar">
-    <img src="assets/profile.jpg" alt="User Avatar" class="user-avatar" />
-    <div class="post-box">
-      <div class="user-name">{{userName}}</div>
-      <ion-input placeholder="New Post" class="post-input"></ion-input>
-    </div>
-    
+    <ion-icon name="notifications-outline" class="notification-icon"></ion-icon>
   </div>
 </ion-header>
 
-<ion-footer class="footer">
+<ion-content class="home-content">
+  <!-- Welcome Section -->
+  <div class="welcome-card">
+    <div class="welcome-message">
+      <h2>Welcome back, {{userName}}!</h2>
+      <p>Stay connected with your Josenian community</p>
+    </div>
+    <img src="assets/images/usjr-campus.png" alt="USJR Campus" class="campus-image">
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <ion-button expand="block" color="josephine" routerLink="/freedom-wall">
+      <ion-icon name="chatbubbles" slot="start"></ion-icon>
+      Freedom Wall
+    </ion-button>
+    <ion-button expand="block" color="medium" routerLink="/events">
+      <ion-icon name="calendar" slot="start"></ion-icon>
+      Upcoming Events
+    </ion-button>
+  </div>
+
+  <!-- Alumni Highlights -->
+  <div class="section-title">
+    <h3>Featured Alumni</h3>
+    <a routerLink="/alumni">See All</a>
+  </div>
+
+  <div class="alumni-scroll">
+    <div class="alumni-card" *ngFor="let alumni of featuredAlumni">
+      <img [src]="alumni.photo || 'assets/default-avatar.png'" alt="Alumni Photo">
+      <div class="alumni-info">
+        <h4>{{alumni.name}}</h4>
+        <p>{{alumni.program}} • {{alumni.year}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Updates -->
+  <div class="section-title">
+    <h3>Recent Updates</h3>
+  </div>
+
+  <ion-card class="update-card" *ngFor="let update of recentUpdates">
+    <ion-card-header>
+      <img [src]="update.authorPhoto || 'assets/default-avatar.png'" class="update-avatar">
+      <div class="update-header-text">
+        <h4>{{update.author}}</h4>
+        <p>{{update.date | date:'MMM d'}}</p>
+      </div>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{update.content}}</p>
+      <div class="update-actions">
+        <ion-button fill="clear" size="small">
+          <ion-icon name="heart-outline" slot="start"></ion-icon>
+          {{update.likes}}
+        </ion-button>
+        <ion-button fill="clear" size="small">
+          <ion-icon name="chatbubble-outline" slot="start"></ion-icon>
+          {{update.comments}}
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer class="home-footer">
   <ion-toolbar class="footer-toolbar">
     <ion-buttons slot="start" class="footer-buttons">
-      <ion-button fill="clear" routerLink="/home">
+      <ion-button fill="clear" routerLink="/home" class="active">
         <ion-icon name="home" slot="icon-only"></ion-icon>
       </ion-button>
       <ion-button fill="clear" routerLink="/alumni">
@@ -31,10 +89,9 @@
       <ion-button fill="clear" routerLink="/profile">
         <ion-icon name="card" slot="icon-only"></ion-icon>
       </ion-button>
-      <ion-button fill="clear" routerLink="/messages">
+      <ion-button fill="clear" routerLink="/freedom-wall">
         <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>
-

@@ -1,0 +1,141 @@
+<ion-content class="freedom-wall-redesign">
+  <!-- Floating Post Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="josephine" (click)="submitPost()">
+      <ion-icon name="create-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- Header with Search -->
+  <div class="wall-header">
+    <div class="header-backdrop"></div>
+    <ion-searchbar 
+      placeholder="Search posts..." 
+      class="wall-search"
+      animated
+      debounce="300">
+    </ion-searchbar>
+    <h1>
+      <ion-icon name="chatbubbles" color="josephine"></ion-icon>
+      Freedom Wall
+    </h1>
+  </div>
+
+  <!-- Post Creation Card -->
+  <ion-card class="create-card">
+    <div class="create-header">
+      <ion-avatar>
+        <img [src]="userProfile?.photoURL || 'assets/default-avatar.png'" />
+      </ion-avatar>
+      <ion-textarea
+        [(ngModel)]="newPost"
+        placeholder="Share your thoughts with Josenians..."
+        rows="1"
+        autoGrow
+        maxlength="500"
+        class="post-input">
+      </ion-textarea>
+    </div>
+    <div class="create-footer">
+      <div class="char-count">{{ newPost.length }}/500</div>
+      <ion-button 
+        (click)="submitPost()" 
+        [disabled]="loading || !newPost.trim()"
+        color="josephine"
+        size="small">
+        {{ loading ? 'Posting...' : 'Post' }}
+      </ion-button>
+    </div>
+  </ion-card>
+
+  <!-- Posts Feed -->
+  <div class="posts-container">
+    <div *ngIf="posts$ | async as posts; else loadingPosts">
+      <div *ngIf="posts.length === 0" class="empty-state">
+        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+        <h3>Quiet on the wall</h3>
+        <p>Be the first to share something with your fellow Josenians</p>
+        <ion-button (click)="newPost = ''; submitPost()" color="josephine">
+          Create First Post
+        </ion-button>
+      </div>
+
+      <!-- Post Item -->
+      <ion-card *ngFor="let post of posts" class="post-card">
+        <div class="post-header">
+          <ion-avatar>
+            <img [src]="post.authorAvatar || 'assets/default-avatar.png'" />
+          </ion-avatar>
+          <div class="post-meta">
+            <h3>{{ post.authorName || 'Josenian Alumni' }}</h3>
+            <p>{{ getTimeAgo(post.timestamp) }}</p>
+          </div>
+          <ion-button 
+            *ngIf="canDeletePost(post)"
+            fill="clear" 
+            color="medium" 
+            (click)="deletePost(post.id)"
+            class="post-menu">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="post-content">
+          <p>{{ post.content }}</p>
+        </div>
+
+        <div class="post-actions">
+          <ion-button 
+            fill="clear" 
+            (click)="likePost(post)"
+            [color]="isPostLiked(post) ? 'danger' : 'medium'">
+            <ion-icon 
+              [name]="isPostLiked(post) ? 'heart' : 'heart-outline'" 
+              slot="start">
+            </ion-icon>
+            {{ post.likes || 0 }}
+          </ion-button>
+          
+          <ion-button fill="clear" color="medium">
+            <ion-icon name="chatbubble-outline" slot="start"></ion-icon>
+            {{ post.comments?.length || 0 }}
+          </ion-button>
+          
+          <ion-button fill="clear" color="medium">
+            <ion-icon name="arrow-redo-outline" slot="start"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card>
+    </div>
+
+    <ng-template #loadingPosts>
+      <div class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading community posts...</p>
+      </div>
+    </ng-template>
+  </div>
+</ion-content>
+
+<!-- Footer Navigation -->
+<ion-footer class="custom-footer">
+  <ion-toolbar>
+    <ion-buttons slot="start" class="footer-nav">
+      <ion-button fill="clear" routerLink="/home" routerDirection="root">
+        <ion-icon name="home-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/alumni" routerDirection="forward">
+        <ion-icon name="people-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/events" routerDirection="forward">
+        <ion-icon name="calendar-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/profile" routerDirection="forward">
+        <ion-icon name="person-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" class="active" routerLink="/freedom-wall" routerDirection="forward">
+        <ion-icon name="chatbubbles" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
