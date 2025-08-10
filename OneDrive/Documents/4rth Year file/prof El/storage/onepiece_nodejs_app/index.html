@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>One Piece Characters</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+      background: #f4f4f4;
+    }
+    h2 {
+      color: #e74c3c;
+    }
+    input {
+      padding: 10px;
+      width: 250px;
+      margin: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #e67e22;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background: #d35400;
+    }
+    button:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+    }
+    .card {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 15px;
+      margin: 10px;
+      width: 220px;
+      display: inline-block;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    #results {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>One Piece Character Search</h2>
+  <input type="text" id="search" placeholder="Type a name...">
+  <button onclick="search()">Search</button>
+
+  <div id="results"></div>
+
+  <script>
+    const searchInput = document.getElementById('search');
+    searchInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') search();
+    });
+
+    function search() {
+      const query = searchInput.value.trim();
+      if (!query) {
+        alert('Please enter a character name to search');
+        return;
+      }
+
+      // Show loading state
+      const container = document.getElementById('results');
+      container.innerHTML = '<p>Searching...</p>';
+
+      fetch(`/search?q=${encodeURIComponent(query)}`)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          container.innerHTML = '';
+
+          if (data.length === 0) {
+            container.innerHTML = '<p>No characters found.</p>';
+            return;
+          }
+
+          data.forEach(c => {
+            // Better image handling with multiple fallback options
+            const imageUrl = c.image_url || `https://via.placeholder.com/100x100/e67e22/ffffff?text=${encodeURIComponent(c.name.split(' ')[0])}`;
+            
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+            cardElement.innerHTML = `
+              <img src="${imageUrl}" 
+                   alt="${c.name}" 
+                   onerror="handleImageError(this, '${c.name}')">
+              <h3>${c.name}</h3>
+              <p><strong>Bounty:</strong> ${c.bounty || 'Unknown'}</p>
+              ${c.crew ? `<p><strong>Crew:</strong> ${c.crew}</p>` : ''}
+              ${c.devil_fruit ? `<p><strong>Devil Fruit:</strong> ${c.devil_fruit}</p>` : ''}
+            `;
+            container.appendChild(cardElement);
+          });
+        })
+        .catch(err => {
+          console.error('Search error:', err);
+          container.innerHTML = '<p style="color:red;">Failed to fetch data. Please try again.</p>';
+        });
+    }
+
+    function handleImageError(img, characterName) {
+      // Try different fallback options
+      const fallbacks = [
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(characterName)}&size=100&background=e67e22&color=ffffff&format=png`,
+        `https://via.placeholder.com/100x100/e67e22/ffffff?text=${encodeURIComponent(characterName.split(' ')[0])}`,
+        `https://via.placeholder.com/100x100/34495e/ffffff?text=OP`
+      ];
+      
+      const currentSrc = img.src;
+      let nextFallback = null;
+      
+      // Find the next fallback to try
+      for (let i = 0; i < fallbacks.length; i++) {
+        if (!currentSrc.includes(fallbacks[i])) {
+          nextFallback = fallbacks[i];
+          break;
+        }
+      }
+      
+      if (nextFallback) {
+        img.src = nextFallback;
+      } else {
+        // Last resort: hide image and show name
+        img.style.display = 'none';
+        img.parentElement.style.paddingTop = '20px';
+      }
+    }
+  </script>
+</body>
+</html>
