@@ -143,24 +143,33 @@ export class AuthService {
     ).valueChanges({ idField: 'id' }) as Observable<any[]>;
   }
 
-  // Add employment history to occupation collection with specific document structure
+  // Add employment history using occupation collection
   async addEmploymentHistory(jobData: any): Promise<any> {
-    console.log('Adding occupation data:', jobData); // Debug log
+    console.log('Adding employment data to occupation collection:', jobData);
 
     const user = await this.afAuth.currentUser;
     if (!user) {
+      console.error('No authenticated user found');
       throw new Error('No authenticated user found');
     }
 
-    if (jobData.type === 'current') {
-      // Handle current occupation
-      await this.addCurrentOccupation(user.uid, jobData);
-    } else {
-      // Handle past occupation
-      await this.addPastOccupation(user.uid, jobData);
-    }
+    console.log('Current user:', user.uid);
 
-    console.log('Occupation data added successfully'); // Debug log
+    try {
+      if (jobData.type === 'current') {
+        // Handle current occupation
+        await this.addCurrentOccupation(user.uid, jobData);
+      } else {
+        // Handle past occupation
+        await this.addPastOccupation(user.uid, jobData);
+      }
+
+      console.log('Employment data saved successfully to occupation collection');
+      return { success: true };
+    } catch (error) {
+      console.error('Error saving employment data:', error);
+      throw error;
+    }
   }
 
   // Add current occupation (move existing current to past if exists)
@@ -183,9 +192,12 @@ export class AuthService {
       }
     }
 
+    // Clean jobData to remove any undefined values
+    const cleanJobData = this.removeUndefinedValues(jobData);
+
     // Add new current occupation
     await currentDocRef.set({
-      [userId]: jobData
+      [userId]: cleanJobData
     }, { merge: true });
   }
 
@@ -204,8 +216,11 @@ export class AuthService {
       }
     }
 
+    // Clean jobData to remove any undefined values
+    const cleanJobData = this.removeUndefinedValues(jobData);
+
     // Add new past job to the array
-    pastJobs.push(jobData);
+    pastJobs.push(cleanJobData);
 
     // Update past document
     await pastDocRef.set({
@@ -213,13 +228,26 @@ export class AuthService {
     }, { merge: true });
   }
 
+  // Helper method to remove undefined values from objects
+  private removeUndefinedValues(obj: any): any {
+    const cleaned: any = {};
+    for (const key in obj) {
+      if (obj[key] !== undefined) {
+        cleaned[key] = obj[key];
+      }
+    }
+    return cleaned;
+  }
+
+
+
   // Get user employment history from occupation collection
   getUserEmploymentHistory(): Observable<any[]> {
     return this.afAuth.authState.pipe(
       switchMap(user => {
-        console.log('Current user for occupation data:', user); // Debug log
+        console.log('Current user for occupation data:', user);
         if (user) {
-          console.log('Querying occupation data for user ID:', user.uid); // Debug log
+          console.log('Querying occupation data for user ID:', user.uid);
 
           // Combine current and past occupations
           const currentObs = this.firestore.collection('occupation').doc('current').valueChanges();
@@ -262,7 +290,7 @@ export class AuthService {
             });
           });
         } else {
-          console.log('No authenticated user found for occupation data'); // Debug log
+          console.log('No authenticated user found for occupation data');
           return new Observable<any[]>(observer => observer.next([]));
         }
       })
@@ -285,7 +313,7 @@ export class AuthService {
 
   // Update employment history
   async updateEmploymentHistory(oldJobData: any, newJobData: any): Promise<void> {
-    console.log('Updating employment history:', oldJobData, newJobData); // Debug log
+    console.log('Updating employment history:', oldJobData, newJobData);
 
     // First delete the old job
     await this.deleteEmploymentHistory(oldJobData);
@@ -293,12 +321,12 @@ export class AuthService {
     // Then add the new job data
     await this.addEmploymentHistory(newJobData);
 
-    console.log('Employment history updated successfully'); // Debug log
+    console.log('Employment history updated successfully');
   }
 
   // Delete employment history
   async deleteEmploymentHistory(jobData: any): Promise<void> {
-    console.log('Deleting employment history:', jobData); // Debug log
+    console.log('Deleting employment history:', jobData);
 
     const user = await this.afAuth.currentUser;
     if (!user) {
@@ -347,6 +375,39 @@ export class AuthService {
       }
     }
 
-    console.log('Employment history deleted successfully'); // Debug log
+    console.log('Employment history deleted successfully');
+  }
+
+  // Test method to verify Firebase connection
+  async testFirebaseConnection(): Promise<void> {
+    try {
+      const user = await this.afAuth.currentUser;
+      console.log('Test - Current user:', user?.uid);
+
+      if (user) {
+        const testData = {
+          type: 'current',
+          companyName: 'Test Company',
+          position: 'Test Position',
+          startDate: 'Test Date',
+          endDate: '',
+          address: 'Test Address',
+          contactNumber: 'Test Phone',
+          email: 'test@test.com'
+        };
+
+        console.log('Test - Attempting to save test employment data:', testData);
+        await this.addEmploymentHistory(testData);
+        console.log('Test - Employment data saved successfully');
+
+        // Clean up test data
+        await this.deleteEmploymentHistory(testData);
+        console.log('Test - Test data cleaned up');
+      } else {
+        console.error('Test - No user authenticated');
+      }
+    } catch (error) {
+      console.error('Test - Firebase connection error:', error);
+    }
   }
 }

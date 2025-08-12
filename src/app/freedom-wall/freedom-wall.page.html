@@ -25,7 +25,9 @@
   <ion-card class="create-card">
     <div class="create-header">
       <ion-avatar>
-        <img [src]="userProfile?.photoURL || 'assets/default-avatar.png'" />
+        <img [src]="userProfile?.photoURL || getDefaultAvatar()"
+             [alt]="userProfile?.fullName || 'User'"
+             (error)="onImageError($event)" />
       </ion-avatar>
       <ion-textarea
         [(ngModel)]="newPost"
@@ -64,7 +66,9 @@
       <ion-card *ngFor="let post of posts" class="post-card">
         <div class="post-header">
           <ion-avatar>
-            <img [src]="post.authorAvatar || 'assets/default-avatar.png'" />
+            <img [src]="post.authorPhoto || post.authorAvatar || getDefaultAvatar()"
+                 [alt]="post.authorName || 'User'"
+                 (error)="onImageError($event)" />
           </ion-avatar>
           <div class="post-meta">
             <h3>{{ post.authorName || 'Josenian Alumni' }}</h3>

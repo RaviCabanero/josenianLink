@@ -166,6 +166,13 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #e0e0e0;
+  background-color: #f5f5f5;
+  flex-shrink: 0; // Prevent avatar from shrinking
+
+  // Ensure avatar is always visible
+  &:not([src]), &[src=""], &[src*="data:image/svg"] {
+    background-color: #2c543f;
+  }
 }
 
 .post-content {
@@ -751,5 +758,191 @@
       --background: #ccc;
       --color: #666;
     }
+  }
+}
+
+// Activities Section Styles
+.activities-section {
+  padding: 20px 16px;
+  background: white;
+}
+
+.events-table {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  background: #f8f9fa;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header-cell {
+  display: flex;
+  align-items: center;
+}
+
+.table-body {
+  background: white;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f8f9fa;
+  }
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+}
+
+.events-cell {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.event-info {
+  width: 100%;
+}
+
+.event-name {
+  font-weight: 600;
+  color: #2c543f;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.event-badges {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.badge {
+  background: #f8961e;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.date-cell {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.points-cell {
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.points-value {
+  font-weight: 700;
+  color: #2c543f;
+  font-size: 1rem;
+}
+
+.points-label {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.empty-activities {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.empty-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #2c543f;
+}
+
+.empty-subtext {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+// Level System Styles
+.level-system {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.level-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.level-label {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c543f;
+}
+
+.points-info {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2c543f 0%, #4cc9f0 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.use-points-btn {
+  --border-color: #2c543f;
+  --color: #2c543f;
+  font-size: 0.85rem;
+  height: 32px;
+
+  &:hover {
+    --background: #2c543f;
+    --color: white;
   }
 }

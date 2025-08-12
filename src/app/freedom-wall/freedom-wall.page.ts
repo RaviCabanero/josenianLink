@@ -55,6 +55,10 @@ export class FreedomWallPage implements OnInit {
         content: this.newPost.trim(),
         authorName: this.userProfile.fullName || 'Anonymous',
         authorEmail: this.userProfile.email || '',
+        authorPhoto: this.userProfile.photoURL || this.getDefaultAvatar(),
+        authorAvatar: this.userProfile.photoURL || this.getDefaultAvatar(), // For compatibility
+        authorId: this.userProfile.uid || '',
+        authorProgram: this.userProfile.program || '',
         timestamp: new Date(),
         likes: 0,
         likedBy: []
@@ -145,6 +149,17 @@ export class FreedomWallPage implements OnInit {
 
   trackById(index: number, post: any): string {
     return post.id;
+  }
+
+  // Get default avatar
+  getDefaultAvatar(): string {
+    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMyYzU0M2YiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTEyIDEyQzE0LjIwOTEgMTIgMTYgMTAuMjA5MSAxNiA4QzE2IDUuNzkwODYgMTQuMjA5MSA0IDEyIDRDOS43OTA4NiA0IDggNS43OTA4NiA4IDhDOCAxMC4yMDkxIDkuNzkwODYgMTIgMTIgMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTIgMTRDOC42ODYyOSAxNCA2IDE2LjY4NjMgNiAyMFYyMkgxOFYyMEMxOCAxNi42ODYzIDE1LjMxMzcgMTQgMTIgMTRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+';
+  }
+
+  // Handle image loading errors
+  onImageError(event: any): void {
+    console.log('Image failed to load, using default avatar');
+    event.target.src = this.getDefaultAvatar();
   }
 
   async presentToast(message: string, color: string = 'primary') {

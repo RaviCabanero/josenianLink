@@ -13,7 +13,10 @@
   <!-- Profile Card -->
   <div class="profile-card">
     <div class="profile-header">
-      <img [src]="user.photo" class="profile-avatar" />
+      <img [src]="getUserPhoto()"
+           [alt]="user.name"
+           class="profile-avatar"
+           (error)="onImageError($event)" />
       <div class="profile-basic-info">
         <h2 class="profile-name">{{ user.name }}</h2>
         <p class="profile-id">{{ user.id }}</p>
@@ -80,7 +83,10 @@
 
       <!-- User created posts -->
       <div class="user-post" *ngFor="let post of userPosts; trackBy: trackByPostId">
-        <img [src]="post.authorPhoto || user.photo" class="post-avatar" />
+        <img [src]="getPostAuthorPhoto(post)"
+             [alt]="post.authorName || user.name"
+             class="post-avatar"
+             (error)="onImageError($event)" />
         <div class="post-content">
           <h4 class="post-author">{{ post.authorName || user.name }}</h4>
           <p class="post-program">{{ post.authorProgram || user.program }}</p>
@@ -101,7 +107,10 @@
 
       <!-- Default post if no posts exist -->
       <div class="user-post" *ngIf="userPosts && userPosts.length === 0">
-        <img [src]="user.photo" class="post-avatar" />
+        <img [src]="getUserPhoto()"
+             [alt]="user.name"
+             class="post-avatar"
+             (error)="onImageError($event)" />
         <div class="post-content">
           <h4 class="post-author">{{ user.name }}</h4>
           <p class="post-program">{{ user.program }}</p>
@@ -184,7 +193,57 @@
 
   <!-- Activities Section -->
   <div class="activities-section" *ngIf="activeTab === 'activities'">
-    <p class="section-placeholder">Activities will be displayed here.</p>
+    <!-- Events Table -->
+    <div class="events-table">
+      <div class="table-header">
+        <div class="header-cell events-col">EVENTS</div>
+        <div class="header-cell date-col">DATE</div>
+        <div class="header-cell points-col">POINTS</div>
+      </div>
+
+      <div class="table-body">
+        <div class="table-row" *ngFor="let activity of userActivities">
+          <div class="cell events-cell">
+            <div class="event-info">
+              <span class="event-name">{{ activity.eventName }}</span>
+              <div class="event-badges">
+                <span class="badge" *ngFor="let badge of activity.badges" [style.background-color]="badge.color">
+                  {{ badge.name }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="cell date-cell">{{ activity.date | date:'MMM d, yyyy' }}</div>
+          <div class="cell points-cell">
+            <span class="points-value">{{ activity.points }}</span>
+            <span class="points-label">pts</span>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-activities" *ngIf="userActivities.length === 0">
+          <p class="empty-text">No activities attended yet</p>
+          <p class="empty-subtext">Start participating in USJR events to earn points, badges, and level up!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Level System -->
+    <div class="level-system">
+      <div class="level-info">
+        <span class="level-label">Level {{ userLevel.current }}</span>
+        <span class="points-info">{{ userLevel.currentPoints }}/{{ userLevel.pointsToNext }} pts to next level</span>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="userLevel.progressPercentage"></div>
+        </div>
+        <ion-button fill="outline" size="small" class="use-points-btn" (click)="openUsePointsModal()">
+          Use Points
+        </ion-button>
+      </div>
+    </div>
   </div>
 </ion-content>
 

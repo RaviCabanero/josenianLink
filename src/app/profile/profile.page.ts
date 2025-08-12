@@ -20,6 +20,14 @@ export class ProfilePage implements OnInit {
   userPosts: any[] | undefined = undefined; // undefined = loading, [] = no posts
   currentJobs: any[] = [];
   pastJobs: any[] = [];
+  userActivities: any[] = [];
+  userLevel: any = {
+    current: 1,
+    currentPoints: 0,
+    pointsToNext: 1000,
+    progressPercentage: 0,
+    totalPoints: 0
+  };
 
   newPost = {
     content: ''
@@ -74,11 +82,28 @@ export class ProfilePage implements OnInit {
     this.loadUserPosts();
     // Load employment history
     this.loadEmploymentHistory();
+    // Load user activities and level
+    this.loadUserActivities();
   }
 
-  loadUserProfile() {
+  async loadUserProfile() {
+    // Get both profile data and auth user data
+    const authUser = await this.authService.getCurrentUser();
+    console.log('Auth user:', authUser); // Debug log
+
     this.authService.getUserProfile().subscribe(profile => {
+      console.log('Profile data from Firestore:', profile); // Debug log
+
       if (profile) {
+        // Try multiple sources for the photo
+        let userPhoto = profile.photoURL ||
+                       profile.photo ||
+                       profile.profilePicture ||
+                       authUser?.photoURL ||
+                       this.getDefaultAvatar();
+
+        console.log('Selected photo URL:', userPhoto); // Debug log
+
         this.user = {
           name: profile.fullName || 'mellow w allow',
           id: profile.idNumber || '1233445',
@@ -87,11 +112,12 @@ export class ProfilePage implements OnInit {
           email: profile.email || 'mellow@gmail.com',
           address: profile.address || 'mao nani',
           contactNumber: profile.contactNumber || '+63 912 345 6789',
-          photo: profile.photoURL || 'https://via.placeholder.com/80x80/4CAF50/ffffff?text=MW',
+          photo: userPhoto,
           postText: profile.postText || 'We have an opportunity for a software engineer at our company. Feel free to get in touch if you\'re interested.',
           isPublic: profile.isPublic !== undefined ? profile.isPublic : true
         };
         this.editUser = { ...this.user };
+        console.log('Final user object:', this.user); // Debug log
       }
     });
   }
@@ -241,7 +267,7 @@ export class ProfilePage implements OnInit {
         authorId: await this.authService.getCurrentUserId(),
         authorName: this.user.name,
         authorProgram: this.user.program,
-        authorPhoto: this.user.photo,
+        authorPhoto: this.getUserPhoto(), // Ensure photo is always available
         timestamp: new Date(),
         likes: 0,
         comments: []
@@ -352,6 +378,76 @@ export class ProfilePage implements OnInit {
     });
   }
 
+  // Load user activities and calculate level
+  loadUserActivities() {
+    // Start with no activities - replace with actual Firebase call later
+    this.userActivities = [];
+
+    this.calculateUserLevel();
+  }
+
+  // Calculate user level based on total points
+  calculateUserLevel() {
+    const totalPoints = this.userActivities.reduce((sum, activity) => sum + activity.points, 0);
+    const pointsPerLevel = 1000;
+
+    // Ensure user starts at Level 1 (minimum level is 1)
+    const currentLevel = Math.max(1, Math.floor(totalPoints / pointsPerLevel) + 1);
+    const pointsInCurrentLevel = totalPoints % pointsPerLevel;
+
+    this.userLevel = {
+      current: currentLevel,
+      currentPoints: pointsInCurrentLevel,
+      pointsToNext: pointsPerLevel,
+      progressPercentage: (pointsInCurrentLevel / pointsPerLevel) * 100,
+      totalPoints: totalPoints
+    };
+
+    console.log('User level calculated:', this.userLevel);
+  }
+
+  // Open use points modal
+  openUsePointsModal() {
+    // TODO: Implement use points functionality
+    this.presentToast('Use Points feature coming soon!', 'primary');
+  }
+
+  // Helper method to add sample activities for testing (can be removed in production)
+  addSampleActivities() {
+    this.userActivities = [
+      {
+        id: '1',
+        eventName: 'Home Coming',
+        date: new Date('2025-11-01'),
+        points: 1000,
+        badges: [{ name: '⭐', color: '#f8961e' }]
+      },
+      {
+        id: '2',
+        eventName: 'Seminar',
+        date: new Date('2024-01-03'),
+        points: 250,
+        badges: [{ name: '⭐', color: '#f8961e' }]
+      },
+      {
+        id: '3',
+        eventName: 'Social Gathering',
+        date: new Date('2023-12-10'),
+        points: 250,
+        badges: [{ name: '⭐', color: '#f8961e' }]
+      },
+      {
+        id: '4',
+        eventName: 'Reunion',
+        date: new Date('2022-07-20'),
+        points: 200,
+        badges: [{ name: '⭐', color: '#f8961e' }]
+      }
+    ];
+    this.calculateUserLevel();
+    this.presentToast('Sample activities added for demonstration!', 'success');
+  }
+
   // Open add job modal
   openAddJobModal() {
     this.resetJobForm();
@@ -400,6 +496,12 @@ export class ProfilePage implements OnInit {
     }
 
     try {
+      // Check if user object is available
+      if (!this.user) {
+        this.presentToast('User profile not loaded. Please try again.', 'warning');
+        return;
+      }
+
       const jobData = {
         type: this.newJob.type,
         companyName: this.newJob.companyName.trim(),
@@ -414,17 +516,15 @@ export class ProfilePage implements OnInit {
         userProgram: this.user.program, // Include user's program
         userEmail: this.user.email, // Include user's email
         createdAt: this.editingJob ? this.editingJob.createdAt : new Date(),
-        updatedAt: this.editingJob ? new Date() : undefined
+        updatedAt: new Date() // Always set updatedAt to avoid undefined values
       };
 
       if (this.editingJob) {
         // Update existing job
-        console.log('Updating occupation data:', jobData); // Debug log
         await this.authService.updateEmploymentHistory(this.editingJob, jobData);
         this.presentToast('Employment history updated successfully!', 'success');
       } else {
         // Add new job
-        console.log('Adding occupation data:', jobData); // Debug log
         await this.authService.addEmploymentHistory(jobData);
         this.presentToast('Employment history added successfully!', 'success');
       }
@@ -480,6 +580,62 @@ export class ProfilePage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  // Get post author photo with fallback
+  getPostAuthorPhoto(post: any): string {
+    console.log('Getting photo for post:', post); // Debug log
+    console.log('Post authorPhoto:', post.authorPhoto); // Debug log
+    console.log('User photo:', this.user?.photo); // Debug log
+    console.log('Has valid user photo:', this.hasValidUserPhoto()); // Debug log
+
+    // For posts on the profile page, always use the current user's photo
+    // since all posts here are from the current user
+    if (this.hasValidUserPhoto()) {
+      console.log('Using current user photo for profile post'); // Debug log
+      return this.user.photo;
+    }
+
+    // Fallback to post's saved photo if available
+    if (post.authorPhoto && post.authorPhoto.trim() && !post.authorPhoto.includes('placeholder')) {
+      console.log('Using post authorPhoto as fallback'); // Debug log
+      return post.authorPhoto;
+    }
+
+    console.log('Using default avatar'); // Debug log
+    return this.getDefaultAvatar();
+  }
+
+  // Get user photo with fallback
+  getUserPhoto(): string {
+    console.log('getUserPhoto called, user.photo:', this.user?.photo); // Debug log
+    if (this.hasValidUserPhoto()) {
+      console.log('Returning user photo:', this.user.photo); // Debug log
+      return this.user.photo;
+    }
+    console.log('Returning default avatar'); // Debug log
+    return this.getDefaultAvatar();
+  }
+
+  // Check if user has a valid photo URL
+  hasValidUserPhoto(): boolean {
+    return !!(this.user?.photo &&
+             this.user.photo.trim() &&
+             !this.user.photo.includes('data:image/svg') &&
+             !this.user.photo.includes('placeholder') &&
+             (this.user.photo.startsWith('http') || this.user.photo.startsWith('data:image')));
+  }
+
+  // Get default avatar
+  getDefaultAvatar(): string {
+    // Return a default avatar URL or data URI
+    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMyYzU0M2YiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTEyIDEyQzE0LjIwOTEgMTIgMTYgMTAuMjA5MSAxNiA4QzE2IDUuNzkwODYgMTQuMjA5MSA0IDEyIDRDOS43OTA4NiA0IDggNS43OTA4NiA4IDhDOCAxMC4yMDkxIDkuNzkwODYgMTIgMTIgMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTIgMTRDOC42ODYyOSAxNCA2IDE2LjY4NjMgNiAyMFYyMkgxOFYyMEMxOCAxNi42ODYzIDE1LjMxMzcgMTQgMTIgMTRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+';
+  }
+
+  // Handle image loading errors
+  onImageError(event: any): void {
+    console.log('Image failed to load, using default avatar');
+    event.target.src = this.getDefaultAvatar();
   }
 
   // Present toast message
