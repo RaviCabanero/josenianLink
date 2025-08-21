@@ -184,4 +184,8 @@ export class AddEmployeePage implements OnInit {
     });
     await toast.present();
   }
+
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
+  }
 }

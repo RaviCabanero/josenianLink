@@ -1,3 +1,19 @@
+/* Freedom Wall Header */
+.freedom-wall-header {
+  ion-toolbar {
+    --background: #2c543f;
+    --color: white;
+
+    ion-title {
+      font-weight: 600;
+    }
+
+    ion-button {
+      --color: white;
+    }
+  }
+}
+
 /* Freedom Wall Redesign with Green Header/Footer */
 .freedom-wall-redesign {
   --background: #ffffff;

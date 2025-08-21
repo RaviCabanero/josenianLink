@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { EmployeeService, Employee } from '../services/employee.service';
 
 @Component({
@@ -10,7 +11,10 @@ import { EmployeeService, Employee } from '../services/employee.service';
 export class EmployeeListPage implements OnInit {
   employees: Employee[] = [];
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(
+    private employeeService: EmployeeService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.employeeService.getEmployees().subscribe((data) => {
@@ -39,5 +43,9 @@ export class EmployeeListPage implements OnInit {
       // Refresh the list
       this.ngOnInit();
     });
+  }
+
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
   }
 }

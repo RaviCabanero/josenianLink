@@ -1,82 +1,155 @@
-<ion-header class="home-header">
-  <div class="header-bar">
-    <div class="logo-title">
-      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
+<ion-header class="main-header">
+  <ion-toolbar>
+    <div class="header-content">
+      <div class="logo-container">
+        <h1 class="app-logo">
+          <span class="green">JOSENIAN</span><span class="yellow">LINK</span>
+        </h1>
+      </div>
+      
+      <div class="header-actions">
+        <ion-button fill="clear" class="header-button">
+          <ion-icon name="search" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" class="header-button" (click)="navigateTo('settings')">
+          <ion-icon name="settings" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-avatar class="user-avatar">
+          <img [src]="userProfile?.photoURL || 'assets/default-avatar.png'" />
+        </ion-avatar>
+      </div>
     </div>
-    <ion-icon name="notifications-outline" class="notification-icon"></ion-icon>
-  </div>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content class="home-content">
-  <!-- Welcome Section -->
-  <div class="welcome-card">
-    <div class="welcome-message">
-      <h2>Welcome back, {{userName}}!</h2>
-      <p>Stay connected with your Josenian community</p>
+<ion-content class="content-wrapper">
+  <!-- Create Post Card -->
+  <ion-card class="create-post-card">
+    <div class="create-post-header">
+      <ion-avatar class="post-avatar">
+        <img [src]="userProfile?.photoURL || 'assets/default-avatar.png'" />
+      </ion-avatar>
+      <ion-button fill="outline" class="post-prompt" (click)="focusPostInput()">
+        Share something with Josenians...
+      </ion-button>
     </div>
-    <img src="assets/images/usjr-campus.png" alt="USJR Campus" class="campus-image">
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="quick-actions">
-    <ion-button expand="block" color="josephine" routerLink="/freedom-wall">
-      <ion-icon name="chatbubbles" slot="start"></ion-icon>
-      Freedom Wall
-    </ion-button>
-    <ion-button expand="block" color="medium" routerLink="/events">
-      <ion-icon name="calendar" slot="start"></ion-icon>
-      Upcoming Events
-    </ion-button>
-  </div>
-
-  <!-- Alumni Highlights -->
-  <div class="section-title">
-    <h3>Featured Alumni</h3>
-    <a routerLink="/alumni">See All</a>
-  </div>
-
-  <div class="alumni-scroll">
-    <div class="alumni-card" *ngFor="let alumni of featuredAlumni">
-      <img [src]="alumni.photo || 'assets/default-avatar.png'" alt="Alumni Photo">
-      <div class="alumni-info">
-        <h4>{{alumni.name}}</h4>
-        <p>{{alumni.program}} • {{alumni.year}}</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Updates -->
-  <div class="section-title">
-    <h3>Recent Updates</h3>
-  </div>
-
-  <ion-card class="update-card" *ngFor="let update of recentUpdates">
-    <ion-card-header>
-      <img [src]="update.authorPhoto || 'assets/default-avatar.png'" class="update-avatar">
-      <div class="update-header-text">
-        <h4>{{update.author}}</h4>
-        <p>{{update.date | date:'MMM d'}}</p>
-      </div>
-    </ion-card-header>
-    <ion-card-content>
-      <p>{{update.content}}</p>
-      <div class="update-actions">
-        <ion-button fill="clear" size="small">
-          <ion-icon name="heart-outline" slot="start"></ion-icon>
-          {{update.likes}}
-        </ion-button>
-        <ion-button fill="clear" size="small">
-          <ion-icon name="chatbubble-outline" slot="start"></ion-icon>
-          {{update.comments}}
+    
+    <div class="create-post-footer" *ngIf="showPostInput">
+      <ion-textarea
+        [(ngModel)]="newPost"
+        placeholder="What's on your mind?"
+        rows="3"
+        autoGrow
+        maxlength="500"
+        class="post-input">
+      </ion-textarea>
+      
+      <div class="post-actions">
+        <div class="action-buttons">
+          <ion-button fill="clear" class="action-button">
+            <ion-icon name="image" color="primary"></ion-icon>
+            Photo
+          </ion-button>
+          <ion-button fill="clear" class="action-button">
+            <ion-icon name="videocam" color="danger"></ion-icon>
+            Video
+          </ion-button>
+        </div>
+        <ion-button 
+          (click)="submitPost()" 
+          [disabled]="loading || !newPost.trim()"
+          class="post-button"
+          shape="round">
+          {{ loading ? 'Posting...' : 'Post' }}
         </ion-button>
       </div>
-    </ion-card-content>
+    </div>
   </ion-card>
+
+  <!-- Posts Feed -->
+  <div class="posts-feed">
+    <ng-container *ngIf="(posts$ | async) as posts; else loadingPosts">
+      <div *ngIf="posts.length === 0" class="empty-feed">
+        <div class="empty-content">
+          <ion-icon name="chatbubbles" class="empty-icon"></ion-icon>
+          <h3>Quiet on the Wall</h3>
+          <p>Be the first to share something with your fellow Josenians</p>
+          <ion-button 
+            (click)="showPostInput = true" 
+            class="first-post-button"
+            shape="round">
+            Create First Post
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Post Item -->
+      <ion-card *ngFor="let post of posts" class="post-card">
+        <div class="post-header">
+          <ion-avatar class="post-author-avatar">
+            <img [src]="post.authorAvatar || 'assets/default-avatar.png'" />
+          </ion-avatar>
+          <div class="post-author-info">
+            <h3 class="author-name">{{ post.authorName || 'Josenian Alumni' }}</h3>
+            <p class="post-time">{{ getTimeAgo(post.timestamp) }}</p>
+          </div>
+          <ion-button
+            *ngIf="canDeletePostSync(post)"
+            fill="clear"
+            class="post-menu"
+            (click)="deletePost(post.id)">
+            <ion-icon name="ellipsis-horizontal"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="post-content">
+          <p>{{ post.content }}</p>
+        </div>
+
+        <div class="post-stats">
+          <div class="likes-count">
+            <ion-icon name="heart" color="danger"></ion-icon>
+            <span>{{ post.likes || 0 }}</span>
+          </div>
+          <div class="comments-count">
+            <span>{{ post.comments?.length || 0 }} comments</span>
+          </div>
+        </div>
+
+        <div class="post-actions">
+          <ion-button fill="clear" class="post-action" (click)="likePost(post)">
+            <ion-icon 
+              [name]="isPostLiked(post) ? 'heart' : 'heart-outline'" 
+              [color]="isPostLiked(post) ? 'danger' : 'medium'">
+            </ion-icon>
+            <span>Like</span>
+          </ion-button>
+          
+          <ion-button fill="clear" class="post-action">
+            <ion-icon name="chatbubble-ellipses-outline" color="medium"></ion-icon>
+            <span>Comment</span>
+          </ion-button>
+          
+          <ion-button fill="clear" class="post-action">
+            <ion-icon name="arrow-redo-outline" color="medium"></ion-icon>
+            <span>Share</span>
+          </ion-button>
+        </div>
+      </ion-card>
+    </ng-container>
+
+    <ng-template #loadingPosts>
+      <div class="loading-posts">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading community posts...</p>
+      </div>
+    </ng-template>
+  </div>
 </ion-content>
 
 <ion-footer class="home-footer">
-  <ion-toolbar class="footer-toolbar">
-    <ion-buttons slot="start" class="footer-buttons">
+  <ion-toolbar>
+    <div class="footer-buttons">
       <ion-button fill="clear" routerLink="/home" class="active">
         <ion-icon name="home" slot="icon-only"></ion-icon>
       </ion-button>
@@ -87,11 +160,11 @@
         <ion-icon name="notifications" slot="icon-only"></ion-icon>
       </ion-button>
       <ion-button fill="clear" routerLink="/profile">
-        <ion-icon name="card" slot="icon-only"></ion-icon>
+        <ion-icon name="person" slot="icon-only"></ion-icon>
       </ion-button>
-      <ion-button fill="clear" routerLink="/freedom-wall">
+      <ion-button fill="clear" routerLink="/messages">
         <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
       </ion-button>
-    </ion-buttons>
+    </div>
   </ion-toolbar>
 </ion-footer>

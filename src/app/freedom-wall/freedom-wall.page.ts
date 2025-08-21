@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AuthService } from '../services/auth.service';
 import { Observable } from 'rxjs';
@@ -23,6 +23,7 @@ export class FreedomWallPage implements OnInit {
   private firestore = inject(AngularFirestore);
   private authService = inject(AuthService);
   private toastController = inject(ToastController);
+  private router = inject(Router);
 
   constructor() {
     // Get posts ordered by timestamp (newest first)
@@ -170,5 +171,9 @@ export class FreedomWallPage implements OnInit {
       color: color
     });
     toast.present();
+  }
+
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
   }
 }

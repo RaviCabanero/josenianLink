@@ -3,9 +3,14 @@
     <div class="logo-title">
       <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
     </div>
-    <ion-button fill="clear" class="logout-button" (click)="logout()">
-      Log Out
-    </ion-button>
+    <div class="header-actions">
+      <ion-button fill="clear" class="header-button" (click)="navigateToSettings()">
+        <ion-icon name="settings" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" class="logout-button" (click)="logout()">
+        Log Out
+      </ion-button>
+    </div>
   </div>
 </ion-header>
 

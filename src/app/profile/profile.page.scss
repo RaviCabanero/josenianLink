@@ -420,6 +420,22 @@
       }
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --color: white;
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+
     .logout-button {
       --color: white;
       font-size: 0.9rem;

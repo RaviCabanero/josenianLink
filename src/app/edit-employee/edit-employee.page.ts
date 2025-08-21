@@ -40,4 +40,8 @@ export class EditEmployeePage implements OnInit {
       this.router.navigate(['/employee-list']);
     });
   }
+
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
+  }
 }

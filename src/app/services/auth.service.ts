@@ -378,6 +378,57 @@ export class AuthService {
     console.log('Employment history deleted successfully');
   }
 
+  // Admin method to get any user's employment history
+  getEmploymentHistoryByUserId(userId: string): Observable<any[]> {
+    console.log('Admin - Getting employment history for user:', userId);
+
+    // Combine current and past occupations for specific user
+    const currentObs = this.firestore.collection('occupation').doc('current').valueChanges();
+    const pastObs = this.firestore.collection('occupation').doc('past').valueChanges();
+
+    return new Observable<any[]>(observer => {
+      let currentJobs: any[] = [];
+      let pastJobs: any[] = [];
+      let currentLoaded = false;
+      let pastLoaded = false;
+
+      const emitCombined = () => {
+        if (currentLoaded && pastLoaded) {
+          const allJobs = [
+            ...currentJobs.map(job => ({ ...job, type: 'current' })),
+            ...pastJobs.map(job => ({ ...job, type: 'past' }))
+          ];
+          observer.next(allJobs);
+        }
+      };
+
+      currentObs.subscribe(currentData => {
+        currentJobs = [];
+        const typedCurrentData = currentData as { [key: string]: any };
+        if (typedCurrentData && typedCurrentData[userId]) {
+          currentJobs = [typedCurrentData[userId]];
+        }
+        currentLoaded = true;
+        emitCombined();
+      });
+
+      pastObs.subscribe(pastData => {
+        pastJobs = [];
+        const typedPastData = pastData as { [key: string]: any };
+        if (typedPastData && typedPastData[userId]) {
+          pastJobs = Array.isArray(typedPastData[userId]) ? typedPastData[userId] : [typedPastData[userId]];
+        }
+        pastLoaded = true;
+        emitCombined();
+      });
+    });
+  }
+
+  // Admin method to get user profile by ID
+  getUserProfileById(userId: string): Observable<any> {
+    return this.firestore.collection('users').doc(userId).valueChanges();
+  }
+
   // Test method to verify Firebase connection
   async testFirebaseConnection(): Promise<void> {
     try {

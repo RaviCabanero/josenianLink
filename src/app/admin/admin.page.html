@@ -10,23 +10,23 @@
       </div>
 
       <div class="nav-links">
-        <div class="nav-item active">
+        <div class="nav-item" [class.active]="activeTab === 'dashboard'" (click)="switchTab('dashboard')">
           <ion-icon name="grid-outline"></ion-icon>
           <span>Dashboard</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" [class.active]="activeTab === 'alumni'" (click)="switchTab('alumni')">
           <ion-icon name="people-outline"></ion-icon>
           <span>Alumni</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" [class.active]="activeTab === 'reports'" (click)="switchTab('reports')">
           <ion-icon name="document-text-outline"></ion-icon>
           <span>Reports</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" [class.active]="activeTab === 'events'" (click)="switchTab('events')">
           <ion-icon name="calendar-outline"></ion-icon>
           <span>Events</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" [class.active]="activeTab === 'freedom-wall'" (click)="switchTab('freedom-wall')">
           <ion-icon name="chatbubbles-outline"></ion-icon>
           <span>Freedom Wall</span>
         </div>
@@ -36,19 +36,21 @@
     <!-- Main Content Area -->
     <div class="main-content">
       <div class="main-panel">
-        <div class="panel-header">
-          <div>
-            <h2>Alumni</h2>
-            <p class="breadcrumb">Dashboard / Alumni Management</p>
+        <!-- Alumni Management Tab -->
+        <div *ngIf="activeTab === 'alumni'">
+          <div class="panel-header">
+            <div>
+              <h2>Alumni</h2>
+              <p class="breadcrumb">Dashboard / Alumni Management</p>
+            </div>
+            <div class="header-actions">
+              <p class="role-label">Alumni Officer</p>
+              <ion-button fill="clear" class="notification-btn">
+                <ion-icon name="notifications-outline"></ion-icon>
+                <ion-badge color="danger">3</ion-badge>
+              </ion-button>
+            </div>
           </div>
-          <div class="header-actions">
-            <p class="role-label">Alumni Officer</p>
-            <ion-button fill="clear" class="notification-btn">
-              <ion-icon name="notifications-outline"></ion-icon>
-              <ion-badge color="danger">3</ion-badge>
-            </ion-button>
-          </div>
-        </div>
 
         <div class="search-filter-bar">
           <ion-searchbar 
@@ -104,10 +106,13 @@
                   <span class="status pending" *ngIf="!alumni.verified">Pending</span>
                 </td>
                 <td class="action-cell">
-                  <ion-button fill="clear" size="small" (click)="editUser(alumni)">
+                  <ion-button fill="clear" size="small" class="action-btn view" (click)="viewUserDetails(alumni)">
+                    <ion-icon name="eye-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" size="small" class="action-btn edit" (click)="editUser(alumni)">
                     <ion-icon name="create-outline"></ion-icon>
                   </ion-button>
-                  <ion-button fill="clear" size="small" color="danger" (click)="deleteUser(alumni.uid)">
+                  <ion-button fill="clear" size="small" class="action-btn delete" (click)="deleteUser(alumni.uid)">
                     <ion-icon name="trash-outline"></ion-icon>
                   </ion-button>
                 </td>
@@ -139,7 +144,331 @@
             </ion-button>
           </ion-buttons>
         </div>
+        </div> <!-- End Alumni Tab -->
+
+        <!-- Freedom Wall Tab -->
+        <div *ngIf="activeTab === 'freedom-wall'" class="freedom-wall-content">
+          <div class="panel-header">
+            <div>
+              <h2>Freedom Wall</h2>
+              <p class="breadcrumb">Dashboard / Freedom Wall</p>
+            </div>
+            <div class="header-actions">
+              <p class="role-label">Alumni Officer</p>
+              <ion-button fill="clear" class="notification-btn">
+                <ion-icon name="notifications-outline"></ion-icon>
+                <ion-badge color="danger">3</ion-badge>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Create Post Card -->
+          <ion-card class="create-post-card">
+            <div class="create-post-header">
+              <ion-avatar class="post-avatar">
+                <img [src]="adminProfile?.photoURL || 'assets/default-avatar.png'" />
+              </ion-avatar>
+              <ion-button fill="outline" class="post-prompt" (click)="focusPostInput()">
+                Share something with Josenians...
+              </ion-button>
+            </div>
+
+            <div class="create-post-footer" *ngIf="showPostInput">
+              <ion-textarea
+                [(ngModel)]="newPost"
+                placeholder="What's on your mind?"
+                rows="3"
+                autoGrow
+                maxlength="500"
+                class="post-input">
+              </ion-textarea>
+
+              <div class="post-actions">
+                <div class="action-buttons">
+                  <ion-button fill="clear" class="action-button">
+                    <ion-icon name="image" color="primary"></ion-icon>
+                    Photo
+                  </ion-button>
+                  <ion-button fill="clear" class="action-button">
+                    <ion-icon name="videocam" color="danger"></ion-icon>
+                    Video
+                  </ion-button>
+                </div>
+                <ion-button
+                  (click)="submitPost()"
+                  [disabled]="postLoading || !newPost.trim()"
+                  class="post-button"
+                  shape="round">
+                  {{ postLoading ? 'Posting...' : 'Post' }}
+                </ion-button>
+              </div>
+            </div>
+          </ion-card>
+
+          <!-- Posts Feed -->
+          <div class="posts-feed">
+            <ng-container *ngIf="(posts$ | async) as posts; else loadingPosts">
+              <div *ngIf="posts.length === 0" class="empty-feed">
+                <div class="empty-content">
+                  <ion-icon name="chatbubbles" class="empty-icon"></ion-icon>
+                  <h3>Quiet on the Wall</h3>
+                  <p>Be the first to share something with your fellow Josenians</p>
+                  <ion-button
+                    (click)="showPostInput = true"
+                    class="first-post-button"
+                    shape="round">
+                    Create First Post
+                  </ion-button>
+                </div>
+              </div>
+
+              <!-- Post Item -->
+              <ion-card *ngFor="let post of posts; trackBy: trackById" class="post-card">
+                <div class="post-header">
+                  <ion-avatar class="post-author-avatar">
+                    <img [src]="post.authorAvatar || 'assets/default-avatar.png'" />
+                  </ion-avatar>
+                  <div class="post-author-info">
+                    <h3 class="author-name">{{ post.authorName || 'Josenian Alumni' }}</h3>
+                    <p class="post-time">{{ getTimeAgo(post.timestamp) }}</p>
+                  </div>
+                  <ion-button
+                    *ngIf="canDeletePostSync(post)"
+                    fill="clear"
+                    class="post-menu"
+                    (click)="deletePost(post.id)">
+                    <ion-icon name="ellipsis-horizontal"></ion-icon>
+                  </ion-button>
+                </div>
+
+                <div class="post-content">
+                  <p>{{ post.content }}</p>
+                </div>
+
+                <div class="post-stats">
+                  <div class="likes-count">
+                    <ion-icon name="heart" color="danger"></ion-icon>
+                    <span>{{ post.likes || 0 }}</span>
+                  </div>
+                  <div class="comments-count">
+                    <span>{{ post.comments?.length || 0 }} comments</span>
+                  </div>
+                </div>
+
+                <div class="post-actions">
+                  <ion-button fill="clear" class="post-action" (click)="likePost(post)">
+                    <ion-icon
+                      [name]="isPostLiked(post) ? 'heart' : 'heart-outline'"
+                      [color]="isPostLiked(post) ? 'danger' : 'medium'">
+                    </ion-icon>
+                    <span>Like</span>
+                  </ion-button>
+
+                  <ion-button fill="clear" class="post-action">
+                    <ion-icon name="chatbubble-ellipses-outline" color="medium"></ion-icon>
+                    <span>Comment</span>
+                  </ion-button>
+
+                  <ion-button fill="clear" class="post-action">
+                    <ion-icon name="arrow-redo-outline" color="medium"></ion-icon>
+                    <span>Share</span>
+                  </ion-button>
+                </div>
+              </ion-card>
+            </ng-container>
+
+            <ng-template #loadingPosts>
+              <div class="loading-posts">
+                <ion-spinner name="crescent"></ion-spinner>
+                <p>Loading community posts...</p>
+              </div>
+            </ng-template>
+          </div>
+        </div> <!-- End Freedom Wall Tab -->
+
+        <!-- Other Tabs (Dashboard, Reports, Events) -->
+        <div *ngIf="activeTab === 'dashboard'" class="dashboard-content">
+          <div class="panel-header">
+            <div>
+              <h2>Dashboard</h2>
+              <p class="breadcrumb">Dashboard / Overview</p>
+            </div>
+          </div>
+          <div class="coming-soon">
+            <ion-icon name="construct-outline"></ion-icon>
+            <h3>Dashboard Coming Soon</h3>
+            <p>Dashboard features are under development</p>
+          </div>
+        </div>
+
+        <div *ngIf="activeTab === 'reports'" class="reports-content">
+          <div class="panel-header">
+            <div>
+              <h2>Reports</h2>
+              <p class="breadcrumb">Dashboard / Reports</p>
+            </div>
+          </div>
+          <div class="coming-soon">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <h3>Reports Coming Soon</h3>
+            <p>Reporting features are under development</p>
+          </div>
+        </div>
+
+        <div *ngIf="activeTab === 'events'" class="events-content">
+          <div class="panel-header">
+            <div>
+              <h2>Events</h2>
+              <p class="breadcrumb">Dashboard / Events</p>
+            </div>
+          </div>
+          <div class="coming-soon">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <h3>Events Coming Soon</h3>
+            <p>Event management features are under development</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- User Detail Modal -->
+  <ion-modal [isOpen]="isUserDetailModalOpen" (didDismiss)="closeUserDetailModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>User Details</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeUserDetailModal()">
+              <ion-icon name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="user-detail-content">
+        <div *ngIf="selectedUser" class="user-detail-container">
+          <!-- User Profile Section -->
+          <div class="profile-section">
+            <div class="profile-header">
+              <img [src]="selectedUser.photo" class="profile-avatar" alt="Profile" />
+              <div class="profile-info">
+                <h2>{{ selectedUser.name }}</h2>
+                <p class="email">{{ selectedUser.email }}</p>
+                <div class="profile-badges">
+                  <span class="badge verified" *ngIf="selectedUser.verified">Verified</span>
+                  <span class="badge pending" *ngIf="!selectedUser.verified">Pending</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-details">
+              <div class="detail-row">
+                <span class="label">ID Number:</span>
+                <span class="value">{{ selectedUser.id }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Program:</span>
+                <span class="value">{{ selectedUser.program }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Graduation Year:</span>
+                <span class="value">{{ selectedUser.year }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Contact:</span>
+                <span class="value">{{ selectedUser.contact }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Address:</span>
+                <span class="value">{{ selectedUser.address }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Employment History Section -->
+          <div class="employment-section">
+            <h3>Employment History</h3>
+
+            <div *ngIf="loadingUserJobs" class="loading-jobs">
+              <ion-spinner name="crescent"></ion-spinner>
+              <p>Loading employment history...</p>
+            </div>
+
+            <div *ngIf="!loadingUserJobs">
+              <!-- Current Jobs -->
+              <div class="job-category" *ngIf="getCurrentJobs().length > 0">
+                <h4>Current Employment</h4>
+                <div class="job-cards">
+                  <div *ngFor="let job of getCurrentJobs()" class="job-card current">
+                    <div class="job-header">
+                      <h5>{{ job.position }}</h5>
+                      <span class="job-type current">Current</span>
+                    </div>
+                    <p class="company">{{ job.companyName }}</p>
+                    <div class="job-details">
+                      <div class="detail-item">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        <span>Started: {{ job.startDate }}</span>
+                      </div>
+                      <div class="detail-item" *ngIf="job.address">
+                        <ion-icon name="location-outline"></ion-icon>
+                        <span>{{ job.address }}</span>
+                      </div>
+                      <div class="detail-item" *ngIf="job.contactNumber">
+                        <ion-icon name="call-outline"></ion-icon>
+                        <span>{{ job.contactNumber }}</span>
+                      </div>
+                      <div class="detail-item" *ngIf="job.email">
+                        <ion-icon name="mail-outline"></ion-icon>
+                        <span>{{ job.email }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Past Jobs -->
+              <div class="job-category" *ngIf="getPastJobs().length > 0">
+                <h4>Past Employment</h4>
+                <div class="job-cards">
+                  <div *ngFor="let job of getPastJobs()" class="job-card past">
+                    <div class="job-header">
+                      <h5>{{ job.position }}</h5>
+                      <span class="job-type past">Past</span>
+                    </div>
+                    <p class="company">{{ job.companyName }}</p>
+                    <div class="job-details">
+                      <div class="detail-item">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        <span>{{ job.startDate }} - {{ job.endDate || 'Present' }}</span>
+                      </div>
+                      <div class="detail-item" *ngIf="job.address">
+                        <ion-icon name="location-outline"></ion-icon>
+                        <span>{{ job.address }}</span>
+                      </div>
+                      <div class="detail-item" *ngIf="job.contactNumber">
+                        <ion-icon name="call-outline"></ion-icon>
+                        <span>{{ job.contactNumber }}</span>
+                      </div>
+                      <div class="detail-item" *ngIf="job.email">
+                        <ion-icon name="mail-outline"></ion-icon>
+                        <span>{{ job.email }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No Employment History -->
+              <div *ngIf="selectedUserJobs.length === 0" class="no-jobs">
+                <ion-icon name="briefcase-outline"></ion-icon>
+                <p>No employment history available</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

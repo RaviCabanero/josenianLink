@@ -126,6 +126,10 @@ export class ProfilePage implements OnInit {
     this.activeTab = tab;
   }
 
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
+  }
+
   logout() {
     this.authService.logout();
   }

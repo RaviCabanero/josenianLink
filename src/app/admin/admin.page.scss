@@ -281,6 +281,30 @@
                     ion-button {
                       --padding-start: 8px;
                       --padding-end: 8px;
+
+                      &.view {
+                        --color: #4cc9f0;
+
+                        &:hover {
+                          --background: rgba(76, 201, 240, 0.1);
+                        }
+                      }
+
+                      &.edit {
+                        --color: #f8961e;
+
+                        &:hover {
+                          --background: rgba(248, 150, 30, 0.1);
+                        }
+                      }
+
+                      &.delete {
+                        --color: #f72585;
+
+                        &:hover {
+                          --background: rgba(247, 37, 133, 0.1);
+                        }
+                      }
                     }
                   }
                 }
@@ -336,5 +360,471 @@
         }
       }
     }
+  }
+}
+
+// User Detail Modal Styles
+.user-detail-content {
+  --background: #f8f9fa;
+}
+
+.user-detail-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.profile-section {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--box-shadow);
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 20px;
+    object-fit: cover;
+    border: 3px solid #2c543f;
+  }
+
+  .profile-info {
+    flex: 1;
+
+    h2 {
+      margin: 0 0 8px 0;
+      color: var(--dark-color);
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .email {
+      margin: 0 0 12px 0;
+      color: #6c757d;
+      font-size: 16px;
+    }
+  }
+}
+
+.profile-badges {
+  display: flex;
+  gap: 8px;
+
+  .badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+
+    &.verified {
+      background-color: rgba(76, 201, 240, 0.1);
+      color: var(--success-color);
+    }
+
+    &.pending {
+      background-color: rgba(248, 150, 30, 0.1);
+      color: var(--warning-color);
+    }
+  }
+}
+
+.profile-details {
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .label {
+      font-weight: 500;
+      color: var(--dark-color);
+      min-width: 140px;
+    }
+
+    .value {
+      color: #6c757d;
+      text-align: right;
+      flex: 1;
+    }
+  }
+}
+
+.employment-section {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 24px;
+  box-shadow: var(--box-shadow);
+
+  h3 {
+    margin: 0 0 20px 0;
+    color: var(--dark-color);
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  h4 {
+    margin: 0 0 16px 0;
+    color: #2c543f;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.loading-jobs {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+}
+
+.job-category {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.job-cards {
+  display: grid;
+  gap: 16px;
+}
+
+.job-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+  transition: var(--transition);
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &.current {
+    border-left: 4px solid #2c543f;
+  }
+
+  &.past {
+    border-left: 4px solid #6c757d;
+  }
+}
+
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  h5 {
+    margin: 0;
+    color: var(--dark-color);
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.job-type {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+
+  &.current {
+    background-color: rgba(44, 84, 63, 0.1);
+    color: #2c543f;
+  }
+
+  &.past {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+  }
+}
+
+.company {
+  margin: 0 0 12px 0;
+  color: #2c543f;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.job-details {
+  display: grid;
+  gap: 8px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6c757d;
+
+  ion-icon {
+    font-size: 14px;
+    color: #2c543f;
+  }
+}
+
+.no-jobs {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #ccc;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+// Freedom Wall Styles (similar to home page)
+.freedom-wall-content {
+  .create-post-card {
+    margin: 16px 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    background: #fff !important;
+    color: #000;
+  }
+
+  .create-post-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+  }
+
+  .post-avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+  }
+
+  .post-prompt {
+    --border-radius: 20px;
+    --border-color: #ddd;
+    --color: #65676b;
+    flex-grow: 1;
+    text-align: left;
+    font-size: 14px;
+  }
+
+  .create-post-footer {
+    padding: 0 16px 16px;
+  }
+
+  .post-input {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .action-buttons {
+    display: flex;
+  }
+
+  .action-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 14px;
+  }
+
+  .post-button {
+    --background: #2c543f;
+    --color: white;
+    font-weight: 500;
+  }
+
+  .posts-feed {
+    padding-bottom: 20px;
+  }
+
+  .empty-feed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .empty-icon {
+    font-size: 64px;
+    color: #ccc;
+    margin-bottom: 16px;
+  }
+
+  .empty-content h3 {
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  .empty-content p {
+    color: #666;
+    margin-bottom: 20px;
+  }
+
+  .first-post-button {
+    --background: #2c543f;
+    --color: white;
+  }
+
+  .post-card {
+    margin: 16px 0;
+    border-radius: 12px;
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+  }
+
+  .post-author-avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+  }
+
+  .post-author-info {
+    flex-grow: 1;
+  }
+
+  .author-name {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .post-time {
+    margin: 0;
+    font-size: 13px;
+    color: #65676b;
+  }
+
+  .post-menu {
+    color: #65676b;
+  }
+
+  .post-content {
+    padding: 0 16px 16px;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #333;
+  }
+
+  .post-stats {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+    color: #65676b;
+    height: 36px;
+  }
+
+  .likes-count {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+  }
+
+  .likes-count ion-icon {
+    margin-right: 4px;
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+  }
+
+  .post-action {
+    --padding-start: 0;
+    --padding-end: 0;
+    font-size: 13px;
+    color: #65676b;
+  }
+
+  .post-action ion-icon {
+    margin-right: 6px;
+  }
+
+  .loading-posts {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+
+    ion-spinner {
+      margin-bottom: 16px;
+    }
+  }
+}
+
+// Coming Soon Styles
+.coming-soon {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: #2c543f;
+  }
+
+  h3 {
+    margin: 0 0 12px 0;
+    color: #333;
+    font-size: 24px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+// Navigation active state
+.nav-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
