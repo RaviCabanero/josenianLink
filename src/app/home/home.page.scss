@@ -1,3 +1,13 @@
+.post-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.post-action ion-icon[name="link-outline"] {
+  color: #057609 !important;
+  font-size: 1.6em;
+}
 /* Main Colors */
 :root {
   --josenian-green: #1e8449;
@@ -6,12 +16,53 @@
   --josenian-dark: #0e3d22;
 }
 
-/* Header Styles */
-.main-header {
-  background: #2c543f !important;
-  color: #fff;
-  --border-color: #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.288);
+// Header Styles
+.custom-header {
+  --background: #2c543f;
+  --color: white;
+
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #2c543f;  
+
+    .logo-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+
+      .logo-green {
+        color: #4cc9f0; /* USJR teal */
+      }
+
+      .logo-yellow {
+        color: #f8961e; /* USJR gold */
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --color: white;
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+
+    .logout-button {
+      --color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
 }
 
 .header-content {

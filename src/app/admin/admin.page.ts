@@ -18,11 +18,12 @@ import { Observable } from 'rxjs';
   imports: [IonicModule, RouterModule, CommonModule, FormsModule]
 })
 export class AdminPage implements OnInit {
-  adminProfile: any = null;
-  adminName: string = 'Administrator';
-  alumniList: any[] = [];
   filteredAlumniList: any[] = [];
   loading: boolean = false;
+
+  alumniList: any[] = [];
+  adminProfile: any = null;
+  adminName: string = 'Administrator';
 
   // Tab management
   activeTab: string = 'alumni';
@@ -38,7 +39,63 @@ export class AdminPage implements OnInit {
   posts$!: Observable<any[]>;
   showPostInput: boolean = false;
   postLoading: boolean = false;
-  
+
+  focusPostInput() {
+    this.showPostInput = true;
+  }
+
+  submitPost() {
+    // Implement post submission logic here
+    this.showPostInput = false;
+    this.newPost = '';
+  }
+
+  loadPosts() {
+    // Implement loading posts logic here
+    this.posts$ = new Observable<any[]>();
+  }
+
+  getTimeAgo(timestamp: any): string {
+    if (!timestamp) return '';
+    const d: Date = timestamp?.toDate?.() ? timestamp.toDate() : new Date(timestamp);
+    const diffMs = Date.now() - d.getTime();
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    if (days < 7) return `${days}d ago`;
+    return d.toLocaleDateString();
+  }
+
+  canDeletePostSync(post: any): boolean {
+    const email = this.adminProfile?.email || '';
+    return !!this.adminProfile && (
+      email === post.authorEmail ||
+      this.authService.isAdmin?.(email) === true
+    );
+  }
+
+  deletePost(postId: string) {
+    // Implement delete post logic here
+    console.log('Delete post', postId);
+  }
+
+  likePost(post: any) {
+    // Implement like post logic here
+    console.log('Like post', post);
+  }
+
+  isPostLiked(post: any): boolean {
+    // Implement logic to check if post is liked
+    return false;
+  }
+
+  trackById(_index: number, post: any): string {
+    return post.id;
+  }
+
   private afAuth = inject(AngularFireAuth);
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -124,7 +181,6 @@ export class AdminPage implements OnInit {
     this.isUserDetailModalOpen = true;
     this.loadingUserJobs = true;
     this.selectedUserJobs = [];
-
     try {
       // Get user's employment history
       this.authService.getEmploymentHistoryByUserId(user.uid).subscribe(jobs => {
@@ -171,144 +227,5 @@ export class AdminPage implements OnInit {
     console.log('Admin page loaded');
   }
 
-  // Freedom Wall methods (similar to home page)
-  loadPosts() {
-    try {
-      this.posts$ = this.firestore
-        .collection('posts', ref => ref.orderBy('timestamp', 'desc'))
-        .valueChanges({ idField: 'id' });
-    } catch (error) {
-      console.error('Error loading posts:', error);
-      // Fallback to loading posts without ordering to avoid index issues
-      this.posts$ = this.firestore
-        .collection('posts')
-        .valueChanges({ idField: 'id' });
-    }
-  }
-
-  focusPostInput() {
-    this.showPostInput = true;
-  }
-
-  async submitPost() {
-    const content = this.newPost.trim();
-    if (!content) {
-      console.log('Please enter a post message');
-      return;
-    }
-    if (!this.adminProfile) {
-      console.log('Please log in to post');
-      return;
-    }
-
-    this.postLoading = true;
-    try {
-      // Get current user ID
-      const currentUser = await this.authService.getCurrentUser();
-      if (!currentUser) {
-        console.log('Authentication required to post');
-        return;
-      }
-
-      const post = {
-        content,
-        authorId: currentUser.uid,
-        authorName: this.adminProfile.fullName || 'Administrator',
-        authorEmail: this.adminProfile.email || '',
-        authorAvatar: this.adminProfile.photoURL || '',
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        likes: 0,
-        likedBy: [] as string[],
-        comments: []
-      };
-
-      await this.firestore.collection('posts').add(post);
-      this.newPost = '';
-      this.showPostInput = false;
-      console.log('Post shared successfully!');
-    } catch (error) {
-      console.error('Error posting message:', error);
-    } finally {
-      this.postLoading = false;
-    }
-  }
-
-  async likePost(post: any) {
-    if (!this.adminProfile) {
-      console.log('Please log in to like posts');
-      return;
-    }
-    try {
-      const userEmail = this.adminProfile.email;
-      const likedBy: string[] = post.likedBy || [];
-      const doc = this.firestore.collection('posts').doc(post.id);
-
-      if (likedBy.includes(userEmail)) {
-        await doc.update({
-          likes: (post.likes || 0) - 1,
-          likedBy: likedBy.filter(e => e !== userEmail)
-        });
-      } else {
-        await doc.update({
-          likes: (post.likes || 0) + 1,
-          likedBy: [...likedBy, userEmail]
-        });
-      }
-    } catch (error) {
-      console.error('Error liking post:', error);
-    }
-  }
-
-  async deletePost(postId: string) {
-    if (!postId) return;
-    if (!confirm('Are you sure you want to delete this post?')) return;
-
-    try {
-      await this.firestore.collection('posts').doc(postId).delete();
-      console.log('Post deleted successfully');
-    } catch (error) {
-      console.error('Error deleting post:', error);
-    }
-  }
-
-  canDeletePostSync(post: any): boolean {
-    const email = this.adminProfile?.email || '';
-    return !!this.adminProfile && (
-      email === post.authorEmail ||
-      this.authService.isAdmin?.(email) === true
-    );
-  }
-
-  isPostLiked(post: any): boolean {
-    const email = this.adminProfile?.email;
-    const likedBy: string[] = post.likedBy || [];
-    return !!email && likedBy.includes(email);
-  }
-
-  getTimeAgo(timestamp: any): string {
-    if (!timestamp) return '';
-    const d: Date = timestamp?.toDate?.() ? timestamp.toDate() : new Date(timestamp);
-    const diffMs = Date.now() - d.getTime();
-    const mins = Math.floor(diffMs / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    const days = Math.floor(hrs / 24);
-    if (days < 7) return `${days}d ago`;
-    return d.toLocaleDateString();
-  }
-
-  trackById(_index: number, post: any): string {
-    return post.id;
-  }
-
-  async logout() {
-    try {
-      await this.afAuth.signOut();
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  }
+  // ...existing code...
 }

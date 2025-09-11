@@ -13,6 +13,31 @@ import { AuthService } from '../services/auth.service';
   standalone: false,
 })
 export class HomePage implements OnInit {
+  async clickLink(post: any) {
+    if (!this.userProfile) {
+      await this.presentToast('Please log in to react', 'warning');
+      return;
+    }
+    const userEmail = this.userProfile.email;
+    const clickedBy: string[] = post.clickedBy || [];
+    const doc = this.firestore.collection('posts').doc(post.id);
+    if (clickedBy.includes(userEmail)) {
+      // User already clicked, remove their click
+      await doc.update({
+        linkClicks: (post.linkClicks || 0) - 1,
+        clickedBy: clickedBy.filter(e => e !== userEmail)
+      });
+    } else {
+      // Add user click
+      await doc.update({
+        linkClicks: (post.linkClicks || 0) + 1,
+        clickedBy: [...clickedBy, userEmail]
+      });
+    }
+  }
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
+  }
   newPost: string = '';
   posts$!: Observable<any[]>;
   userProfile: any = null;
