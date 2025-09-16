@@ -1,0 +1,90 @@
+<ion-header class="custom-header">
+  <div class="header-bar">
+    <div class="logo-title">
+      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
+    </div>
+    <div class="header-actions">
+      <ion-button fill="clear" class="header-button" (click)="navigateToSettings()">
+        <ion-icon name="settings" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" class="logout-button" (click)="logout()">
+        Log Out
+      </ion-button>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="calendar-events-content">
+  <div class="calendar-events-header">
+    <h2>Upcoming Events</h2>
+    <ion-button fill="solid" color="success" routerLink="/add-event">
+      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+      Add Event
+    </ion-button>
+  </div>
+  <ion-list>
+    <ion-item *ngFor="let event of events$ | async">
+      <ion-label>
+        <h3>{{ event.title }}</h3>
+        <p>{{ event.date | date:'mediumDate' }} - {{ event.location }}</p>
+      </ion-label>
+      <ion-button fill="clear" color="primary" (click)="viewEvent(event)">
+        <ion-icon name="eye-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Alumni ID Request Form -->
+  <div class="alumni-id-request">
+    <h2>Request Alumni ID</h2>
+    <ion-item>
+      <ion-label position="floating">Full Name</ion-label>
+      <ion-input [(ngModel)]="alumniIdRequest.name" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="alumniIdRequest.email" type="email" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Year Graduated</ion-label>
+      <ion-input [(ngModel)]="alumniIdRequest.yearGraduated" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Course</ion-label>
+      <ion-input [(ngModel)]="alumniIdRequest.course" required></ion-input>
+    </ion-item>
+    <ion-button expand="block" color="primary" (click)="submitAlumniIdRequest()" [disabled]="loading || !alumniIdRequest.name || !alumniIdRequest.email || !alumniIdRequest.yearGraduated || !alumniIdRequest.course">
+      {{ loading ? 'Submitting...' : 'Request Alumni ID' }}
+    </ion-button>
+    <div *ngIf="requestSuccess" class="request-success">
+      <ion-icon name="checkmark-circle" color="success"></ion-icon>
+      <span>Your request has been submitted!</span>
+    </div>
+  </div>
+  <div *ngIf="(events$ | async)?.length === 0" class="empty-events">
+    <ion-icon name="calendar-outline" size="large" color="medium"></ion-icon>
+    <p>No events scheduled yet.</p>
+  </div>
+</ion-content>
+
+<ion-footer class="home-footer">
+  <ion-toolbar>
+    <div class="footer-buttons">
+      <ion-button fill="clear" routerLink="/home" class="active">
+        <ion-icon name="home" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/events">
+        <ion-icon name="calendar" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/notifications">
+        <ion-icon name="notifications" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/profile">
+        <ion-icon name="person" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/messages">
+        <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

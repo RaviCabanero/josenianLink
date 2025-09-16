@@ -1,0 +1,223 @@
+<ion-content class="admin-layout">
+  <div class="layout-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/usjrlogo.png" class="sidebar-logo-img" />
+        <h1 class="logo-text">
+          <span class="green">JOSENIAN</span><span class="yellow">LINK</span> 🔗
+        </h1>
+      </div>
+      <div class="nav-links">
+        <div class="nav-item active">
+          <ion-icon name="grid-outline"></ion-icon>
+          <span>Dashboard</span>
+        </div>
+        <div class="nav-item" routerLink="/admin" routerLinkActive="active">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Alumni</span>
+        </div>
+        <div class="nav-item" routerLink="/admin-reports" routerLinkActive="active">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <span>Reports</span>
+        </div>
+        <div class="nav-item" routerLink="/admin-events" routerLinkActive="active">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>Events</span>
+        </div>
+  <div class="nav-item" routerLink="/home" routerLinkActive="active">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
+          <span>Freedom Wall</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <div class="main-panel">
+        <div class="panel-header">
+          <div class="container1">
+            <h2>Dashboard</h2>
+            <p class="breadcrumb">Dashboard / Alumni ID Requests</p>
+          </div>
+          <div class="header-actions">
+            <ion-button fill="clear" class="notification-btn">
+              <ion-icon name="notifications-outline"></ion-icon>
+              <ion-badge color="danger">{{ notifCount || 0 }}</ion-badge>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- ====== Stats Row ====== -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><ion-icon name="people"></ion-icon></div>
+            <div class="stat-meta">
+              <div class="stat-label">Registered Alumni</div>
+              <div class="stat-value">{{ totals?.alumni || 0 }}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><ion-icon name="calendar"></ion-icon></div>
+            <div class="stat-meta">
+              <div class="stat-label">Total Events</div>
+              <div class="stat-value">{{ totals?.events || 0 }}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><ion-icon name="id-card"></ion-icon></div>
+            <div class="stat-meta">
+              <div class="stat-label">Alumni ID Requests</div>
+              <div class="stat-value">{{ totals?.idRequests || 0 }}</div>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-icon"><ion-icon name="hourglass"></ion-icon></div>
+            <div class="stat-meta">
+              <div class="stat-label">Pending Approval</div>
+              <div class="stat-value">{{ totals?.pending || 0 }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== Lists Row (3 cards) ====== -->
+        <div class="lists-grid">
+          <!-- Registered Alumni -->
+          <div class="list-card">
+            <div class="list-card-header">
+              <h3><ion-icon name="people-outline"></ion-icon> Registered Alumni</h3>
+              <ion-button size="small" fill="clear" routerLink="/admin">View all</ion-button>
+            </div>
+            <ion-list lines="full">
+              <ion-item *ngFor="let a of alumniList | slice:0:5">
+                <ion-avatar slot="start">
+                  <img [src]="a.photoURL || 'assets/default-avatar.png'">
+                </ion-avatar>
+                <ion-label>
+                  <div class="row1">
+                    <span class="name">{{ a.fullName || a.userName }}</span>
+                    <ion-badge *ngIf="a.department">{{ a.department }}</ion-badge>
+                  </div>
+                  <div class="row2">{{ a.email }}</div>
+                </ion-label>
+              </ion-item>
+              <div *ngIf="(alumniList?.length || 0) === 0" class="empty-state">
+                <ion-icon name="person-circle-outline"></ion-icon>
+                <p>No registered alumni found.</p>
+              </div>
+            </ion-list>
+          </div>
+
+          <!-- Events -->
+          <div class="list-card">
+            <div class="list-card-header">
+              <h3><ion-icon name="calendar-outline"></ion-icon> Events</h3>
+              <ion-button size="small" fill="clear" routerLink="/admin-events">View all</ion-button>
+            </div>
+            <ion-list lines="full">
+              <ion-item *ngFor="let e of eventsList | slice:0:5">
+                <ion-label>
+                  <div class="row1">
+                    <span class="name">{{ e.title }}</span>
+                    <ion-badge>{{ e.department || 'All' }}</ion-badge>
+                  </div>
+                  <div class="row2">
+                    {{ e.start?.toDate?.() ? (e.start.toDate() | date:'mediumDate') : (e.start | date:'mediumDate') }}
+                    • {{ e.location || 'TBA' }}
+                  </div>
+                </ion-label>
+              </ion-item>
+              <div *ngIf="(eventsList?.length || 0) === 0" class="empty-state">
+                <ion-icon name="calendar-clear-outline"></ion-icon>
+                <p>No events posted.</p>
+              </div>
+            </ion-list>
+          </div>
+
+          <!-- Alumni ID Requests -->
+          <div class="list-card">
+            <div class="list-card-header">
+              <h3><ion-icon name="id-card-outline"></ion-icon> Alumni ID Requests</h3>
+              <ion-button size="small" fill="clear" routerLink="/admin-id-requests">View all</ion-button>
+            </div>
+            <ion-list lines="full">
+              <ion-item *ngFor="let r of idRequestsList | slice:0:5">
+                <ion-label>
+                  <div class="row1">
+                    <span class="name">{{ r.name }}</span>
+                    <ion-badge [color]="r.status === 'approved' ? 'success' : (r.status === 'rejected' ? 'danger' : 'warning')">
+                      {{ r.status | titlecase }}
+                    </ion-badge>
+                  </div>
+                  <div class="row2">
+                    {{ r.userEmail }} •
+                    {{ r.timestamp?.toDate?.() ? (r.timestamp.toDate() | date:'short') : (r.timestamp | date:'short') }}
+                  </div>
+                </ion-label>
+              </ion-item>
+              <div *ngIf="(idRequestsList?.length || 0) === 0" class="empty-state">
+                <ion-icon name="id-card-outline"></ion-icon>
+                <p>No Alumni ID requests.</p>
+              </div>
+            </ion-list>
+          </div>
+        </div>
+
+        <!-- ====== Pending Requests (Approval table) ====== -->
+        <div class="panel-subheader">
+          <h3>Pending Alumni ID Requests</h3>
+          <p class="muted">Review and approve or reject requests below.</p>
+        </div>
+
+        <div class="table-container">
+          <div *ngIf="loadingAlumniIdRequests" style="text-align: center; padding: 40px;">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Loading Alumni ID requests...</p>
+          </div>
+
+          <table *ngIf="!loadingAlumniIdRequests">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Details</th>
+                <th>Status</th>
+                <th>Requested</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let request of alumniIdRequests">
+                <td><span class="user-name-black">{{ request.userName }}</span></td>
+                <td>{{ request.userEmail }}</td>
+                <td>{{ request.requestDetails }}</td>
+                <td>
+                  <span class="status" [ngClass]="{
+                      'verified': request.status === 'approved',
+                      'pending': request.status === 'pending',
+                      'rejected': request.status === 'rejected'
+                    }">{{ request.status | titlecase }}</span>
+                </td>
+                <td>
+                  {{ request.timestamp?.toDate?.() ? (request.timestamp.toDate() | date:'medium') : (request.timestamp | date:'medium') }}
+                </td>
+                <td class="actions-cell">
+                  <ion-button color="success" size="small" fill="outline" style="margin-right: 8px;"
+                              (click)="approveRequest(request)" [disabled]="request.__busy">Approve</ion-button>
+                  <ion-button color="danger" size="small" fill="outline"
+                              (click)="rejectRequest(request)" [disabled]="request.__busy">Reject</ion-button>
+                </td>
+              </tr>
+              <tr *ngIf="alumniIdRequests.length === 0">
+                <td colspan="6" class="empty-table">
+                  <ion-icon name="id-card-outline"></ion-icon>
+                  <p>No Alumni ID requests found</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

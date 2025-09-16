@@ -21,11 +21,15 @@ const routes: Routes = [
     path: 'register',
     component: RegisterComponent
   },
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
-  },
+    {
+      path: '',
+      redirectTo: 'login',
+      pathMatch: 'full'
+    },
+    {
+      path: 'events',
+      loadChildren: () => import('./calendar-events/calendar-events.module').then(m => m.CalendarEventsPageModule)
+    },
   {
     path: 'employee-list',
     loadChildren: () => import('./employee-list/employee-list.module').then( m => m.EmployeeListPageModule),
@@ -52,6 +56,11 @@ const routes: Routes = [
   {
     path: 'admin',
     component: AdminPage,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'admin-dashboard',
+    loadChildren: () => import('./admin-dashboard/admin-dashboard.module').then(m => m.AdminDashboardPageModule),
     canActivate: [AdminGuard]
   },
   {

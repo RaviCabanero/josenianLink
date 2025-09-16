@@ -10,7 +10,7 @@
       </div>
 
       <div class="nav-links">
-        <div class="nav-item" [class.active]="activeTab === 'dashboard'" (click)="switchTab('dashboard')">
+        <div class="nav-item" routerLink="/admin-dashboard" routerLinkActive="active">
           <ion-icon name="grid-outline"></ion-icon>
           <span>Dashboard</span>
         </div>
@@ -84,8 +84,12 @@
                 <th>Graduation Year</th>
                 <th>Program</th>
                 <th>Contact</th>
+<<<<<<< HEAD
                 <th>Status</th>
                 <th>Role</th>
+=======
+                <!-- Status column removed -->
+>>>>>>> 8c7c0c17174cbf880c18e9953d0d139badd31fb3
                 <th>Actions</th>
               </tr>
             </thead>
@@ -102,6 +106,7 @@
                 <td>{{ alumni.year }}</td>
                 <td>{{ alumni.program }}</td>
                 <td>{{ alumni.contact }}</td>
+<<<<<<< HEAD
                 <td>
                   <span class="status verified" *ngIf="alumni.verified">Verified</span>
                   <span class="status pending" *ngIf="!alumni.verified">Pending</span>
@@ -109,6 +114,9 @@
                 <td>
                   <span class="role-badge">{{ alumni.role || 'user' }}</span>
                 </td>
+=======
+                <!-- Status cell removed -->
+>>>>>>> 8c7c0c17174cbf880c18e9953d0d139badd31fb3
                 <td class="action-cell">
                   <ion-button fill="clear" size="small" class="action-btn view" (click)="viewUserDetails(alumni)">
                     <ion-icon name="eye-outline"></ion-icon>
