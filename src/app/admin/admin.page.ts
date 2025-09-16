@@ -17,12 +17,11 @@ import firebase from 'firebase/compat/app';
   imports: [IonicModule, RouterModule, CommonModule, FormsModule]
 })
 export class AdminPage implements OnInit {
-  filteredAlumniList: any[] = [];
-  loading: boolean = false;
-
-  alumniList: any[] = [];
   adminProfile: any = null;
   adminName: string = 'Administrator';
+  alumniList: any[] = [];
+  filteredAlumniList: any[] = [];
+  loading: boolean = false;
 
   // Tab management
   activeTab: string = 'alumni';
@@ -44,63 +43,7 @@ export class AdminPage implements OnInit {
   posts$!: Observable<any[]>;
   showPostInput: boolean = false;
   postLoading: boolean = false;
-
-  focusPostInput() {
-    this.showPostInput = true;
-  }
-
-  submitPost() {
-    // Implement post submission logic here
-    this.showPostInput = false;
-    this.newPost = '';
-  }
-
-  loadPosts() {
-    // Implement loading posts logic here
-    this.posts$ = new Observable<any[]>();
-  }
-
-  getTimeAgo(timestamp: any): string {
-    if (!timestamp) return '';
-    const d: Date = timestamp?.toDate?.() ? timestamp.toDate() : new Date(timestamp);
-    const diffMs = Date.now() - d.getTime();
-    const mins = Math.floor(diffMs / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    const days = Math.floor(hrs / 24);
-    if (days < 7) return `${days}d ago`;
-    return d.toLocaleDateString();
-  }
-
-  canDeletePostSync(post: any): boolean {
-    const email = this.adminProfile?.email || '';
-    return !!this.adminProfile && (
-      email === post.authorEmail ||
-      this.authService.isAdmin?.(email) === true
-    );
-  }
-
-  deletePost(postId: string) {
-    // Implement delete post logic here
-    console.log('Delete post', postId);
-  }
-
-  likePost(post: any) {
-    // Implement like post logic here
-    console.log('Like post', post);
-  }
-
-  isPostLiked(post: any): boolean {
-    // Implement logic to check if post is liked
-    return false;
-  }
-
-  trackById(_index: number, post: any): string {
-    return post.id;
-  }
-
+  
   private afAuth = inject(AngularFireAuth);
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -213,6 +156,7 @@ export class AdminPage implements OnInit {
     this.isUserDetailModalOpen = true;
     this.loadingUserJobs = true;
     this.selectedUserJobs = [];
+
     try {
       this.authService.getEmploymentHistoryByUserId(user.uid).subscribe(jobs => {
         this.selectedUserJobs = jobs || [];
@@ -247,9 +191,10 @@ export class AdminPage implements OnInit {
     return user.uid;
   }
 
-  ionViewDidEnter() {}
+  ionViewDidEnter() {
+    
+  }
 
-<<<<<<< HEAD
   // Freedom Wall methods
   loadPosts() {
     try {
@@ -355,7 +300,3 @@ export class AdminPage implements OnInit {
     }
   }
 }
-=======
-  // ...existing code...
-}
->>>>>>> 8c7c0c17174cbf880c18e9953d0d139badd31fb3
