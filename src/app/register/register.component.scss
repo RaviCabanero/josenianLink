@@ -13,6 +13,13 @@
   flex-direction: column;
   align-items: center;
   padding: 20px 0 10px;
+  transition: transform 0.6s cubic-bezier(.77,0,.18,1), opacity 0.4s;
+}
+
+.logo-animate-up {
+  transform: translateY(-80px) scale(0.8);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .logo-img {
@@ -89,4 +96,22 @@ ion-label {
   font-weight: 500;
   font-size: 14px;
   margin-top: 14px;
+}
+
+.register-title-animated {
+  color: #f4c014;
+  font-family: 'Avenir', sans-serif;
+  font-weight: bold;
+  font-size: 1.2em;
+  letter-spacing: 1px;
+  animation: fadeInDown 1s cubic-bezier(.77,0,.18,1) both;
+}
+
+.register-btn-text {
+  color: #f4c014;
+  font-family: 'Avenir', sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+  letter-spacing: 0.5px;
+  animation: popIn 0.7s cubic-bezier(.77,0,.18,1) both;
 }

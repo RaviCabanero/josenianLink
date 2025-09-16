@@ -828,3 +828,24 @@
     background-color: rgba(255, 255, 255, 0.1);
   }
 }
+
+// ...existing code...
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #f8f9fa;
+  color: #2c543f;
+  text-transform: capitalize;
+  border: 1px solid #e0e0e0;
+  margin-right: 4px;
+}
+
+.action-btn.edit-role {
+  color: #3f37c9;
+}
+
+// ...existing code...

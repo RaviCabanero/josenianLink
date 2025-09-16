@@ -85,6 +85,7 @@
                 <th>Program</th>
                 <th>Contact</th>
                 <th>Status</th>
+                <th>Role</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -105,6 +106,9 @@
                   <span class="status verified" *ngIf="alumni.verified">Verified</span>
                   <span class="status pending" *ngIf="!alumni.verified">Pending</span>
                 </td>
+                <td>
+                  <span class="role-badge">{{ alumni.role || 'user' }}</span>
+                </td>
                 <td class="action-cell">
                   <ion-button fill="clear" size="small" class="action-btn view" (click)="viewUserDetails(alumni)">
                     <ion-icon name="eye-outline"></ion-icon>
@@ -115,11 +119,14 @@
                   <ion-button fill="clear" size="small" class="action-btn delete" (click)="deleteUser(alumni.uid)">
                     <ion-icon name="trash-outline"></ion-icon>
                   </ion-button>
+                  <ion-button fill="clear" size="small" class="action-btn edit-role" (click)="openEditRoleModal(alumni)">
+                    <ion-icon name="person-outline"></ion-icon>
+                  </ion-button>
                 </td>
               </tr>
               
               <tr *ngIf="filteredAlumniList.length === 0 && !loading">
-                <td colspan="7" style="text-align: center; padding: 40px; color: #6c757d;">
+                <td colspan="8" style="text-align: center; padding: 40px; color: #6c757d;">
                   <ion-icon name="people-outline" style="font-size: 48px; margin-bottom: 16px;"></ion-icon>
                   <p>No users found</p>
                 </td>
@@ -145,6 +152,38 @@
           </ion-buttons>
         </div>
         </div> <!-- End Alumni Tab -->
+
+        <!-- Edit Role Modal -->
+        <ion-modal [isOpen]="isEditRoleModalOpen" (didDismiss)="closeEditRoleModal()">
+          <ng-template>
+            <ion-header>
+              <ion-toolbar>
+                <ion-title>Edit User Role</ion-title>
+                <ion-buttons slot="end">
+                  <ion-button (click)="closeEditRoleModal()">
+                    <ion-icon name="close"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-toolbar>
+            </ion-header>
+            <ion-content class="user-detail-content">
+              <div class="user-detail-container">
+                <h2>Edit Role for {{ editingUser?.name }}</h2>
+                <ion-item>
+                  <ion-label>Role</ion-label>
+                  <ion-select [(ngModel)]="editingUserRole">
+                    <ion-select-option value="user">User</ion-select-option>
+                    <ion-select-option value="alumni-officer">Alumni Officer</ion-select-option>
+                    <ion-select-option value="admin">Admin</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-button expand="block" color="primary" (click)="saveUserRole()" [disabled]="roleSaving">
+                  {{ roleSaving ? 'Saving...' : 'Save' }}
+                </ion-button>
+              </div>
+            </ion-content>
+          </ng-template>
+        </ion-modal>
 
         <!-- Freedom Wall Tab -->
         <div *ngIf="activeTab === 'freedom-wall'" class="freedom-wall-content">

@@ -1,7 +1,8 @@
 import { Component, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { IonicModule, ToastController } from '@ionic/angular';  // Import IonicModule for standalone component
-import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel binding
-import { RouterModule } from '@angular/router';  // Import RouterModule for routerLink
+import { CommonModule } from '@angular/common'; // <-- Add this line
+import { IonicModule, ToastController } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
@@ -11,19 +12,22 @@ import { Router } from '@angular/router';
   standalone: true,
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
-  imports: [IonicModule, FormsModule, RouterModule],  // Add RouterModule for routerLink directive and FormsModule for ngModel
+  imports: [CommonModule, IonicModule, FormsModule, RouterModule], // <-- Add CommonModule here
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
+
 export class RegisterComponent {
   fullName: string = '';
-idNumber: string = '';
-yearGraduated: number | null = null;
-program: string = '';
-contactNumber: string = '';
-address: string = '';
-email: string = '';
-password: string = '';
-  
+  idNumber: string = '';
+  yearGraduated: number | null = null;
+  program: string = '';
+  contactNumber: string = '';
+  address: string = '';
+  email: string = '';
+  password: string = '';
+
+  isInputFocused: boolean = false;
+
   private afAuth = inject(AngularFireAuth);
   private firestore = inject(AngularFirestore);
   private router = inject(Router);
@@ -36,7 +40,7 @@ password: string = '';
       if (this.email && this.password && this.fullName) {
         const userCredential = await this.afAuth.createUserWithEmailAndPassword(this.email, this.password);
         console.log('User registered successfully:', userCredential.user);
-        
+
         // Store additional user profile data in Firestore
         if (userCredential.user) {
           await this.firestore.collection('users').doc(userCredential.user.uid).set({
@@ -51,10 +55,10 @@ password: string = '';
           });
           console.log('User profile saved to Firestore');
         }
-        
+
         // Show success message
         await this.presentToast('Registration successful! Please log in with your credentials.', 'success');
-        
+
         // Navigate to login page after successful registration
         this.router.navigate(['/login']);
       } else {
@@ -77,5 +81,16 @@ password: string = '';
     toast.present();
   }
 
-  
+  checkBlur() {
+    setTimeout(() => {
+      const active = document.activeElement;
+      if (
+        active &&
+        (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')
+      ) {
+        return;
+      }
+      this.isInputFocused = false;
+    }, 10);
+  }
 }
