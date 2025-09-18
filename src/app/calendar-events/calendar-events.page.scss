@@ -1,6 +1,239 @@
 .calendar-events-content {
-  padding: 16px;
-  background: #f8f9fa;
+  --background: #ffffff;
+  padding: 0;
+}
+
+.events-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  // Mobile responsive padding
+  @media (max-width: 768px) {
+    padding: 16px 12px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px 8px;
+  }
+}
+
+.events-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px 0;
+
+  h1 {
+    margin: 0 0 8px 0;
+    color: #2c543f;
+    font-size: 28px;
+    font-weight: 700;
+
+    // Mobile responsive font sizes
+    @media (max-width: 768px) {
+      font-size: 24px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 20px;
+    }
+  }
+
+  .subtitle {
+    margin: 0;
+    color: #64748b;
+    font-size: 16px;
+    font-weight: 400;
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
+  }
+
+  // Mobile responsive margins
+  @media (max-width: 768px) {
+    margin-bottom: 20px;
+    padding: 16px 0;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 16px;
+    padding: 12px 0;
+  }
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+
+  // Mobile responsive grid
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+}
+
+.event-card {
+  margin: 0;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  // Mobile responsive border radius
+  @media (max-width: 480px) {
+    border-radius: 12px;
+  }
+
+  .event-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+
+    // Mobile responsive height
+    @media (max-width: 768px) {
+      height: 180px;
+    }
+
+    @media (max-width: 480px) {
+      height: 160px;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .event-date-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 8px 12px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      @media (max-width: 480px) {
+        top: 12px;
+        right: 12px;
+        padding: 6px 10px;
+        border-radius: 8px;
+      }
+
+      .day {
+        display: block;
+        font-size: 18px;
+        font-weight: 700;
+        color: #2c543f;
+        line-height: 1;
+
+        @media (max-width: 480px) {
+          font-size: 16px;
+        }
+      }
+
+      .month {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        @media (max-width: 480px) {
+          font-size: 10px;
+        }
+      }
+    }
+  }
+
+  ion-card-content {
+    padding: 20px;
+
+    .event-title {
+      margin: 0 0 16px 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.3;
+    }
+
+    .event-details {
+      margin-bottom: 16px;
+
+      .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #64748b;
+
+        ion-icon {
+          font-size: 16px;
+          color: #2c543f;
+        }
+      }
+    }
+
+    .event-description {
+      margin: 0 0 20px 0;
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .event-actions {
+      display: flex;
+      gap: 12px;
+
+      ion-button {
+        --border-radius: 8px;
+        font-weight: 600;
+        flex: 1;
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #64748b;
+
+  ion-icon {
+    font-size: 64px;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+  }
 }
 
 // Header Styles
@@ -13,7 +246,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: #2c543f;  
+    background: #2c543f;
 
     .logo-title {
       font-size: 1.3rem;
@@ -52,14 +285,202 @@
   }
 }
 
-.empty-events {
-  text-align: center;
-  color: #888;
-  margin-top: 32px;
+// Alumni ID Section
+.alumni-id-section {
+  margin-top: 40px;
+
+  @media (max-width: 768px) {
+    margin-top: 30px;
+  }
+
+  @media (max-width: 480px) {
+    margin-top: 24px;
+  }
 }
 
-ion-list {
-  background: transparent;
+.alumni-id-card {
+  margin: 0;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+  // View ID Card (for verified users)
+  &.view-id-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 2px solid #22c55e;
+
+    .header-icon.verified {
+      color: #22c55e;
+    }
+
+    ion-card-title {
+      color: #166534;
+    }
+
+    ion-card-subtitle {
+      color: #15803d;
+      font-weight: 600;
+    }
+  }
+
+  // Request ID Card (for non-verified users)
+  &.request-id-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+  }
+
+  ion-card-header {
+    padding: 24px 24px 0 24px;
+
+    // Mobile responsive padding
+    @media (max-width: 768px) {
+      padding: 20px 20px 0 20px;
+    }
+
+    @media (max-width: 480px) {
+      padding: 16px 16px 0 16px;
+    }
+
+    .card-header-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      @media (max-width: 480px) {
+        gap: 12px;
+      }
+
+      .header-icon {
+        font-size: 32px;
+        color: #2c543f;
+
+        @media (max-width: 480px) {
+          font-size: 28px;
+        }
+      }
+
+      ion-card-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c543f;
+
+        @media (max-width: 768px) {
+          font-size: 20px;
+        }
+
+        @media (max-width: 480px) {
+          font-size: 18px;
+        }
+      }
+
+      ion-card-subtitle {
+        margin: 4px 0 0 0;
+        font-size: 14px;
+        color: #64748b;
+
+        @media (max-width: 480px) {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  ion-card-content {
+    padding: 24px;
+
+    // Mobile responsive padding
+    @media (max-width: 768px) {
+      padding: 20px;
+    }
+
+    @media (max-width: 480px) {
+      padding: 16px;
+    }
+
+    // View Alumni ID Button
+    .view-id-button {
+      --background: #22c55e;
+      --background-hover: #16a34a;
+      --color: white;
+      --border-radius: 12px;
+      font-weight: 600;
+      height: 48px;
+      margin-top: 8px;
+
+      @media (max-width: 480px) {
+        height: 44px;
+        font-size: 14px;
+      }
+    }
+
+    .alumni-form {
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+        }
+
+        &:last-of-type {
+          margin-bottom: 24px;
+        }
+      }
+
+      .form-item {
+        --background: #f8fafc;
+        --border-radius: 12px;
+        --padding-start: 16px;
+        --padding-end: 16px;
+        margin: 0;
+        border: 1px solid #e2e8f0;
+
+        &.item-has-focus {
+          --border-color: #2c543f;
+          --background: #ffffff;
+        }
+
+        ion-label {
+          --color: #64748b;
+          font-weight: 500;
+        }
+
+        ion-input {
+          --color: #1e293b;
+          font-weight: 500;
+        }
+      }
+
+      .submit-button {
+        --border-radius: 12px;
+        --padding-top: 16px;
+        --padding-bottom: 16px;
+        font-weight: 600;
+        font-size: 16px;
+        margin-top: 8px;
+      }
+
+      .success-message {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+        padding: 16px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
+        color: #166534;
+        font-weight: 500;
+
+        ion-icon {
+          font-size: 24px;
+          color: #22c55e;
+        }
+      }
+    }
+  }
 }
 
 // Footer Styles
@@ -107,4 +528,4 @@ ion-list {
       }
     }
   }
-} 
+}

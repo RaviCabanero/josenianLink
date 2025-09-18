@@ -44,13 +44,18 @@ export class RegisterComponent {
         // Store additional user profile data in Firestore
         if (userCredential.user) {
           await this.firestore.collection('users').doc(userCredential.user.uid).set({
+            uid: userCredential.user.uid,
             fullName: this.fullName,
+            name: this.fullName, // Add name field for compatibility
             idNumber: this.idNumber,
             yearGraduated: this.yearGraduated,
             program: this.program,
             contactNumber: this.contactNumber,
             address: this.address,
             email: this.email,
+            photoURL: userCredential.user.photoURL || null,
+            verified: false,
+            role: 'user',
             createdAt: new Date()
           });
           console.log('User profile saved to Firestore');

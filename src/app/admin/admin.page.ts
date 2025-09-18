@@ -7,6 +7,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { PushNotificationService } from '../services/push-notification.service';
 import firebase from 'firebase/compat/app';
 
 @Component({
@@ -24,7 +25,7 @@ export class AdminPage implements OnInit {
   loading: boolean = false;
 
   // Tab management
-  activeTab: string = 'alumni';
+  activeTab: string = 'dashboard';
 
   // User detail modal properties
   isUserDetailModalOpen: boolean = false;
@@ -43,18 +44,40 @@ export class AdminPage implements OnInit {
   posts$!: Observable<any[]>;
   showPostInput: boolean = false;
   postLoading: boolean = false;
+
+  // Dashboard properties (from admin-dashboard)
+  notifCount: number = 0;
+  totals: any = { alumni: 0, events: 0, idRequests: 0, pending: 0 };
+  eventsList: any[] = [];
+  idRequestsList: any[] = [];
+  alumniIdRequests: any[] = [];
+  loadingAlumniIdRequests: boolean = false;
   
   private afAuth = inject(AngularFireAuth);
   private router = inject(Router);
   private authService = inject(AuthService);
   private firestore = inject(AngularFirestore);
+  private pushNotificationService = inject(PushNotificationService);
 
   constructor() {}
 
   ngOnInit() {
     this.authService.checkUserRole().subscribe(result => {
-      this.adminProfile = result.userProfile;
-      this.adminName = result.userProfile?.fullName || 'Administrator';
+      if (result.isAdmin) {
+        // Create proper admin profile
+        this.adminProfile = {
+          uid: 'admin',
+          fullName: 'Administrator',
+          email: result.userProfile?.email || 'admin@josenianlink.com',
+          photoURL: 'assets/images/admin-avatar.png',
+          role: 'admin',
+          isAdmin: true
+        };
+        this.adminName = 'Administrator';
+      } else {
+        this.adminProfile = result.userProfile;
+        this.adminName = result.userProfile?.fullName || 'Administrator';
+      }
     });
 
     // Load all users
@@ -62,6 +85,12 @@ export class AdminPage implements OnInit {
 
     // Load posts for Freedom Wall
     this.loadPosts();
+
+    // Load dashboard data
+    this.loadAlumniIdRequests();
+    this.loadStats();
+    this.loadEventsList();
+    this.loadIdRequestsList();
   }
 
   // Tab switching
@@ -88,6 +117,7 @@ export class AdminPage implements OnInit {
         }));
         this.filteredAlumniList = [...this.alumniList];
         this.loading = false;
+        this.loadStats(); // Update stats after alumni are loaded
       });
     } catch (error) {
       this.loading = false;
@@ -191,6 +221,28 @@ export class AdminPage implements OnInit {
     return user.uid;
   }
 
+  async updateUserRole(alumni: any, event: any) {
+    const newRole = event.detail.value;
+    const originalRole = alumni.role;
+
+    try {
+      // Update in Firestore
+      await this.firestore.collection('users').doc(alumni.uid).update({
+        role: newRole
+      });
+
+      // Update local data
+      alumni.role = newRole;
+
+      console.log(`Updated ${alumni.name}'s role to ${newRole}`);
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      // Revert the change in UI
+      alumni.role = originalRole;
+      alert('Failed to update user role. Please try again.');
+    }
+  }
+
   ionViewDidEnter() {
     
   }
@@ -224,22 +276,82 @@ export class AdminPage implements OnInit {
 
       const post = {
         content,
-        authorId: currentUser.uid,
-        authorName: this.adminProfile.fullName || 'Administrator',
-        authorEmail: this.adminProfile.email || '',
-        authorAvatar: this.adminProfile.photoURL || '',
+        authorId: 'admin', // Use admin as authorId
+        authorName: 'Administrator',
+        authorEmail: this.adminProfile.email || 'admin@josenianlink.com',
+        authorAvatar: this.adminProfile.photoURL || 'assets/images/admin-avatar.png',
+        authorPhoto: this.adminProfile.photoURL || 'assets/images/admin-avatar.png',
+        authorProgram: 'Administration',
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         likes: 0,
         likedBy: [] as string[],
-        comments: []
+        comments: [],
+        isAdminPost: true
       };
-      await this.firestore.collection('posts').add(post);
+
+      const docRef = await this.firestore.collection('posts').add(post);
+      console.log('Admin post created:', docRef.id);
+
+      // Send notification to ALL users about admin post
+      await this.sendAdminPostNotificationToAllUsers(docRef.id, content);
+
       this.newPost = '';
       this.showPostInput = false;
+
+      console.log('Admin post submitted successfully');
     } catch (error) {
-      // handle error
+      console.error('Error submitting admin post:', error);
     } finally {
       this.postLoading = false;
+    }
+  }
+
+  // Send notification to all users when admin posts
+  async sendAdminPostNotificationToAllUsers(postId: string, content: string) {
+    try {
+      // Get all users from Firestore
+      const usersSnapshot = await this.firestore.collection('users').get().toPromise();
+
+      if (usersSnapshot) {
+        const users = usersSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...(doc.data() as any)
+        }));
+
+        // Send notification to each user
+        for (const user of users) {
+          if (user.id && user.id !== 'admin') { // Don't send to admin
+            await this.sendNotificationToUser(user.id, postId, content);
+          }
+        }
+
+        console.log(`Admin post notification sent to ${users.length} users`);
+      }
+    } catch (error) {
+      console.error('Error sending admin post notifications:', error);
+    }
+  }
+
+  // Helper method to send notification to specific user
+  async sendNotificationToUser(userId: string, postId: string, content: string) {
+    try {
+      const notification = {
+        title: '📢 Administrator Posted',
+        body: `Administrator shared: "${content.substring(0, 50)}${content.length > 50 ? '...' : ''}"`,
+        type: 'freedom_wall_post',
+        userId: userId,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        read: false,
+        data: {
+          postId: postId,
+          authorName: 'Administrator',
+          postContent: content
+        }
+      };
+
+      await this.firestore.collection('notifications').add(notification);
+    } catch (error) {
+      console.error('Error sending notification to user:', userId, error);
     }
   }
 
@@ -297,6 +409,184 @@ export class AdminPage implements OnInit {
       this.router.navigate(['/login']);
     } catch (error) {
       // handle error
+    }
+  }
+
+  // Dashboard methods (from admin-dashboard)
+  loadAlumniIdRequests() {
+    this.loadingAlumniIdRequests = true;
+    this.firestore.collection('alumniIdRequests', ref => ref.orderBy('timestamp', 'desc'))
+      .valueChanges({ idField: 'id' })
+      .subscribe(requests => {
+        this.alumniIdRequests = requests;
+        this.totals.idRequests = requests.length;
+        this.totals.pending = requests.filter((r: any) => r.status === 'pending').length;
+        this.idRequestsList = requests;
+        this.loadingAlumniIdRequests = false;
+        this.loadStats(); // Update stats after requests are loaded
+      }, error => {
+        console.error('Error loading Alumni ID requests:', error);
+        this.loadingAlumniIdRequests = false;
+      });
+  }
+
+  loadStats() {
+    // Update stats based on loaded data
+    this.totals = {
+      alumni: this.alumniList.length,
+      events: this.eventsList.length,
+      idRequests: this.alumniIdRequests.length,
+      pending: this.alumniIdRequests.filter(r => r.status === 'pending').length
+    };
+    this.notifCount = 3;
+  }
+
+  loadEventsList() {
+    // Simulate events list, replace with Firestore queries as needed
+    this.eventsList = [
+      { title: 'Alumni Homecoming', department: 'All', start: new Date(), location: 'USJR Main Campus' },
+      { title: 'Career Fair', department: 'Engineering', start: new Date(), location: 'USJR Gymnasium' }
+    ];
+    this.totals.events = this.eventsList.length;
+  }
+
+  loadIdRequestsList() {
+    // Use the first 5 alumni ID requests for the list
+    this.idRequestsList = this.alumniIdRequests.slice(0, 5);
+  }
+
+  async approveRequest(request: any) {
+    request.__busy = true;
+    try {
+      // Generate Alumni ID using the correct field name
+      const userName = request.userName || request.name || 'User';
+      const alumniId = this.generateAlumniId(userName);
+
+      console.log('Approving request:', request);
+      console.log('Generated Alumni ID:', alumniId);
+
+      // Update request status in Firestore
+      await this.firestore.collection('alumniIdRequests').doc(request.id).update({
+        status: 'approved',
+        approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        alumniId: alumniId
+      });
+
+      // Update or create user profile with alumni ID if userId exists
+      if (request.userId) {
+        try {
+          // First try to update the existing document
+          await this.firestore.collection('users').doc(request.userId).update({
+            alumniId: alumniId,
+            verified: true,
+            verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          console.log('User document updated successfully');
+        } catch (updateError: any) {
+          // If document doesn't exist, create it
+          if (updateError.code === 'not-found') {
+            console.log('User document not found, creating new one...');
+            await this.firestore.collection('users').doc(request.userId).set({
+              uid: request.userId,
+              email: request.userEmail || request.email,
+              fullName: userName,
+              name: userName,
+              alumniId: alumniId,
+              verified: true,
+              verifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              // Add other fields from the request
+              studentId: request.studentId,
+              graduationYear: request.graduationYear,
+              program: request.program,
+              contactNumber: request.contactNumber,
+              address: request.address,
+              photoURL: request.userPhoto || null,
+              role: 'user'
+            });
+            console.log('User document created successfully');
+          } else {
+            throw updateError;
+          }
+        }
+      }
+
+      // Send notification to user with alumni ID
+      if (request.userId) {
+        await this.pushNotificationService.sendIdRequestNotification(
+          request.userId,
+          userName,
+          'approved',
+          alumniId
+        );
+      }
+
+      request.status = 'approved';
+      request.alumniId = alumniId;
+      this.loadStats(); // Update stats after approval
+
+      console.log('Request approved successfully');
+      alert('Alumni ID request approved successfully! Alumni ID: ' + alumniId);
+    } catch (error) {
+      console.error('Error approving request:', error);
+      alert('Error approving request: ' + (error as any).message);
+    } finally {
+      request.__busy = false;
+    }
+  }
+
+  async rejectRequest(request: any) {
+    request.__busy = true;
+    try {
+      // Update request status in Firestore
+      await this.firestore.collection('alumniIdRequests').doc(request.id).update({
+        status: 'rejected',
+        rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      // Send notification to user
+      await this.pushNotificationService.sendIdRequestNotification(
+        request.userId,
+        request.userName,
+        'rejected'
+      );
+
+      request.status = 'rejected';
+      this.loadStats(); // Update stats after rejection
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+    } finally {
+      request.__busy = false;
+    }
+  }
+
+  // Generate Alumni ID
+  private generateAlumniId(userName: string): string {
+    const year = new Date().getFullYear();
+    const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const namePrefix = userName.substring(0, 2).toUpperCase();
+    return `USJR-${year}-${namePrefix}${randomNum}`;
+  }
+
+  // Test notification for user "ravi"
+  async testNotification() {
+    try {
+      // Create a test notification with a sample Alumni ID for ravi
+      const alumniId = this.generateAlumniId('ravi');
+
+      // Send test notification (using a mock user ID for testing)
+      await this.pushNotificationService.sendIdRequestNotification(
+        'test-user-ravi',
+        'ravi',
+        'approved',
+        alumniId
+      );
+
+      console.log('Test notification created with Alumni ID:', alumniId);
+      alert(`✅ Test notification created for ravi!\nAlumni ID: ${alumniId}\n\nCheck the notifications page to see it.`);
+    } catch (error) {
+      console.error('Error sending test notification:', error);
+      alert('❌ Error sending test notification');
     }
   }
 }

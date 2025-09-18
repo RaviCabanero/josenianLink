@@ -5,6 +5,7 @@ import { ToastController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import firebase from 'firebase/compat/app';
 import { AuthService } from '../services/auth.service';
+import { PushNotificationService } from '../services/push-notification.service';
 
 @Component({
   selector: 'app-home',
@@ -43,11 +44,12 @@ export class HomePage implements OnInit {
   userProfile: any = null;
   loading: boolean = false;
   showPostInput: boolean = false;
-  unreadNotifications: number = 3;
+  unreadNotifications: number = 0;
   unreadMessages: number = 5;
 
   private firestore = inject(AngularFirestore);
   private authService = inject(AuthService);
+  private pushNotificationService = inject(PushNotificationService);
   private toastController = inject(ToastController);
   private router = inject(Router);
 
@@ -59,6 +61,13 @@ export class HomePage implements OnInit {
   loadUserProfile() {
     this.authService.checkUserRole().subscribe((result: any) => {
       this.userProfile = result?.userProfile ?? null;
+      // Get the current user to get the UID
+      this.authService.getCurrentUser().then(user => {
+        if (user && this.userProfile) {
+          this.userProfile.uid = user.uid; // Add UID to profile
+          this.loadNotificationCount();
+        }
+      });
     });
   }
 
@@ -112,7 +121,15 @@ export class HomePage implements OnInit {
         comments: []
       };
 
-      await this.firestore.collection('posts').add(post);
+      const docRef = await this.firestore.collection('posts').add(post);
+
+      // Send notification about new post
+      await this.pushNotificationService.sendFreedomWallNotification(
+        docRef.id,
+        this.userProfile.fullName || 'Anonymous',
+        content
+      );
+
       this.newPost = '';
       this.showPostInput = false;
       await this.presentToast('Post shared successfully!', 'success');
@@ -218,6 +235,42 @@ export class HomePage implements OnInit {
       color
     });
     await toast.present();
+  }
+
+  loadNotificationCount() {
+    if (this.userProfile?.uid) {
+      console.log('Loading notification count for user:', this.userProfile.uid);
+      this.pushNotificationService.getUnreadNotificationCount(this.userProfile.uid)
+        .subscribe(count => {
+          console.log('Notification count received:', count);
+          this.unreadNotifications = count;
+        });
+    } else {
+      console.log('No user profile found for notification count');
+    }
+  }
+
+  navigateToNotifications() {
+    console.log('Navigating to notifications page...');
+    console.log('Current user profile:', this.userProfile);
+    this.router.navigate(['/notifications']).then(success => {
+      console.log('Navigation result:', success);
+    }).catch(error => {
+      console.error('Navigation error:', error);
+    });
+  }
+
+  // Test method to create a sample notification
+  async createTestNotification() {
+    if (this.userProfile?.uid) {
+      await this.pushNotificationService.sendIdRequestNotification(
+        this.userProfile.uid,
+        this.userProfile.displayName || 'Test User',
+        'approved',
+        'USJR-2024-TU1234'
+      );
+      console.log('Test notification created');
+    }
   }
 
   navigateTo(route: string) {

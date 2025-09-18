@@ -55,6 +55,22 @@
       ion-icon {
         font-size: 20px;
       }
+
+      &.notification-btn {
+        position: relative;
+
+        ion-badge {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          transform: translate(30%, -30%);
+          font-size: 10px;
+          min-width: 18px;
+          height: 18px;
+          border-radius: 9px;
+          font-weight: 600;
+        }
+      }
     }
 
     .logout-button {

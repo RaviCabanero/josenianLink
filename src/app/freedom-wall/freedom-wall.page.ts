@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import firebase from 'firebase/compat/app';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -52,24 +53,23 @@ export class FreedomWallPage implements OnInit {
     this.loading = true;
 
     try {
+      const isAdmin = this.authService.isAdmin?.(this.userProfile.email || '');
       const post = {
         content: this.newPost.trim(),
-        authorName: this.userProfile.fullName || 'Anonymous',
+        authorName: isAdmin ? 'Administrator' : (this.userProfile.fullName || 'Anonymous'),
         authorEmail: this.userProfile.email || '',
         authorPhoto: this.userProfile.photoURL || this.getDefaultAvatar(),
         authorAvatar: this.userProfile.photoURL || this.getDefaultAvatar(), // For compatibility
         authorId: this.userProfile.uid || '',
         authorProgram: this.userProfile.program || '',
-        timestamp: new Date(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         likes: 0,
         likedBy: []
       };
 
       await this.firestore.collection('posts').add(post);
-      
-      this.newPost = ''; // Clear the input
+      this.newPost = '';
       await this.presentToast('Post shared successfully!', 'success');
-      
     } catch (error) {
       console.error('Error posting message:', error);
       await this.presentToast('Failed to post message. Please try again.', 'danger');

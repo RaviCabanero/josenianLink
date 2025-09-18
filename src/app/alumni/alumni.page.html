@@ -1,0 +1,173 @@
+<ion-header class="custom-header">
+  <div class="header-bar">
+    <div class="logo-title">
+      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
+    </div>
+    <div class="header-actions">
+      <ion-button fill="clear" class="header-button" (click)="navigateToSettings()">
+        <ion-icon name="settings" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" class="logout-button" (click)="logout()">
+        Log Out
+      </ion-button>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="alumni-content">
+  <div class="alumni-container">
+    <!-- Header Section -->
+    <div class="alumni-header">
+      <h1>Alumni Directory</h1>
+      <p class="subtitle">Connect with fellow USJR graduates</p>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="search-filter-bar">
+      <ion-searchbar 
+        placeholder="Search by name, program, or year" 
+        class="search-bar"
+        animated
+        debounce="300"
+        [(ngModel)]="searchTerm"
+        (ionInput)="filterAlumni()">
+      </ion-searchbar>
+      <ion-button fill="outline" class="filter-btn" (click)="openFilterModal()">
+        <ion-icon name="filter-outline" slot="start"></ion-icon>
+        Filter
+      </ion-button>
+    </div>
+
+    <!-- Alumni Grid -->
+    <div class="alumni-grid" *ngIf="!loading">
+      <div class="alumni-card" *ngFor="let alumni of filteredAlumni" (click)="viewAlumniProfile(alumni)">
+        <div class="alumni-avatar">
+          <img [src]="alumni.photo || 'assets/default-avatar.png'" [alt]="alumni.name">
+          <div class="online-indicator" *ngIf="alumni.isOnline"></div>
+        </div>
+        
+        <div class="alumni-info">
+          <h3 class="alumni-name">{{ alumni.name }}</h3>
+          <p class="alumni-program">{{ alumni.program }}</p>
+          <p class="alumni-year">Class of {{ alumni.yearGraduated }}</p>
+          <p class="alumni-location" *ngIf="alumni.location">
+            <ion-icon name="location-outline"></ion-icon>
+            {{ alumni.location }}
+          </p>
+        </div>
+
+        <div class="alumni-actions">
+          <ion-button fill="clear" size="small" (click)="sendMessage(alumni, $event)">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small" (click)="viewProfile(alumni, $event)">
+            <ion-icon name="person-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading alumni directory...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && filteredAlumni.length === 0">
+      <ion-icon name="people-outline"></ion-icon>
+      <h3>No Alumni Found</h3>
+      <p *ngIf="searchTerm">Try adjusting your search criteria</p>
+      <p *ngIf="!searchTerm">No alumni profiles available at the moment</p>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Filter Modal -->
+<ion-modal [isOpen]="isFilterModalOpen" (didDismiss)="closeFilterModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Filter Alumni</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeFilterModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="filter-modal-content">
+      <div class="filter-form">
+        <!-- Program Filter -->
+        <div class="filter-section">
+          <h4>Program</h4>
+          <ion-select [(ngModel)]="filters.program" placeholder="Select Program" multiple>
+            <ion-select-option value="BSIT">BSIT</ion-select-option>
+            <ion-select-option value="BSCS">BSCS</ion-select-option>
+            <ion-select-option value="BSN">BSN</ion-select-option>
+            <ion-select-option value="BSBA">BSBA</ion-select-option>
+            <ion-select-option value="BSED">BSED</ion-select-option>
+          </ion-select>
+        </div>
+
+        <!-- Year Filter -->
+        <div class="filter-section">
+          <h4>Graduation Year</h4>
+          <ion-range 
+            [(ngModel)]="filters.yearRange" 
+            min="2000" 
+            max="2024" 
+            dual-knobs="true"
+            pin="true">
+          </ion-range>
+          <div class="year-labels">
+            <span>{{ filters.yearRange.lower }}</span>
+            <span>{{ filters.yearRange.upper }}</span>
+          </div>
+        </div>
+
+        <!-- Location Filter -->
+        <div class="filter-section">
+          <h4>Location</h4>
+          <ion-input 
+            [(ngModel)]="filters.location" 
+            placeholder="Enter city or country">
+          </ion-input>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="filter-actions">
+          <ion-button expand="block" fill="outline" (click)="clearFilters()">
+            Clear Filters
+          </ion-button>
+          <ion-button expand="block" (click)="applyFilters()">
+            Apply Filters
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-footer class="home-footer">
+  <ion-toolbar>
+    <div class="footer-buttons">
+      <ion-button fill="clear" routerLink="/home">
+        <ion-icon name="home" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/events">
+        <ion-icon name="calendar" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/notifications">
+        <ion-icon name="notifications" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/profile">
+        <ion-icon name="person" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/alumni" class="active">
+        <ion-icon name="people" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

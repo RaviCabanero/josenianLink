@@ -58,14 +58,20 @@ const routes: Routes = [
     component: AdminPage,
     canActivate: [AdminGuard]
   },
-  {
-    path: 'admin-dashboard',
-    loadChildren: () => import('./admin-dashboard/admin-dashboard.module').then(m => m.AdminDashboardPageModule),
-    canActivate: [AdminGuard]
-  },
+
   {
     path: 'freedom-wall',
     component: FreedomWallPage,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'notifications',
+    loadComponent: () => import('./notifications/notifications.page').then(m => m.NotificationsPage),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'alumni',
+    loadChildren: () => import('./alumni/alumni.module').then(m => m.AlumniPageModule),
     canActivate: [AuthGuard]
   },
   {

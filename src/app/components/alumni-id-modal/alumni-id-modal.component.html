@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Your Alumni ID</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="closeModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="alumni-id-content">
+  <div class="id-card-container">
+    <!-- Alumni ID Card -->
+    <div class="alumni-id-card">
+      <div class="card-header">
+        <img src="assets/usjrlogo.png" alt="USJR Logo" class="university-logo">
+        <div class="university-info">
+          <h2>University of San Jose - Recoletos</h2>
+          <p>Alumni Identification Card</p>
+        </div>
+      </div>
+      
+      <div class="card-body">
+        <div class="photo-section">
+          <img [src]="userPhoto || 'assets/default-avatar.png'" alt="Alumni Photo" class="alumni-photo">
+        </div>
+        
+        <div class="info-section">
+          <div class="info-row">
+            <label>Alumni ID:</label>
+            <span class="alumni-id-number">{{ alumniId }}</span>
+          </div>
+          
+          <div class="info-row">
+            <label>Name:</label>
+            <span class="alumni-name">{{ userName }}</span>
+          </div>
+          
+          <div class="info-row">
+            <label>Email:</label>
+            <span class="alumni-email">{{ userEmail }}</span>
+          </div>
+          
+          <div class="info-row">
+            <label>Status:</label>
+            <span class="status-verified">✅ Verified Alumni</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-footer">
+        <div class="qr-placeholder">
+          <ion-icon name="qr-code-outline"></ion-icon>
+          <p>QR Code</p>
+        </div>
+        <div class="issue-date">
+          <p>Issued: {{ getCurrentDate() }}</p>
+          <p>Valid until: {{ getExpiryDate() }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <ion-button expand="block" fill="outline" (click)="downloadId()">
+      <ion-icon name="download" slot="start"></ion-icon>
+      Download ID Card
+    </ion-button>
+    
+    <ion-button expand="block" (click)="shareId()">
+      <ion-icon name="share" slot="start"></ion-icon>
+      Share Alumni ID
+    </ion-button>
+  </div>
+  
+  <!-- Congratulations Message -->
+  <div class="congratulations-message">
+    <ion-icon name="trophy" color="warning"></ion-icon>
+    <h3>Congratulations!</h3>
+    <p>Your Alumni ID has been successfully approved. You now have access to all USJR alumni services and benefits.</p>
+  </div>
+</ion-content>

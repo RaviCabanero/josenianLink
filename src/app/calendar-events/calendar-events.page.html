@@ -15,55 +15,153 @@
 </ion-header>
 
 <ion-content class="calendar-events-content">
-  <div class="calendar-events-header">
-    <h2>Upcoming Events</h2>
-    <ion-button fill="solid" color="success" routerLink="/add-event">
-      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-      Add Event
-    </ion-button>
-  </div>
-  <ion-list>
-    <ion-item *ngFor="let event of events$ | async">
-      <ion-label>
-        <h3>{{ event.title }}</h3>
-        <p>{{ event.date | date:'mediumDate' }} - {{ event.location }}</p>
-      </ion-label>
-      <ion-button fill="clear" color="primary" (click)="viewEvent(event)">
-        <ion-icon name="eye-outline"></ion-icon>
-      </ion-button>
-    </ion-item>
-  </ion-list>
-
-  <!-- Alumni ID Request Form -->
-  <div class="alumni-id-request">
-    <h2>Request Alumni ID</h2>
-    <ion-item>
-      <ion-label position="floating">Full Name</ion-label>
-      <ion-input [(ngModel)]="alumniIdRequest.name" required></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Email</ion-label>
-      <ion-input [(ngModel)]="alumniIdRequest.email" type="email" required></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Year Graduated</ion-label>
-      <ion-input [(ngModel)]="alumniIdRequest.yearGraduated" required></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label position="floating">Course</ion-label>
-      <ion-input [(ngModel)]="alumniIdRequest.course" required></ion-input>
-    </ion-item>
-    <ion-button expand="block" color="primary" (click)="submitAlumniIdRequest()" [disabled]="loading || !alumniIdRequest.name || !alumniIdRequest.email || !alumniIdRequest.yearGraduated || !alumniIdRequest.course">
-      {{ loading ? 'Submitting...' : 'Request Alumni ID' }}
-    </ion-button>
-    <div *ngIf="requestSuccess" class="request-success">
-      <ion-icon name="checkmark-circle" color="success"></ion-icon>
-      <span>Your request has been submitted!</span>
+  <div class="events-container">
+    <!-- Header Section -->
+    <div class="events-header">
+      <h1>Upcoming Events</h1>
+      <p class="subtitle">Stay updated with USJR alumni activities</p>
     </div>
-  </div>
-  <div *ngIf="(events$ | async)?.length === 0" class="empty-events">
-    <ion-icon name="calendar-outline" size="large" color="medium"></ion-icon>
-    <p>No events scheduled yet.</p>
+
+    <!-- Events Cards -->
+    <div class="events-grid" *ngIf="(events$ | async) && (events$ | async)!.length > 0">
+      <ion-card class="event-card" *ngFor="let event of events$ | async">
+        <div class="event-image">
+          <img [src]="event.image || 'assets/default-event.jpg'" alt="Event Image">
+          <div class="event-date-badge">
+            <span class="day">{{ event.date | date:'dd' }}</span>
+            <span class="month">{{ event.date | date:'MMM' }}</span>
+          </div>
+        </div>
+
+        <ion-card-content>
+          <h2 class="event-title">{{ event.title }}</h2>
+          <div class="event-details">
+            <div class="detail-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ event.date | date:'EEEE, MMMM d, y' }}</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>{{ event.time || '9:00 AM' }}</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ event.location }}</span>
+            </div>
+          </div>
+          <p class="event-description">{{ event.description || 'Join us for this exciting event!' }}</p>
+
+          <div class="event-actions">
+            <ion-button fill="outline" size="small" (click)="viewEvent(event)">
+              <ion-icon name="eye-outline" slot="start"></ion-icon>
+              View Details
+            </ion-button>
+            <ion-button fill="solid" size="small" color="primary">
+              <ion-icon name="calendar-outline" slot="start"></ion-icon>
+              RSVP
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="(events$ | async) && (events$ | async)!.length === 0" class="empty-state">
+      <ion-icon name="calendar-outline" size="large"></ion-icon>
+      <h3>No Events Yet</h3>
+      <p>Stay tuned for upcoming USJR alumni events!</p>
+    </div>
+
+    <!-- Alumni ID Section -->
+    <div class="alumni-id-section">
+      <!-- View Alumni ID Card (for verified users) -->
+      <ion-card class="alumni-id-card view-id-card" *ngIf="userProfile?.verified && userProfile?.alumniId">
+        <ion-card-header>
+          <div class="card-header-content">
+            <ion-icon name="card" class="header-icon verified"></ion-icon>
+            <div>
+              <ion-card-title>Your Alumni ID</ion-card-title>
+              <ion-card-subtitle>{{ userProfile.alumniId }}</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-button
+            expand="block"
+            color="success"
+            class="view-id-button"
+            (click)="viewDigitalAlumniId()">
+            <ion-icon name="eye" slot="start"></ion-icon>
+            View Digital Alumni ID
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Request Alumni ID Card (for non-verified users) -->
+      <ion-card class="alumni-id-card request-id-card" *ngIf="!userProfile?.verified || !userProfile?.alumniId">
+        <ion-card-header>
+          <div class="card-header-content">
+            <ion-icon name="card-outline" class="header-icon"></ion-icon>
+            <div>
+              <ion-card-title>Request Alumni ID</ion-card-title>
+              <ion-card-subtitle>Get your official USJR Alumni identification</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+
+      <ion-card-content>
+        <form class="alumni-form">
+          <div class="form-row">
+            <ion-item class="form-item">
+              <ion-label position="floating">Full Name</ion-label>
+              <ion-input [(ngModel)]="alumniIdRequest.name" name="name" required></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-label position="floating">Email Address</ion-label>
+              <ion-input [(ngModel)]="alumniIdRequest.email" name="email" type="email" required></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="form-row">
+            <ion-item class="form-item">
+              <ion-label position="floating">Year Graduated</ion-label>
+              <ion-input [(ngModel)]="alumniIdRequest.yearGraduated" name="year" type="number" required></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-label position="floating">Course/Program</ion-label>
+              <ion-input [(ngModel)]="alumniIdRequest.course" name="course" required></ion-input>
+            </ion-item>
+          </div>
+
+          <div class="form-row">
+            <ion-item class="form-item">
+              <ion-label position="floating">Student ID Number</ion-label>
+              <ion-input [(ngModel)]="alumniIdRequest.studentId" name="studentId" required></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-label position="floating">Contact Number</ion-label>
+              <ion-input [(ngModel)]="alumniIdRequest.contactNumber" name="contact" type="tel" required></ion-input>
+            </ion-item>
+          </div>
+
+          <ion-button
+            expand="block"
+            color="primary"
+            class="submit-button"
+            (click)="submitAlumniIdRequest()"
+            [disabled]="loading || !isFormValid()">
+            <ion-icon name="send" slot="start"></ion-icon>
+            {{ loading ? 'Submitting...' : 'Submit Request' }}
+          </ion-button>
+
+          <div *ngIf="requestSuccess" class="success-message">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Your Alumni ID request has been submitted successfully!</span>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+    </div> <!-- Close alumni-id-section -->
   </div>
 </ion-content>
 
