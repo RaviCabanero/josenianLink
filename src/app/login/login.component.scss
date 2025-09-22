@@ -1,182 +1,617 @@
-// Color palette
-$green: #2c543f;
-$yellow: #f4c014;
-$white: #fff;
-$black: #232323;
-$gray-bg: #f7f8fa;
+// USJR Color Palette - Enhanced
+$usjr-green: #2c543f;
+$usjr-gold: #f4c014;
+$usjr-cream: #f7f6f4;
+$usjr-dark-green: #1a3329;
+$usjr-light-gold: #f8d558;
+$usjr-deep-green: #0f1f17;
+$usjr-soft-gold: #fef3c7;
 
-.login-content {
-  --background: $gray-bg;
-  font-family: 'Avenir', sans-serif;
+// Stunning Login Page Design
+.login-page-wrapper {
+  position: relative;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: fadeInBg 1.2s cubic-bezier(.77,0,.18,1) both;
+  overflow: hidden;
 }
 
-@keyframes fadeInBg {
-  from { background: $green; opacity: 0; }
-  to   { background: $gray-bg; opacity: 1; }
-}
+// Animated Background
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg,
+    $usjr-deep-green 0%,
+    $usjr-dark-green 25%,
+    $usjr-green  50%,
+    $usjr-dark-green 75%,
+    $usjr-deep-green 100%);
+  z-index: -2;
 
-.logo-container {
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 32px 20px 12px;
-  animation: fadeInDown 1s cubic-bezier(.77,0,.18,1) both;
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-40px);}
-  to   { opacity: 1; transform: translateY(0);}
-}
-
-.logo-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  box-shadow: 0 4px 24px rgba(44,84,63,0.08);
-  margin-bottom: 10px;
-  border: 3px solid $green;
-  background: $white;
-  object-fit: contain;
-  animation: popIn 0.7s cubic-bezier(.77,0,.18,1) both;
-}
-
-@keyframes popIn {
-  0% { transform: scale(0.7); opacity: 0; }
-  80% { transform: scale(1.1);}
-  100% { transform: scale(1); opacity: 1;}
-}
-
-.josenianlink-text {
-  font-family: 'Avenir', sans-serif;
-  font-size: 2rem;
-  font-weight: 900;
-  margin-top: 8px;
-  color: $green;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.10);
-  letter-spacing: 1px;
-  .link-text {
-    color: $yellow;
-    margin-left: 2px;
-    font-weight: 900;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 20%, rgba(244, 192, 20, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(244, 192, 20, 0.08) 0%, transparent 50%);
+    animation: backgroundPulse 8s ease-in-out infinite alternate;
   }
+}
+
+.floating-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  .shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(244, 192, 20, 0.1);
+    animation: float 20s infinite linear;
+
+    &.shape-1 {
+      width: 80px;
+      height: 80px;
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    &.shape-2 {
+      width: 120px;
+      height: 120px;
+      top: 60%;
+      right: 15%;
+      animation-delay: -5s;
+    }
+
+    &.shape-3 {
+      width: 60px;
+      height: 60px;
+      top: 80%;
+      left: 20%;
+      animation-delay: -10s;
+    }
+
+    &.shape-4 {
+      width: 100px;
+      height: 100px;
+      top: 10%;
+      right: 30%;
+      animation-delay: -15s;
+    }
+
+    &.shape-5 {
+      width: 40px;
+      height: 40px;
+      top: 40%;
+      left: 60%;
+      animation-delay: -8s;
+    }
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.7;
+  }
+  33% {
+    transform: translateY(-30px) rotate(120deg);
+    opacity: 0.4;
+  }
+  66% {
+    transform: translateY(-60px) rotate(240deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg);
+    opacity: 0.7;
+  }
+}
+
+@keyframes backgroundPulse {
+  0% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Main Content
+.login-content {
+  --background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .login-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  background: transparent;
-  margin-top: 0;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 400px;
-  background: $white;
-  border-radius: 32px;
-  padding: 40px 28px 32px;
-  box-shadow: 0 8px 32px rgba(44,84,63,0.10);
-  text-align: center;
-  margin-top: 16px;
-  animation: fadeInUp 1.1s cubic-bezier(.77,0,.18,1) both;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(40px);}
-  to   { opacity: 1; transform: translateY(0);}
-}
-
-.form-item {
-  --background: $gray-bg !important;
-  --border-radius: 16px;
-  --padding-start: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(44,84,63,0.04);
-  transition: box-shadow 0.3s;
-  &:focus-within {
-    box-shadow: 0 4px 16px rgba(244,192,20,0.12);
-    border: 1.5px solid $yellow;
-  }
-}
-
-.input-label {
-  font-weight: 600;
-  color: $green;
-  letter-spacing: 0.5px;
-}
-
-.input-icon {
-  color: $green;
-  font-size: 22px;
-}
-
-.custom-input {
-  font-size: 16px;
-  color: $black !important;
-  background: transparent !important;
-  font-family: 'Avenir', sans-serif;
-  letter-spacing: 0.2px;
-}
-
-.action-buttons {
-  margin-top: 18px;
+  padding: 20px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  justify-content: center;
+  align-items: center;
 }
 
-.login-button {
-  --background: #f4c014;
-  --color: #232323;
-  font-weight: bold;
-  height: 48px;
+// University Header
+.university-header {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: slideInFromTop 1s ease-out;
+
+  .logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+
+    .logo-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+
+      .university-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 4px solid $usjr-gold;
+        box-shadow:
+          0 0 30px rgba(244, 192, 20, 0.4),
+          0 0 60px rgba(244, 192, 20, 0.2);
+        animation: logoFloat 3s ease-in-out infinite alternate;
+      }
+
+      .logo-glow {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(244, 192, 20, 0.3) 0%, transparent 70%);
+        animation: glowPulse 2s ease-in-out infinite alternate;
+      }
+    }
+
+    .university-info {
+      .university-name {
+        font-family: 'Georgia', serif;
+        font-size: 24px;
+        font-weight: 700;
+        color: $usjr-cream;
+        margin: 0 0 8px 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        letter-spacing: 1px;
+      }
+
+      .university-tagline {
+        font-size: 14px;
+        color: rgba(247, 246, 244, 0.8);
+        margin: 0;
+        font-style: italic;
+      }
+    }
+  }
+
+  .josenianlink-branding {
+    .app-title {
+      position: relative;
+      margin: 0 0 10px 0;
+      display: inline-block;
+
+      .josenian-text {
+        font-family: 'Avenir', sans-serif;
+        font-size: 36px;
+        font-weight: 900;
+        color: $usjr-cream;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+        letter-spacing: 3px;
+      }
+
+      .link-text {
+        font-family: 'Avenir', sans-serif;
+        font-size: 36px;
+        font-weight: 900;
+        color: $usjr-gold;
+        text-shadow: 3px 3px 6px rgba(244, 192, 20, 0.5);
+        letter-spacing: 3px;
+        margin-left: 8px;
+      }
+
+      .title-underline {
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, $usjr-gold 0%, $usjr-light-gold 100%);
+        border-radius: 2px;
+        animation: underlineGlow 2s ease-in-out infinite alternate;
+      }
+    }
+
+    .app-subtitle {
+      font-size: 16px;
+      color: rgba(247, 246, 244, 0.9);
+      margin: 0;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+  }
+}
+
+// Modern Login Card
+.login-card-modern {
+  background: rgba(247, 246, 244, 0.95);
+  backdrop-filter: blur(20px);
   border-radius: 24px;
-  margin-top: 0;
-  box-shadow: 0 2px 8px rgba(44,84,63,0.13);
-  letter-spacing: 1px;
-  font-size: 1.1rem;
-  transition: transform 0.18s, filter 0.18s;
-  &:hover {
-    transform: translateY(-2px) scale(1.03);
-    filter: brightness(1.07);
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(244, 192, 20, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(244, 192, 20, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: slideInFromBottom 1s ease-out 0.3s both;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+      $usjr-gold 0%,
+      $usjr-light-gold 50%,
+      $usjr-gold 100%);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  .card-header {
+    text-align: center;
+    margin-bottom: 30px;
+
+    .login-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: $usjr-green;
+      margin: 0 0 8px 0;
+      font-family: 'Avenir', sans-serif;
+    }
+
+    .login-subtitle {
+      font-size: 16px;
+      color: rgba(44, 84, 63, 0.7);
+      margin: 0;
+      font-weight: 500;
+    }
   }
 }
 
-.register-button {
-  --background: $white;
-  --color: $green;
-  font-weight: bold;
-  border: 2px solid $green;
-  border-radius: 24px;
-  margin-top: 0;
-  text-transform: none;
-  font-size: 1.05rem;
-  transition: background 0.2s, color 0.2s;
-  &:hover {
-    background: $yellow;
-    color: $white;
-    border-color: $yellow;
+// Modern Form Styling
+.form-container {
+  .input-group {
+    margin-bottom: 24px;
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .input-icon-modern {
+        position: absolute;
+        left: 16px;
+        z-index: 2;
+        color: $usjr-green;
+        font-size: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .modern-input {
+        --background: rgba(44, 84, 63, 0.05);
+        --color: #{$usjr-green};
+        --placeholder-color: rgba(44, 84, 63, 0.6);
+        --border-color: rgba(44, 84, 63, 0.2);
+        --border-radius: 16px;
+        --padding-start: 52px;
+        --padding-end: 16px;
+        height: 56px;
+        font-weight: 500;
+        font-size: 16px;
+        transition: all 0.3s ease;
+
+        &:focus {
+          --border-color: #{$usjr-gold};
+          --background: rgba(244, 192, 20, 0.08);
+          box-shadow: 0 0 0 3px rgba(244, 192, 20, 0.15);
+          transform: translateY(-2px);
+        }
+      }
+
+      .input-focus-line {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: $usjr-gold;
+        transition: width 0.3s ease;
+        border-radius: 1px;
+      }
+
+      &:focus-within {
+        .input-icon-modern {
+          color: $usjr-gold;
+          transform: scale(1.1);
+        }
+
+        .input-focus-line {
+          width: 100%;
+        }
+      }
+    }
   }
 }
 
-// Responsive
-@media (max-width: 500px) {
-  .login-card {
-    padding: 28px 8px 24px;
-    border-radius: 18px;
+// Action Section
+.action-section {
+  margin-top: 32px;
+
+  .login-btn-modern {
+    --background: linear-gradient(135deg, #{$usjr-gold} 0%, #{$usjr-light-gold} 100%);
+    --color: #{$usjr-green};
+    --border-radius: 16px;
+    height: 56px;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(244, 192, 20, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(244, 192, 20, 0.4);
+    }
+
+    &:active {
+      transform: translateY(-1px);
+    }
+
+    .btn-ripple {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent);
+      animation: ripple 2s infinite;
+    }
   }
-  .logo-img {
-    width: 60px;
-    height: 60px;
+
+  .divider-section {
+    display: flex;
+    align-items: center;
+    margin: 24px 0;
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(44, 84, 63, 0.2);
+    }
+
+    .divider-text {
+      margin: 0 16px;
+      color: rgba(44, 84, 63, 0.6);
+      font-size: 14px;
+      font-weight: 500;
+    }
   }
-  .josenianlink-text {
-    font-size: 1.3rem;
+
+  .register-btn-modern {
+    --border-color: #{$usjr-green};
+    --color: #{$usjr-green};
+    --border-radius: 16px;
+    --background: transparent;
+    height: 56px;
+    font-weight: 600;
+    font-size: 16px;
+    
+    transition: all 0.3s ease;
+
+    &:hover {
+      --background: #{$usjr-green};
+      --color: #{$usjr-cream};
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(44, 84, 63, 0.3);
+    }
+  }
+}
+
+// Footer
+.login-footer {
+  text-align: center;
+  margin-top: 40px;
+  animation: fadeIn 1s ease-out 0.6s both;
+
+  .footer-text {
+    color: rgba(247, 246, 244, 0.8);
+    font-size: 14px;
+    margin: 0 0 4px 0;
+    font-weight: 500;
+  }
+
+  .footer-subtext {
+    color: rgba(247, 246, 244, 0.6);
+    font-size: 12px;
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+// Animations
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes logoFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes underlineGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(244, 192, 20, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(244, 192, 20, 0.8);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .university-header {
+    margin-bottom: 30px;
+
+    .logo-section {
+      .logo-wrapper .university-logo {
+        width: 80px;
+        height: 80px;
+      }
+
+      .university-info .university-name {
+        font-size: 20px;
+      }
+    }
+
+    .josenianlink-branding .app-title {
+      .josenian-text, .link-text {
+        font-size: 28px;
+        letter-spacing: 2px;
+      }
+    }
+  }
+
+  .login-card-modern {
+    padding: 30px 25px;
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 480px) {
+  .university-header {
+    .logo-section {
+      .logo-wrapper .university-logo {
+        width: 70px;
+        height: 70px;
+      }
+
+      .university-info .university-name {
+        font-size: 18px;
+      }
+    }
+
+    .josenianlink-branding .app-title {
+      .josenian-text, .link-text {
+        font-size: 24px;
+        letter-spacing: 1px;
+      }
+    }
+  }
+
+  .login-card-modern {
+    padding: 25px 20px;
+    margin: 0 10px;
+
+    .card-header .login-title {
+      font-size: 24px;
+    }
+  }
+
+  .form-container .input-group .input-wrapper .modern-input {
+    height: 52px;
+    font-size: 15px;
+  }
+
+  .action-section {
+    .login-btn-modern, .register-btn-modern {
+      height: 52px;
+      font-size: 15px;
+    }
   }
 }

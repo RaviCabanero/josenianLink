@@ -1,0 +1,274 @@
+/* Shared Header and Footer Styles for JosenianLink */
+
+/* Main Colors */
+:root {
+  --josenian-green: #2c543f;
+  --josenian-teal: #4cc9f0;
+  --josenian-gold: #f8961e;
+  --josenian-dark: #1e3a2b;
+  --josenian-light: #e8f8ef;
+}
+
+// Header Styles
+.custom-header {
+  --background: var(--josenian-green);
+  --color: white;
+  box-shadow: 0 2px 8px rgba(44, 84, 63, 0.2);
+
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--josenian-green) 0%, var(--josenian-dark) 100%);
+    min-height: 56px;
+
+    // Mobile responsive padding
+    @media (max-width: 768px) {
+      padding: 10px 12px;
+      min-height: 52px;
+    }
+
+    @media (max-width: 480px) {
+      padding: 8px 10px;
+      min-height: 48px;
+    }
+
+    .logo-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+
+      // Mobile responsive font size
+      @media (max-width: 768px) {
+        font-size: 1.2rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 1.1rem;
+      }
+
+      .logo-green {
+        color: var(--josenian-teal);
+      }
+
+      .logo-yellow {
+        color: var(--josenian-gold);
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      // Mobile responsive gap
+      @media (max-width: 480px) {
+        gap: 4px;
+      }
+    }
+
+    .header-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --color: white;
+      --background-hover: rgba(255, 255, 255, 0.1);
+      --border-radius: 8px;
+      transition: all 0.2s ease;
+
+      // Mobile responsive sizing
+      @media (max-width: 480px) {
+        --padding-start: 6px;
+        --padding-end: 6px;
+        min-width: 36px;
+        height: 36px;
+      }
+
+      ion-icon {
+        font-size: 20px;
+
+        @media (max-width: 480px) {
+          font-size: 18px;
+        }
+      }
+
+      &:hover {
+        --background: rgba(255, 255, 255, 0.1);
+      }
+
+      &.notification-btn {
+        position: relative;
+
+        ion-badge {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          transform: translate(30%, -30%);
+          font-size: 10px;
+          min-width: 18px;
+          height: 18px;
+          border-radius: 9px;
+          font-weight: 600;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+
+          @media (max-width: 480px) {
+            font-size: 9px;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+          }
+        }
+      }
+    }
+
+    .logout-button {
+      --color: white;
+      --background-hover: rgba(255, 255, 255, 0.1);
+      --border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px 12px;
+      transition: all 0.2s ease;
+
+      // Mobile responsive sizing
+      @media (max-width: 768px) {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+      }
+
+      &:hover {
+        --background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+// Footer Styles
+.home-footer {
+  box-shadow: 0 -2px 8px rgba(44, 84, 63, 0.15);
+  
+  ion-toolbar {
+    --background: linear-gradient(135deg, var(--josenian-green) 0%, var(--josenian-dark) 100%);
+    --border-width: 0;
+    padding: 0;
+    min-height: 60px;
+
+    // Mobile responsive height
+    @media (max-width: 768px) {
+      min-height: 56px;
+    }
+
+    @media (max-width: 480px) {
+      min-height: 52px;
+    }
+
+    .footer-buttons {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      padding: 8px 0;
+      position: relative;
+
+      // Mobile responsive padding
+      @media (max-width: 480px) {
+        padding: 6px 0;
+      }
+
+      ion-button {
+        --padding-start: 0;
+        --padding-end: 0;
+        margin: 0;
+        --color: rgba(255,255,255,0.7);
+        --color-activated: white;
+        --background-hover: rgba(255, 255, 255, 0.1);
+        --border-radius: 12px;
+        position: relative;
+        height: 48px;
+        width: 48px;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        // Mobile responsive sizing
+        @media (max-width: 768px) {
+          height: 44px;
+          width: 44px;
+        }
+
+        @media (max-width: 480px) {
+          height: 40px;
+          width: 40px;
+        }
+
+        ion-icon {
+          font-size: 1.4rem;
+          transition: all 0.3s ease;
+
+          // Mobile responsive icon size
+          @media (max-width: 768px) {
+            font-size: 1.3rem;
+          }
+
+          @media (max-width: 480px) {
+            font-size: 1.2rem;
+          }
+        }
+
+        &:hover {
+          --background: rgba(255, 255, 255, 0.1);
+          transform: translateY(-2px);
+        }
+
+        &.active {
+          --color: white;
+          --background: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
+
+          ion-icon {
+            transform: scale(1.1);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+          }
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--josenian-teal), var(--josenian-gold));
+            border-radius: 3px 3px 0 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+
+            // Mobile responsive indicator
+            @media (max-width: 768px) {
+              width: 20px;
+              height: 2.5px;
+              bottom: -6px;
+            }
+
+            @media (max-width: 480px) {
+              width: 18px;
+              height: 2px;
+              bottom: -5px;
+            }
+          }
+        }
+
+        // Add subtle animation for touch feedback
+        &:active {
+          transform: translateY(0) scale(0.95);
+        }
+      }
+    }
+  }
+}

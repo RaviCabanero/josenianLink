@@ -330,9 +330,7 @@
             <table class="alumni-table">
               <thead>
                 <tr>
-                  <th class="user-col">User</th>
-                  <th class="id-col">ID Number</th>
-                  <th class="program-col">Program</th>
+                  <th class="user-col-enhanced">Alumni Information</th>
                   <th class="year-col">Year</th>
                   <th class="contact-col">Contact</th>
                   <th class="status-col">Status</th>
@@ -342,28 +340,27 @@
               </thead>
               <tbody>
                 <tr *ngFor="let alumni of filteredAlumniList; trackBy: trackByUid" class="alumni-row">
-                  <!-- User Column -->
+                  <!-- User Column with Enhanced Layout -->
                   <td class="user-cell">
-                    <div class="user-info">
-                      <div class="user-avatar">
+                    <div class="user-info-enhanced">
+                      <div class="user-avatar-circle">
                         <img [src]="alumni.photo" [alt]="alumni.name" />
                         <div class="status-dot" [class.verified]="alumni.verified" [class.pending]="!alumni.verified"></div>
                       </div>
-                      <div class="user-details">
-                        <span class="user-name">{{ alumni.name }}</span>
-                        <span class="user-email">{{ alumni.email }}</span>
+                      <div class="user-details-enhanced">
+                        <div class="name-section">
+                          <span class="first-name">{{ getFirstName(alumni.name) }}</span>
+                          <span class="last-name">{{ getLastName(alumni.name) }}</span>
+                        </div>
+                        <div class="info-section">
+                          <span class="course-info">{{ alumni.program }}</span>
+                          <span class="id-info">ID: {{ alumni.id }}</span>
+                        </div>
+                        <div class="email-section">
+                          <span class="user-email">{{ alumni.email }}</span>
+                        </div>
                       </div>
                     </div>
-                  </td>
-
-                  <!-- ID Number -->
-                  <td class="id-cell">
-                    <span class="id-number">{{ alumni.id }}</span>
-                  </td>
-
-                  <!-- Program -->
-                  <td class="program-cell">
-                    <span class="program-badge">{{ alumni.program }}</span>
                   </td>
 
                   <!-- Year -->

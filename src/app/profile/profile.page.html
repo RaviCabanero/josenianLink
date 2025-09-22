@@ -1,15 +1,35 @@
-<ion-header class="custom-header">
-  <div class="header-bar">
-    <div class="logo-title">
-      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
-    </div>
-    <div class="header-actions">
-      <ion-button fill="clear" class="header-button" (click)="navigateToSettings()">
-        <ion-icon name="settings" slot="icon-only"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" class="logout-button" (click)="logout()">
-        Log Out
-      </ion-button>
+
+<ion-header class="modern-header">
+  <div class="header-container">
+    <div class="header-content">
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <div class="logo-wrapper">
+          <div class="university-seal">
+            <img src="assets/alumnilogo.webp" alt="USJR Seal" class="header-logo">
+            <div class="logo-glow"></div>
+          </div>
+          <div class="brand-text">
+            <h1 class="app-title">
+              <span class="josenian-text">JOSENIAN</span>
+              <span class="link-text">LINK</span>
+            </h1>
+            <p class="tagline">Profile Center</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Section -->
+      <div class="actions-section">
+        <div class="header-actions">
+          <ion-button fill="clear" class="action-btn" (click)="navigateToSettings()">
+            <ion-icon name="settings-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="action-btn logout-btn" (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
     </div>
   </div>
 </ion-header>
@@ -271,20 +291,30 @@
         <!-- Profile Photo Section -->
         <div class="photo-section">
           <div class="current-photo">
-            <img [src]="editUser.photo" class="edit-avatar" />
-            <ion-button fill="clear" class="change-photo-btn" (click)="selectPhoto()">
-              <ion-icon name="camera" slot="icon-only"></ion-icon>
-            </ion-button>
+            <img [src]="editUser.photo" class="edit-avatar" (error)="onImageError($event)" />
+            <div class="photo-overlay">
+              <ion-button fill="clear" class="change-photo-btn" (click)="selectPhoto()">
+                <ion-icon name="camera" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
           </div>
           <input type="file" #fileInput accept="image/*" (change)="onPhotoSelected($event)" style="display: none;">
+          <p class="photo-hint">Tap the camera icon to change your profile picture</p>
         </div>
 
         <!-- Form Fields -->
         <div class="form-fields">
-          <ion-item>
-            <ion-label position="stacked">Full Name</ion-label>
-            <ion-input [(ngModel)]="editUser.name" placeholder="Enter your full name"></ion-input>
-          </ion-item>
+          <!-- Name Fields Row -->
+          <div class="name-fields-row">
+            <ion-item class="name-field">
+              <ion-label position="stacked">First Name</ion-label>
+              <ion-input [(ngModel)]="editUser.firstName" placeholder="Enter your first name"></ion-input>
+            </ion-item>
+            <ion-item class="name-field">
+              <ion-label position="stacked">Last Name</ion-label>
+              <ion-input [(ngModel)]="editUser.lastName" placeholder="Enter your last name"></ion-input>
+            </ion-item>
+          </div>
 
           <ion-item>
             <ion-label position="stacked">Email</ion-label>
@@ -511,23 +541,30 @@
   </ng-template>
 </ion-modal>
 
-<ion-footer class="home-footer">
+<ion-footer class="modern-footer">
   <ion-toolbar>
     <div class="footer-buttons">
-      <ion-button fill="clear" routerLink="/home">
+      <ion-button fill="clear" routerLink="/home" class="footer-nav-btn active">
         <ion-icon name="home" slot="icon-only"></ion-icon>
+        <span class="nav-label">Home</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/events">
+      <ion-button fill="clear" routerLink="/events" class="footer-nav-btn">
         <ion-icon name="calendar" slot="icon-only"></ion-icon>
+        <span class="nav-label">Events</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/notifications">
+      <ion-button fill="clear" routerLink="/notifications" class="footer-nav-btn">
         <ion-icon name="notifications" slot="icon-only"></ion-icon>
+        <span class="nav-label">Notifications</span>
+        <div class="notification-badge" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</div>
       </ion-button>
-      <ion-button fill="clear" routerLink="/profile" class="active">
+      <ion-button fill="clear" routerLink="/profile" class="footer-nav-btn">
         <ion-icon name="person" slot="icon-only"></ion-icon>
+        <span class="nav-label">Profile</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/messages">
+      <ion-button fill="clear" routerLink="/messages" class="footer-nav-btn">
         <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
+        <span class="nav-label">Messages</span>
+        <div class="notification-badge" *ngIf="unreadMessages > 0">{{ unreadMessages }}</div>
       </ion-button>
     </div>
   </ion-toolbar>

@@ -104,13 +104,15 @@ export class AdminPage implements OnInit {
       this.firestore.collection('users').valueChanges({ idField: 'uid' }).subscribe(users => {
         this.alumniList = users.map((user: any) => ({
           id: user.idNumber || 'N/A',
-          name: user.fullName || 'Unknown User',
+          name: user.fullName || user.name || 'Unknown User',
+          firstName: user.firstName || this.getFirstName(user.fullName || user.name || 'Unknown User'),
+          lastName: user.lastName || this.getLastName(user.fullName || user.name || 'Unknown User'),
           email: user.email || 'No email',
           year: user.yearGraduated || 'N/A',
           program: user.program || 'N/A',
           contact: user.contactNumber || 'N/A',
           address: user.address || 'N/A',
-          photo: user.photoURL || 'https://via.placeholder.com/40x40/cccccc/ffffff?text=👤',
+          photo: user.photoURL || user.photo || 'https://via.placeholder.com/40x40/cccccc/ffffff?text=👤',
           verified: user.verified || false,
           uid: user.uid,
           role: user.role || 'user'
@@ -122,6 +124,19 @@ export class AdminPage implements OnInit {
     } catch (error) {
       this.loading = false;
     }
+  }
+
+  // Helper methods for name parsing
+  getFirstName(fullName: string): string {
+    if (!fullName) return 'Unknown';
+    const nameParts = fullName.trim().split(' ');
+    return nameParts[0] || 'Unknown';
+  }
+
+  getLastName(fullName: string): string {
+    if (!fullName) return '';
+    const nameParts = fullName.trim().split(' ');
+    return nameParts.slice(1).join(' ') || '';
   }
 
   searchUsers(event: any) {

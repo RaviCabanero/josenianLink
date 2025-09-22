@@ -116,4 +116,6 @@ export class CalendarEventsPage implements OnInit {
       this.alumniIdRequest.contactNumber
     );
   }
+
+
 }

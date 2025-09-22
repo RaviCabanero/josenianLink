@@ -40,27 +40,42 @@
 
     <!-- Alumni Grid -->
     <div class="alumni-grid" *ngIf="!loading">
-      <div class="alumni-card" *ngFor="let alumni of filteredAlumni" (click)="viewAlumniProfile(alumni)">
-        <div class="alumni-avatar">
-          <img [src]="alumni.photo || 'assets/default-avatar.png'" [alt]="alumni.name">
-          <div class="online-indicator" *ngIf="alumni.isOnline"></div>
-        </div>
-        
-        <div class="alumni-info">
-          <h3 class="alumni-name">{{ alumni.name }}</h3>
-          <p class="alumni-program">{{ alumni.program }}</p>
-          <p class="alumni-year">Class of {{ alumni.yearGraduated }}</p>
-          <p class="alumni-location" *ngIf="alumni.location">
-            <ion-icon name="location-outline"></ion-icon>
-            {{ alumni.location }}
-          </p>
+      <div class="alumni-card-enhanced" *ngFor="let alumni of filteredAlumni" (click)="viewAlumniProfile(alumni)">
+        <div class="alumni-card-content">
+          <!-- Left side: Circular Image -->
+          <div class="alumni-avatar-circle">
+            <img [src]="alumni.photo || 'assets/default-avatar.png'" [alt]="alumni.name">
+            <div class="online-indicator" *ngIf="alumni.isOnline"></div>
+          </div>
+
+          <!-- Right side: Alumni Information -->
+          <div class="alumni-info-enhanced">
+            <div class="name-section">
+              <span class="first-name">{{ getFirstName(alumni.name) }}</span>
+              <span class="last-name">{{ getLastName(alumni.name) }}</span>
+            </div>
+
+            <div class="details-section">
+              <div class="course-id-row">
+                <span class="course-badge">{{ alumni.program }}</span>
+                <span class="id-number">ID: {{ alumni.idNumber || 'N/A' }}</span>
+              </div>
+              <p class="graduation-year">Class of {{ alumni.yearGraduated }}</p>
+            </div>
+
+            <div class="contact-section" *ngIf="alumni.location">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ alumni.location }}</span>
+            </div>
+          </div>
         </div>
 
+        <!-- Action buttons -->
         <div class="alumni-actions">
-          <ion-button fill="clear" size="small" (click)="sendMessage(alumni, $event)">
+          <ion-button fill="clear" size="small" (click)="sendMessage(alumni, $event)" class="action-btn">
             <ion-icon name="chatbubble-outline"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" size="small" (click)="viewProfile(alumni, $event)">
+          <ion-button fill="clear" size="small" (click)="viewProfile(alumni, $event)" class="action-btn">
             <ion-icon name="person-outline"></ion-icon>
           </ion-button>
         </div>

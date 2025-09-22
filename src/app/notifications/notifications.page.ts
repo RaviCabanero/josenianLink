@@ -176,6 +176,39 @@ export class NotificationsPage implements OnInit, OnDestroy {
     this.router.navigate(['/home']);
   }
 
+  navigateToSettings() {
+    this.router.navigate(['/settings']);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  refreshNotifications() {
+    this.loading = true;
+    this.loadNotifications();
+  }
+
+  getUnreadCount(): number {
+    return this.notifications.filter(n => !n.read).length;
+  }
+
+  getNotificationTypeLabel(type: string): string {
+    switch (type) {
+      case 'alumni_id_approved':
+        return 'Alumni ID';
+      case 'freedom_wall_post':
+        return 'Freedom Wall';
+      case 'event_reminder':
+        return 'Event';
+      case 'system':
+        return 'System';
+      default:
+        return 'Notification';
+    }
+  }
+
   trackByNotificationId(index: number, notification: NotificationData): string {
     return notification.id || index.toString();
   }

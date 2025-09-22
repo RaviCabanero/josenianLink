@@ -1,23 +1,55 @@
 
-<ion-header class="custom-header">
-  <div class="header-bar">
-    <div class="logo-title">
-      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
-    </div>
-    <div class="header-actions">
-      <ion-button fill="clear" class="header-button notification-btn" (click)="navigateToNotifications()">
-        <ion-icon name="notifications" slot="icon-only"></ion-icon>
-        <ion-badge *ngIf="unreadNotifications > 0" color="danger">{{ unreadNotifications }}</ion-badge>
-      </ion-button>
-      <ion-button fill="clear" class="header-button" (click)="createTestNotification()">
-        <ion-icon name="add" slot="icon-only"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" class="header-button" (click)="navigateToSettings()">
-        <ion-icon name="settings" slot="icon-only"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" class="logout-button" (click)="logout()">
-        Log Out
-      </ion-button>
+<ion-header class="modern-header">
+  <div class="header-container">
+    <div class="header-content">
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <div class="logo-wrapper">
+          <div class="university-seal">
+            <img src="assets/alumnilogo.webp" alt="USJR Seal" class="header-logo">
+            <div class="logo-glow"></div>
+          </div>
+          <div class="brand-text">
+            <h1 class="app-title">
+              <span class="josenian-text">JOSENIAN</span>
+              <span class="link-text">LINK</span>
+            </h1>
+            <p class="tagline">Alumni Network</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Section -->
+      <div class="user-section">
+        <div class="user-info">
+          <div class="user-avatar-wrapper">
+            <img [src]="userProfile?.photoURL || 'assets/default-avatar.png'"
+                 alt="User Avatar" class="user-avatar">
+            <div class="online-indicator"></div>
+          </div>
+          <div class="user-details" *ngIf="userProfile">
+            <h3 class="user-name">{{ getFirstName() }}</h3>
+            <p class="user-role">Alumni</p>
+          </div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <ion-button fill="clear" class="action-btn notification-btn" (click)="navigateToNotifications()">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <div class="notification-badge" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</div>
+          </ion-button>
+          <ion-button fill="clear" class="action-btn" (click)="createTestNotification()">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="action-btn" (click)="navigateToSettings()">
+            <ion-icon name="settings-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="action-btn logout-btn" (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
     </div>
   </div>
 </ion-header>
@@ -43,10 +75,20 @@
         maxlength="500"
         class="post-input">
       </ion-textarea>
-      
+
+      <!-- Image Preview Section -->
+      <div class="image-preview-section" *ngIf="selectedImage">
+        <div class="image-preview-container">
+          <img [src]="selectedImage" alt="Selected image" class="preview-image">
+          <ion-button fill="clear" class="remove-image-btn" (click)="removeSelectedImage()">
+            <ion-icon name="close-circle" color="danger"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
       <div class="post-actions">
         <div class="action-buttons">
-          <ion-button fill="clear" class="action-button">
+          <ion-button fill="clear" class="action-button" (click)="selectImage()">
             <ion-icon name="image" color="primary"></ion-icon>
             Photo
           </ion-button>
@@ -54,16 +96,23 @@
             <ion-icon name="videocam" color="danger"></ion-icon>
             Video
           </ion-button>
+          <ion-button fill="clear" class="action-button" (click)="cancelPost()">
+            <ion-icon name="close" color="medium"></ion-icon>
+            Cancel
+          </ion-button>
         </div>
-        <ion-button 
-          (click)="submitPost()" 
-          [disabled]="loading || !newPost.trim()"
+        <ion-button
+          (click)="submitPost()"
+          [disabled]="loading || (!newPost.trim() && !selectedImage)"
           class="post-button"
           shape="round">
           {{ loading ? 'Posting...' : 'Post' }}
         </ion-button>
       </div>
     </div>
+
+    <!-- Hidden file input -->
+    <input type="file" #fileInput accept="image/*" (change)="onImageSelected($event)" style="display: none;">
   </ion-card>
 
   <!-- Posts Feed -->
@@ -103,7 +152,12 @@
         </div>
 
         <div class="post-content">
-          <p>{{ post.content }}</p>
+          <p *ngIf="post.content">{{ post.content }}</p>
+
+          <!-- Post Image -->
+          <div class="post-image-container" *ngIf="post.imageUrl">
+            <img [src]="post.imageUrl" alt="Post image" class="post-image" (click)="viewFullImage(post.imageUrl)">
+          </div>
         </div>
 
         <!-- Removed like, comment, share, and react count -->
@@ -126,23 +180,30 @@
   </div>
 </ion-content>
 
-<ion-footer class="home-footer">
+<ion-footer class="modern-footer">
   <ion-toolbar>
     <div class="footer-buttons">
-      <ion-button fill="clear" routerLink="/home" class="active">
+      <ion-button fill="clear" routerLink="/home" class="footer-nav-btn active">
         <ion-icon name="home" slot="icon-only"></ion-icon>
+        <span class="nav-label">Home</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/events">
+      <ion-button fill="clear" routerLink="/events" class="footer-nav-btn">
         <ion-icon name="calendar" slot="icon-only"></ion-icon>
+        <span class="nav-label">Events</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/notifications">
+      <ion-button fill="clear" routerLink="/notifications" class="footer-nav-btn">
         <ion-icon name="notifications" slot="icon-only"></ion-icon>
+        <span class="nav-label">Notifications</span>
+        <div class="notification-badge" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</div>
       </ion-button>
-      <ion-button fill="clear" routerLink="/profile">
+      <ion-button fill="clear" routerLink="/profile" class="footer-nav-btn">
         <ion-icon name="person" slot="icon-only"></ion-icon>
+        <span class="nav-label">Profile</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/messages">
+      <ion-button fill="clear" routerLink="/messages" class="footer-nav-btn">
         <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
+        <span class="nav-label">Messages</span>
+        <div class="notification-badge" *ngIf="unreadMessages > 0">{{ unreadMessages }}</div>
       </ion-button>
     </div>
   </ion-toolbar>

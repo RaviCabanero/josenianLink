@@ -41,6 +41,8 @@ export class AlumniPage implements OnInit {
         this.alumni = users.map((user: any) => ({
           uid: user.uid,
           name: user.fullName || user.displayName || 'Unknown User',
+          firstName: user.firstName || this.getFirstName(user.fullName || user.displayName || 'Unknown User'),
+          lastName: user.lastName || this.getLastName(user.fullName || user.displayName || 'Unknown User'),
           email: user.email || '',
           program: user.program || 'N/A',
           yearGraduated: user.yearGraduated || 'N/A',
@@ -48,7 +50,8 @@ export class AlumniPage implements OnInit {
           photo: user.photoURL || user.photo || 'assets/default-avatar.png',
           isOnline: user.isOnline || false,
           contactNumber: user.contactNumber || '',
-          bio: user.bio || ''
+          bio: user.bio || '',
+          idNumber: user.idNumber || 'N/A'
         }));
         this.filteredAlumni = [...this.alumni];
         this.loading = false;
@@ -124,6 +127,19 @@ export class AlumniPage implements OnInit {
 
   closeFilterModal() {
     this.isFilterModalOpen = false;
+  }
+
+  // Helper methods for name parsing
+  getFirstName(fullName: string): string {
+    if (!fullName) return 'Unknown';
+    const nameParts = fullName.trim().split(' ');
+    return nameParts[0] || 'Unknown';
+  }
+
+  getLastName(fullName: string): string {
+    if (!fullName) return '';
+    const nameParts = fullName.trim().split(' ');
+    return nameParts.slice(1).join(' ') || '';
   }
 
   clearFilters() {

@@ -1,3 +1,11 @@
+// USJR Color Palette
+$usjr-green: #2c543f;
+$usjr-gold: #f4c014;
+$usjr-cream: #f7f6f4;
+$usjr-dark-green: #1a3329;
+$usjr-light-gold: #f8d558;
+$usjr-deep-green: #0f1f17;
+
 .calendar-events-content {
   --background: #ffffff;
   padding: 0;
@@ -87,10 +95,24 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: #ffffff;
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  // Homecoming special styling
+  &.homecoming-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    border: 2px solid #f4c014;
+    box-shadow: 0 6px 24px rgba(244, 192, 20, 0.15);
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(244, 192, 20, 0.25);
+      border-color: #f8d558;
+    }
   }
 
   // Mobile responsive border radius
@@ -128,6 +150,14 @@
       text-align: center;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
+      &.homecoming-badge {
+        background: linear-gradient(135deg, #f4c014 0%, #f8d558 100%);
+        color: #2c543f;
+        font-weight: 700;
+        border: 2px solid #ffffff;
+        box-shadow: 0 4px 12px rgba(244, 192, 20, 0.3);
+      }
+
       @media (max-width: 480px) {
         top: 12px;
         right: 12px;
@@ -160,6 +190,37 @@
         }
       }
     }
+
+    .event-type-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: linear-gradient(135deg, #2c543f 0%, #1a3329 100%);
+      color: #f4c014;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(44, 84, 63, 0.3);
+
+      ion-icon {
+        font-size: 14px;
+      }
+
+      @media (max-width: 480px) {
+        top: 12px;
+        left: 12px;
+        padding: 4px 8px;
+        font-size: 10px;
+
+        ion-icon {
+          font-size: 12px;
+        }
+      }
+    }
   }
 
   ion-card-content {
@@ -171,6 +232,16 @@
       font-weight: 700;
       color: #1e293b;
       line-height: 1.3;
+
+      &.homecoming-title {
+        color: #2c543f;
+        background: linear-gradient(135deg, #2c543f 0%, #f4c014 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 22px;
+        text-shadow: 0 2px 4px rgba(244, 192, 20, 0.2);
+      }
     }
 
     .event-details {
@@ -206,6 +277,27 @@
         --border-radius: 8px;
         font-weight: 600;
         flex: 1;
+
+        &.homecoming-btn-outline {
+          --border-color: #f4c014;
+          --color: #2c543f;
+
+          &:hover {
+            --background: rgba(244, 192, 20, 0.1);
+          }
+        }
+
+        &.homecoming-btn {
+          --background: linear-gradient(135deg, #f4c014 0%, #f8d558 100%);
+          --color: #2c543f;
+          box-shadow: 0 2px 8px rgba(244, 192, 20, 0.3);
+
+          &:hover {
+            --background: linear-gradient(135deg, #f8d558 0%, #f4c014 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(244, 192, 20, 0.4);
+          }
+        }
       }
     }
   }
@@ -524,6 +616,409 @@
             background: white;
             border-radius: 3px 3px 0 0;
           }
+        }
+      }
+    }
+  }
+}
+
+// Modern Header Styles
+.modern-header {
+  --background: transparent;
+  --border-width: 0;
+  --box-shadow: none;
+  position: relative;
+  z-index: 100;
+
+  .header-container {
+    background: linear-gradient(135deg, #{$usjr-green} 0%, #{$usjr-dark-green} 50%, #{$usjr-deep-green} 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 8px 32px rgba(44, 84, 63, 0.4);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(244, 192, 20, 0.08) 50%, transparent 70%);
+      animation: headerShimmer 4s ease-in-out infinite;
+    }
+
+    .header-content {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      min-height: 80px;
+
+      @media (max-width: 768px) {
+        padding: 16px 20px;
+        min-height: 70px;
+      }
+
+      @media (max-width: 480px) {
+        padding: 12px 16px;
+        min-height: 60px;
+        flex-direction: row;
+        gap: 12px;
+      }
+
+      .logo-section {
+        .logo-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          @media (max-width: 768px) {
+            gap: 12px;
+          }
+
+          @media (max-width: 480px) {
+            gap: 10px;
+          }
+
+          .university-seal {
+            position: relative;
+            width: 60px;
+            height: 60px;
+
+            @media (max-width: 768px) {
+              width: 50px;
+              height: 50px;
+            }
+
+            @media (max-width: 480px) {
+              width: 45px;
+              height: 45px;
+            }
+
+            .header-logo {
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              border: 3px solid #{$usjr-gold};
+              box-shadow: 0 4px 16px rgba(244, 192, 20, 0.3);
+              animation: logoFloat 3s ease-in-out infinite;
+            }
+
+            .logo-glow {
+              position: absolute;
+              top: -5px;
+              left: -5px;
+              right: -5px;
+              bottom: -5px;
+              border-radius: 50%;
+              background: radial-gradient(circle, rgba(244, 192, 20, 0.2) 0%, transparent 70%);
+              animation: logoGlow 2s ease-in-out infinite alternate;
+            }
+          }
+
+          .brand-text {
+            .app-title {
+              margin: 0;
+              font-size: 2rem;
+              font-weight: 900;
+              letter-spacing: 2px;
+              line-height: 1;
+
+              @media (max-width: 768px) {
+                font-size: 1.7rem;
+                letter-spacing: 1.5px;
+              }
+
+              @media (max-width: 480px) {
+                font-size: 1.4rem;
+                letter-spacing: 1px;
+              }
+
+              .josenian-text {
+                color: #{$usjr-cream};
+                text-shadow: 0 2px 8px rgba(247, 246, 244, 0.5);
+                background: linear-gradient(135deg, #{$usjr-cream} 0%, #ffffff 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              }
+
+              .link-text {
+                color: #{$usjr-gold};
+                text-shadow: 0 2px 8px rgba(244, 192, 20, 0.6);
+                background: linear-gradient(135deg, #{$usjr-gold} 0%, #{$usjr-light-gold} 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-left: 4px;
+              }
+            }
+
+            .tagline {
+              margin: 4px 0 0 0;
+              font-size: 0.85rem;
+              color: rgba(255, 255, 255, 0.7);
+              font-weight: 500;
+              letter-spacing: 0.5px;
+
+              @media (max-width: 768px) {
+                font-size: 0.8rem;
+              }
+
+              @media (max-width: 480px) {
+                font-size: 0.75rem;
+              }
+            }
+          }
+        }
+      }
+
+      .actions-section {
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          @media (max-width: 480px) {
+            gap: 6px;
+          }
+
+          .action-btn {
+            --color: rgba(255, 255, 255, 0.8);
+            --background-hover: rgba(255, 255, 255, 0.1);
+            --border-radius: 12px;
+            height: 44px;
+            width: 44px;
+            transition: all 0.3s ease;
+            position: relative;
+
+            @media (max-width: 768px) {
+              height: 40px;
+              width: 40px;
+            }
+
+            @media (max-width: 480px) {
+              height: 36px;
+              width: 36px;
+            }
+
+            ion-icon {
+              font-size: 1.4rem;
+              transition: all 0.3s ease;
+
+              @media (max-width: 768px) {
+                font-size: 1.3rem;
+              }
+
+              @media (max-width: 480px) {
+                font-size: 1.2rem;
+              }
+            }
+
+            &:hover {
+              --background: rgba(255, 255, 255, 0.15);
+              transform: translateY(-2px);
+
+              ion-icon {
+                transform: scale(1.1);
+              }
+            }
+
+            &.logout-btn {
+              --color: #{$usjr-gold};
+              --background-hover: rgba(244, 192, 20, 0.1);
+              margin-left: 4px;
+
+              &:hover {
+                --background: rgba(244, 192, 20, 0.15);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Header Animations
+@keyframes headerShimmer {
+  0%, 100% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes logoGlow {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+// Modern Footer Styles
+.modern-footer {
+  box-shadow: 0 -4px 16px rgba(44, 84, 63, 0.15);
+
+  ion-toolbar {
+    --background: linear-gradient(135deg, #{$usjr-green} 0%, #{$usjr-dark-green} 100%);
+    --border-width: 0;
+    padding: 0;
+    min-height: 70px;
+
+    @media (max-width: 768px) {
+      min-height: 65px;
+    }
+
+    @media (max-width: 480px) {
+      min-height: 60px;
+    }
+
+    .footer-buttons {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      padding: 8px 0;
+      position: relative;
+
+      @media (max-width: 480px) {
+        padding: 6px 0;
+      }
+
+      .footer-nav-btn {
+        --padding-start: 0;
+        --padding-end: 0;
+        margin: 0;
+        --color: rgba(255, 255, 255, 0.7);
+        --color-activated: white;
+        --background-hover: rgba(255, 255, 255, 0.1);
+        --border-radius: 12px;
+        position: relative;
+        height: 54px;
+        min-width: 60px;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        @media (max-width: 768px) {
+          height: 50px;
+          min-width: 55px;
+        }
+
+        @media (max-width: 480px) {
+          height: 46px;
+          min-width: 50px;
+        }
+
+        ion-icon {
+          font-size: 1.5rem;
+          transition: all 0.3s ease;
+          margin-bottom: 2px;
+
+          @media (max-width: 768px) {
+            font-size: 1.4rem;
+          }
+
+          @media (max-width: 480px) {
+            font-size: 1.3rem;
+            margin-bottom: 1px;
+          }
+        }
+
+        .nav-label {
+          font-size: 10px;
+          font-weight: 500;
+          opacity: 0.8;
+          transition: all 0.3s ease;
+
+          @media (max-width: 768px) {
+            font-size: 9px;
+          }
+
+          @media (max-width: 480px) {
+            font-size: 8px;
+          }
+        }
+
+        &:hover {
+          --background: rgba(255, 255, 255, 0.1);
+          transform: translateY(-2px);
+
+          ion-icon {
+            transform: scale(1.1);
+          }
+
+          .nav-label {
+            opacity: 1;
+          }
+        }
+
+        &.active {
+          --color: white;
+          --background: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
+
+          ion-icon {
+            transform: scale(1.1);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+          }
+
+          .nav-label {
+            opacity: 1;
+            font-weight: 600;
+          }
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(90deg, #{$usjr-gold}, #{$usjr-light-gold});
+            border-radius: 3px 3px 0 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+
+            @media (max-width: 768px) {
+              width: 26px;
+              height: 2.5px;
+              bottom: -6px;
+            }
+
+            @media (max-width: 480px) {
+              width: 22px;
+              height: 2px;
+              bottom: -5px;
+            }
+          }
+        }
+
+        &:active {
+          transform: translateY(0) scale(0.95);
         }
       }
     }
