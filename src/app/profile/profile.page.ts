@@ -17,6 +17,7 @@ export class ProfilePage implements OnInit {
   isCreatePostModalOpen: boolean = false;
   isEditPostModalOpen: boolean = false;
   isAddJobModalOpen: boolean = false;
+  isQrScannerModalOpen = false;
   userPosts: any[] | undefined = undefined; // undefined = loading, [] = no posts
   currentJobs: any[] = [];
   pastJobs: any[] = [];
@@ -68,11 +69,16 @@ export class ProfilePage implements OnInit {
   // Edit user object for modal
   editUser = { ...this.user };
 
+  qrText = '';
+  qrCodeUrl: string | null = null;
+  selectedQrImage: File | null = null;
+  scannedQrText: string = '';
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
   ) {}
 
   ngOnInit() {
@@ -633,7 +639,7 @@ export class ProfilePage implements OnInit {
   // Get default avatar
   getDefaultAvatar(): string {
     // Return a default avatar URL or data URI
-    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMyYzU0M2YiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTEyIDEyQzE0LjIwOTEgMTIgMTYgMTAuMjA5MSAxNiA4QzE2IDUuNzkwODYgMTQuMjA5MSA0IDEyIDRDOS43OTA4NiA0IDggNS43OTA4NiA4IDhDOCAxMC4yMDkxIDkuNzkwODYgMTIgMTIgMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTIgMTRDOC42ODYyOSAxNCA2IDE2LjY4NjMgNiAyMFYyMkgxOFYyMEMxOCAxNi42ODYzIDE1LjMxMzcgMTQgMTIgMTRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+';
+    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMyYzU0M2YiLz4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4IiB5PSI4Ij4KPHBhdGggZD0iTTEyIDEyQzE0LjIwOTEgMTIgMTYgMTAuMjA9MSAxNiA4QzE2IDUuNzkwODYgMTQuMjA5MSA0IDEyIDRDOS43OTA4NiA0IDggNS43OTA4NiA4IDhDOCAxMC4yMDkxIDkuNzkwODYgMTIgMTIgMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTIgMTRDOC42ODYyOSAxNCA2IDE2LjY4NjMgNiAyMFYyMkgxOFYyMEMxOCAxNi42ODYzIDE1LjMxMzcgMTQgMTIgMTRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+';
   }
 
   // Handle image loading errors
@@ -651,5 +657,47 @@ export class ProfilePage implements OnInit {
       position: 'top'
     });
     toast.present();
+  }
+
+  async openQrScannerModal() {
+    this.isQrScannerModalOpen = true;
+  }
+
+  closeQrScannerModal() {
+    this.isQrScannerModalOpen = false;
+  }
+
+  generateQrCode() {
+    if (this.qrText.trim()) {
+      const encoded = encodeURIComponent(this.qrText.trim());
+      this.qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encoded}&size=200x200`;
+    }
+  }
+
+  onQrImageSelected(event: any) {
+    const file = event.target.files[0];
+    this.selectedQrImage = file ? file : null;
+  }
+
+  async scanQrImage() {
+    if (!this.selectedQrImage) return;
+
+    const formData = new FormData();
+    formData.append('file', this.selectedQrImage);
+
+    try {
+      const response = await fetch('https://api.qrserver.com/v1/read-qr-code/', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+      this.scannedQrText = result[0]?.symbol[0]?.data || 'No QR code found';
+    } catch (error) {
+      this.scannedQrText = 'Error reading QR code';
+    }
+  }
+
+  openNotifications() {
+    this.router.navigate(['/notifications']);
   }
 }

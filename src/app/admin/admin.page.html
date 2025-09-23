@@ -643,11 +643,85 @@
               <p class="breadcrumb">Dashboard / Events</p>
             </div>
           </div>
-          <div class="coming-soon">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <h3>Events Coming Soon</h3>
-            <p>Event management features are under development</p>
+          <div class="events-list-card">
+    <div class="list-card-header dark-header">
+      <h3>
+        <ion-icon name="calendar-outline"></ion-icon>
+        Events
+      </h3>
+      <ion-button size="small" fill="clear">View all</ion-button>
+    </div>
+    <ion-list lines="none">
+      <ion-item *ngFor="let e of eventsList">
+        <ion-label>
+          <div class="event-row1">
+            <span class="event-name">{{ e.title }}</span>
+            <ion-badge *ngIf="e.department">{{ e.department }}</ion-badge>
           </div>
+          <div class="event-row2">
+            {{ e.date }} {{ e.time }}
+            • {{ e.venue || 'TBA' }}
+          </div>
+          <div class="event-description" *ngIf="e.description">
+            {{ e.description }}
+          </div>
+          <div class="event-points" *ngIf="e.points">
+            <strong>Points:</strong> {{ e.points }}
+          </div>
+        </ion-label>
+        <ion-button fill="clear" color="primary" (click)="editEvent(e)">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" color="danger" (click)="deleteEvent(e.id)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <div *ngIf="(eventsList?.length || 0) === 0" class="empty-state">
+        <ion-icon name="calendar-clear-outline"></ion-icon>
+        <p>No events posted.</p>
+      </div>
+    </ion-list>
+  </div>
+
+  <!-- QR Code Generator Card -->
+  <div class="event-qr-code-container" style="margin-top:24px;">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Create Event QR Code</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Event Name</ion-label>
+          <ion-input [(ngModel)]="eventName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Date</ion-label>
+          <ion-input type="date" [(ngModel)]="eventDate"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Time</ion-label>
+          <ion-input type="time" [(ngModel)]="eventTime"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Venue</ion-label>
+          <ion-input [(ngModel)]="eventVenue"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Points</ion-label>
+          <ion-input type="number" [(ngModel)]="eventPoints"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Description</ion-label>
+          <ion-textarea [(ngModel)]="eventDescription"></ion-textarea>
+        </ion-item>
+        <ion-button expand="block" (click)="generateEventQrCode()">Generate QR Code</ion-button>
+        <div *ngIf="qrCodeUrl" style="text-align:center; margin-top:16px;">
+          <img [src]="qrCodeUrl" alt="Event QR Code" style="max-width:200px;" />
+        </div>
+        <ion-button expand="block" color="success" (click)="createEvent()">Create Event</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
         </div>
       </div>
     </div>
@@ -788,6 +862,64 @@
               </div>
             </div>
           </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Event QR Code Generator Modal -->
+  <ion-modal [isOpen]="isEventQrCodeModalOpen" (didDismiss)="closeEventQrCodeModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Create Event QR Code</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeEventQrCodeModal()">
+              <ion-icon name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="event-qr-code-content">
+        <div class="qr-code-container">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Create Event QR Code</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item>
+                <ion-label position="floating">Event Name</ion-label>
+                <ion-input [(ngModel)]="eventName"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Date</ion-label>
+                <ion-input type="date" [(ngModel)]="eventDate"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Time</ion-label>
+                <ion-input type="time" [(ngModel)]="eventTime"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Venue</ion-label>
+                <ion-input [(ngModel)]="eventVenue"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Points</ion-label>
+                <ion-input type="number" [(ngModel)]="eventPoints"></ion-input>
+              </ion-item>
+              <ion-item>
+    <ion-label position="floating">Description</ion-label>
+  <ion-textarea [(ngModel)]="eventDescription"></ion-textarea>
+</ion-item>
+              <ion-button expand="block" (click)="generateEventQrCode()">Generate QR Code</ion-button>
+              <div *ngIf="qrCodeUrl" style="text-align:center; margin-top:16px;">
+                <img [src]="qrCodeUrl" alt="Event QR Code" style="max-width:200px;" />
+              </div>
+
+              <ion-button expand="block" color="success" (click)="createEvent()">Create Event</ion-button>
+            </ion-card-content>
+          </ion-card>
         </div>
       </ion-content>
     </ng-template>

@@ -53,6 +53,17 @@ export class AdminPage implements OnInit {
   alumniIdRequests: any[] = [];
   loadingAlumniIdRequests: boolean = false;
   
+  eventName: string = '';
+  eventDate: string = '';
+  eventTime: string = '';
+  eventVenue: string = '';
+  eventPoints: number | null = null;
+  qrCodeUrl: string | null = null;
+  eventDescription: string = '';
+
+  isEventQrCodeModalOpen: boolean = false;
+  editingEventId: string | null = null; // Track the event being edited
+
   private afAuth = inject(AngularFireAuth);
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -85,7 +96,7 @@ export class AdminPage implements OnInit {
 
     // Load posts for Freedom Wall
     this.loadPosts();
-
+    
     // Load dashboard data
     this.loadAlumniIdRequests();
     this.loadStats();
@@ -442,12 +453,9 @@ export class AdminPage implements OnInit {
   }
 
   loadEventsList() {
-    // Simulate events list, replace with Firestore queries as needed
-    this.eventsList = [
-      { title: 'Alumni Homecoming', department: 'All', start: new Date(), location: 'USJR Main Campus' },
-      { title: 'Career Fair', department: 'Engineering', start: new Date(), location: 'USJR Gymnasium' }
-    ];
-    this.totals.events = this.eventsList.length;
+    this.firestore.collection('events').valueChanges({ idField: 'id' }).subscribe(events => {
+      this.eventsList = events;
+    });
   }
 
   loadIdRequestsList() {
@@ -588,5 +596,83 @@ export class AdminPage implements OnInit {
       console.error('Error sending test notification:', error);
       alert('❌ Error sending test notification');
     }
+  }
+
+  async generateEventQrCode() {
+    const eventDetails = {
+      title: this.eventName,
+      date: this.eventDate,
+      time: this.eventTime,
+      venue: this.eventVenue,
+      points: this.eventPoints,
+      description: this.eventDescription,
+      createdAt: new Date()
+    };
+    const encoded = encodeURIComponent(
+      `Name: ${eventDetails.title}\nDate: ${eventDetails.date}\nTime: ${eventDetails.time}\nVenue: ${eventDetails.venue}\nPoints: ${eventDetails.points}\nDescription: ${eventDetails.description}`
+    );
+    this.qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encoded}&size=200x200`;
+    // Do NOT save to Firestore here
+  }
+
+  openEventQrCodeModal() {
+    this.isEventQrCodeModalOpen = true;
+  }
+
+  closeEventQrCodeModal() {
+    this.isEventQrCodeModalOpen = false;
+  }
+
+  async createEvent() {
+    const eventDetails = {
+      title: this.eventName,
+      date: this.eventDate,
+      time: this.eventTime,
+      venue: this.eventVenue,
+      points: this.eventPoints,
+      description: this.eventDescription,
+      createdAt: new Date()
+    };
+
+    try {
+      if (this.editingEventId) {
+        await this.firestore.collection('events').doc(this.editingEventId).update(eventDetails);
+        this.editingEventId = null;
+      } else {
+        await this.firestore.collection('events').add(eventDetails);
+      }
+      // Clear form fields
+      this.eventName = '';
+      this.eventDate = '';
+      this.eventTime = '';
+      this.eventVenue = '';
+      this.eventPoints = null;
+      this.eventDescription = '';
+      this.qrCodeUrl = null;
+      this.loadEventsList();
+    } catch (error) {
+      console.error('Error saving event:', error);
+    }
+  }
+
+  async deleteEvent(eventId: string) {
+    try {
+      await this.firestore.collection('events').doc(eventId).delete();
+      this.loadEventsList();
+    } catch (error) {
+      console.error('Error deleting event:', error);
+    }
+  }
+
+  editEvent(event: any) {
+    // Populate form fields with event data for editing
+    this.eventName = event.title;
+    this.eventDate = event.date;
+    this.eventTime = event.time;
+    this.eventVenue = event.venue;
+    this.eventPoints = event.points;
+    this.eventDescription = event.description;
+    this.editingEventId = event.id; // Add this property to your class
+    this.isEventQrCodeModalOpen = true; // Optionally open modal for editing
   }
 }
