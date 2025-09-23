@@ -459,14 +459,12 @@
                   text-transform: uppercase;
                   letter-spacing: 0.5px;
 
-                  &.user-col { width: 28%; }
-                  &.id-col { width: 12%; }
-                  &.program-col { width: 12%; }
-                  &.year-col { width: 8%; }
+                  &.user-col-enhanced { width: 40%; }
+                  &.year-col { width: 10%; }
                   &.contact-col { width: 15%; }
-                  &.status-col { width: 10%; }
-                  &.role-col { width: 10%; }
-                  &.actions-col { width: 5%; }
+                  &.status-col { width: 12%; }
+                  &.role-col { width: 12%; }
+                  &.actions-col { width: 11%; }
                 }
               }
 
@@ -490,6 +488,105 @@
                   }
 
                   .user-cell {
+                    // Enhanced user info layout
+                    .user-info-enhanced {
+                      display: flex;
+                      align-items: flex-start;
+                      gap: 16px;
+                      padding: 8px 0;
+
+                      .user-avatar-circle {
+                        position: relative;
+                        width: 48px;
+                        height: 48px;
+                        flex-shrink: 0;
+
+                        img {
+                          width: 100%;
+                          height: 100%;
+                          border-radius: 50%;
+                          object-fit: cover;
+                          border: 3px solid #e2e8f0;
+                          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                        }
+
+                        .status-dot {
+                          position: absolute;
+                          bottom: 2px;
+                          right: 2px;
+                          width: 12px;
+                          height: 12px;
+                          border-radius: 50%;
+                          border: 2px solid white;
+
+                          &.verified {
+                            background: #22c55e;
+                          }
+
+                          &.pending {
+                            background: #f59e0b;
+                          }
+                        }
+                      }
+
+                      .user-details-enhanced {
+                        min-width: 0;
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 4px;
+
+                        .name-section {
+                          display: flex;
+                          gap: 6px;
+                          align-items: baseline;
+
+                          .first-name {
+                            font-weight: 700;
+                            color: #1e293b;
+                            font-size: 15px;
+                          }
+
+                          .last-name {
+                            font-weight: 600;
+                            color: #374151;
+                            font-size: 15px;
+                          }
+                        }
+
+                        .info-section {
+                          display: flex;
+                          gap: 12px;
+                          align-items: center;
+
+                          .course-info {
+                            background: #2c543f;
+                            color: white;
+                            padding: 2px 8px;
+                            border-radius: 12px;
+                            font-size: 11px;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                          }
+
+                          .id-info {
+                            color: #64748b;
+                            font-size: 12px;
+                            font-weight: 500;
+                          }
+                        }
+
+                        .email-section {
+                          .user-email {
+                            color: #64748b;
+                            font-size: 12px;
+                            font-style: italic;
+                          }
+                        }
+                      }
+                    }
+
+                    // Keep original for backward compatibility
                     .user-info {
                       display: flex;
                       align-items: center;

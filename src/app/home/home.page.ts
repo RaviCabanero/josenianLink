@@ -1,8 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { ToastController } from '@ionic/angular';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { ToastController, ModalController } from '@ionic/angular';
 import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
 import { AuthService } from '../services/auth.service';
 import { PushNotificationService } from '../services/push-notification.service';
@@ -14,6 +16,18 @@ import { PushNotificationService } from '../services/push-notification.service';
   standalone: false,
 })
 export class HomePage implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef;
+
+  newPost: string = '';
+  posts$!: Observable<any[]>;
+  userProfile: any = null;
+  loading: boolean = false;
+  showPostInput: boolean = false;
+  unreadNotifications: number = 0;
+  unreadMessages: number = 5;
+  selectedImage: string | null = null;
+  selectedImageFile: File | null = null;
+
   async clickLink(post: any) {
     if (!this.userProfile) {
       await this.presentToast('Please log in to react', 'warning');
@@ -36,6 +50,7 @@ export class HomePage implements OnInit {
       });
     }
   }
+
   navigateToSettings() {
     this.router.navigate(['/settings']);
   }
@@ -46,17 +61,13 @@ export class HomePage implements OnInit {
   showPostInput: boolean = false;
   unreadNotifications: number = 0;
   unreadMessages: number = 5;
-  isQrScannerModalOpen: boolean = false;
-  qrText: string = '';
-  qrCodeUrl: string | null = null;
-  selectedQrImage: File | null = null;
-  scannedQrText: string = '';
 
   private firestore = inject(AngularFirestore);
   private authService = inject(AuthService);
   private pushNotificationService = inject(PushNotificationService);
   private toastController = inject(ToastController);
   private router = inject(Router);
+  private storage = inject(AngularFireStorage);
 
   ngOnInit() {
     this.loadUserProfile();
@@ -96,8 +107,8 @@ export class HomePage implements OnInit {
 
   async submitPost() {
     const content = this.newPost.trim();
-    if (!content) {
-      await this.presentToast('Please enter a post message', 'warning');
+    if (!content && !this.selectedImageFile) {
+      await this.presentToast('Please enter a message or select an image', 'warning');
       return;
     }
     if (!this.userProfile) {
@@ -114,8 +125,24 @@ export class HomePage implements OnInit {
         return;
       }
 
+      let imageUrl = '';
+
+      // Upload image if selected
+      if (this.selectedImageFile) {
+        const filePath = `posts/${Date.now()}_${this.selectedImageFile.name}`;
+        const fileRef = this.storage.ref(filePath);
+        const uploadTask = this.storage.upload(filePath, this.selectedImageFile);
+
+        await uploadTask.snapshotChanges().pipe(
+          finalize(async () => {
+            imageUrl = await fileRef.getDownloadURL().toPromise();
+          })
+        ).toPromise();
+      }
+
       const post = {
         content,
+        imageUrl,
         authorId: currentUser.uid, // Add authorId for proper post management
         authorName: this.userProfile.fullName || 'Anonymous',
         authorEmail: this.userProfile.email || '',
@@ -136,6 +163,8 @@ export class HomePage implements OnInit {
       );
 
       this.newPost = '';
+      this.selectedImage = null;
+      this.selectedImageFile = null;
       this.showPostInput = false;
       await this.presentToast('Post shared successfully!', 'success');
     } catch (error) {
@@ -281,6 +310,68 @@ export class HomePage implements OnInit {
   navigateTo(route: string) {
     this.router.navigate([`/${route}`]);
   }
+
+  // New methods for enhanced homepage
+  getFirstName(): string {
+    if (!this.userProfile?.fullName) return 'Alumni';
+    const nameParts = this.userProfile.fullName.trim().split(' ');
+    return nameParts[0] || 'Alumni';
+  }
+
+  navigateToEvents() {
+    this.router.navigate(['/events']);
+  }
+
+  navigateToAlumni() {
+    this.router.navigate(['/alumni']);
+  }
+
+  navigateToProfile() {
+    this.router.navigate(['/profile']);
+  }
+
+  navigateToMessages() {
+    this.router.navigate(['/messages']);
+  }
+
+  cancelPost() {
+    this.showPostInput = false;
+    this.newPost = '';
+    this.selectedImage = null;
+    this.selectedImageFile = null;
+  }
+
+  // Image handling methods
+  selectImage() {
+    this.fileInput.nativeElement.click();
+  }
+
+  onImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedImageFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImage = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeSelectedImage() {
+    this.selectedImage = null;
+    this.selectedImageFile = null;
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+  }
+
+  viewFullImage(imageUrl: string) {
+    // You can implement a modal or navigation to view full image
+    window.open(imageUrl, '_blank');
+  }
+
+
 
   logout() {
     this.authService.logout();

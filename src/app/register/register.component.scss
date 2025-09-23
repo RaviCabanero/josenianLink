@@ -1,117 +1,655 @@
+// USJR Color Palette - Enhanced
+$usjr-green: #2c543f;
+$usjr-gold: #f4c014;
+$usjr-cream: #f7f6f4;
+$usjr-dark-green: #1a3329;
+$usjr-light-gold: #f8d558;
+$usjr-deep-green: #0f1f17;
+$usjr-soft-gold: #fef3c7;
+
+// Stunning Register Page Design
+.register-page-wrapper {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+// Animated Background
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg,
+    $usjr-deep-green 0%,
+    $usjr-dark-green 25%,
+    $usjr-green  50%,
+    $usjr-dark-green 75%,
+    $usjr-deep-green 100%);
+  z-index: -2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 30%, rgba(244, 192, 20, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(244, 192, 20, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 90%, rgba(244, 192, 20, 0.06) 0%, transparent 50%);
+    animation: backgroundPulse 10s ease-in-out infinite alternate;
+  }
+}
+
+.floating-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  .shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(244, 192, 20, 0.08);
+    animation: float 25s infinite linear;
+
+    &.shape-1 {
+      width: 60px;
+      height: 60px;
+      top: 15%;
+      left: 8%;
+      animation-delay: 0s;
+    }
+
+    &.shape-2 {
+      width: 90px;
+      height: 90px;
+      top: 70%;
+      right: 12%;
+      animation-delay: -8s;
+    }
+
+    &.shape-3 {
+      width: 45px;
+      height: 45px;
+      top: 85%;
+      left: 25%;
+      animation-delay: -15s;
+    }
+
+    &.shape-4 {
+      width: 75px;
+      height: 75px;
+      top: 5%;
+      right: 25%;
+      animation-delay: -20s;
+    }
+
+    &.shape-5 {
+      width: 35px;
+      height: 35px;
+      top: 45%;
+      left: 70%;
+      animation-delay: -12s;
+    }
+
+    &.shape-6 {
+      width: 55px;
+      height: 55px;
+      top: 25%;
+      right: 45%;
+      animation-delay: -5s;
+    }
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-40px) rotate(90deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-80px) rotate(180deg);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translateY(-40px) rotate(270deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes backgroundPulse {
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Main Content
 .register-content {
-  --background: #f5f5f5;
-  font-family: 'Avenir', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 0;
-}
-
-.logo-container {
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 0 10px;
-  transition: transform 0.6s cubic-bezier(.77,0,.18,1), opacity 0.4s;
-}
-
-.logo-animate-up {
-  transform: translateY(-80px) scale(0.8);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.logo-img {
-  width: 130px;
-  height: auto;
-}
-
-.josenianlink-text {
-  font-size: 22px;
-  font-weight: 900;
-  color: #2c543f;
-  margin-top: 6px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.5px;
-}
-
-.link-text {
-  color: #f4c014;
-  margin-left: 3px;
+  --background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .register-container {
-  width: 100%;
+  padding: 20px;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  padding: 0 16px;
+  align-items: center;
 }
 
-.register-card {
-  background: #2c543f;
-  width: 100%;
-  max-width: 420px;
-  padding: 30px 20px;
-  border-top-left-radius: 40px;
-  border-top-right-radius: 40px;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+// University Header
+.university-header {
   text-align: center;
+  margin-bottom: 30px;
+  animation: slideInFromTop 1s ease-out;
+  transition: all 0.5s ease;
+
+  .logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 25px;
+
+    .logo-wrapper {
+      position: relative;
+      margin-bottom: 15px;
+
+      .university-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid $usjr-gold;
+        box-shadow:
+          0 0 25px rgba(244, 192, 20, 0.4),
+          0 0 50px rgba(244, 192, 20, 0.2);
+        animation: logoFloat 3s ease-in-out infinite alternate;
+      }
+
+      .logo-glow {
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        right: -8px;
+        bottom: -8px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(244, 192, 20, 0.25) 0%, transparent 70%);
+        animation: glowPulse 2s ease-in-out infinite alternate;
+      }
+    }
+
+    .university-info {
+      .university-name {
+        font-family: 'Georgia', serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: $usjr-cream;
+        margin: 0 0 6px 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        letter-spacing: 0.5px;
+      }
+
+      .university-tagline {
+        font-size: 13px;
+        color: rgba(247, 246, 244, 0.8);
+        margin: 0;
+        font-style: italic;
+      }
+    }
+  }
+
+  .josenianlink-branding {
+    .app-title {
+      position: relative;
+      margin: 0 0 8px 0;
+      display: inline-block;
+
+      .josenian-text {
+        font-family: 'Avenir', sans-serif;
+        font-size: 28px;
+        font-weight: 900;
+        color: $usjr-cream;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        letter-spacing: 2px;
+      }
+
+      .link-text {
+        font-family: 'Avenir', sans-serif;
+        font-size: 28px;
+        font-weight: 900;
+        color: $usjr-gold;
+        text-shadow: 2px 2px 4px rgba(244, 192, 20, 0.5);
+        letter-spacing: 2px;
+        margin-left: 6px;
+      }
+
+      .title-underline {
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, $usjr-gold 0%, $usjr-light-gold 100%);
+        border-radius: 1px;
+        animation: underlineGlow 2s ease-in-out infinite alternate;
+      }
+    }
+
+    .app-subtitle {
+      font-size: 14px;
+      color: rgba(247, 246, 244, 0.9);
+      margin: 0;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+  }
 }
 
-.form-item {
-  --background: #f4c014;
-  --border-radius: 12px;
-  --padding-start: 12px;
-  margin-bottom: 14px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-ion-input::part(native) {
-  color: #000000;
-}
-
-.input-icon {
-  color: #2c543f;
-  font-size: 20px;
-}
-
-ion-label {
-  color: #000000 !important;
-  font-weight: 500;
-}
-
-.register-button {
-  --background: #ffffff;
-  --color: #2c543f;
-  font-weight: bold;
-  height: 44px;
+// Modern Register Card
+.register-card-modern {
+  background: rgba(247, 246, 244, 0.95);
+  backdrop-filter: blur(20px);
   border-radius: 24px;
-  margin-top: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 35px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(244, 192, 20, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(244, 192, 20, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: slideInFromBottom 1s ease-out 0.3s both;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+      $usjr-gold 0%,
+      $usjr-light-gold 50%,
+      $usjr-gold 100%);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  .card-header {
+    text-align: center;
+    margin-bottom: 25px;
+
+    .register-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: $usjr-green;
+      margin: 0 0 6px 0;
+      font-family: 'Avenir', sans-serif;
+    }
+
+    .register-subtitle {
+      font-size: 15px;
+      color: rgba(44, 84, 63, 0.7);
+      margin: 0;
+      font-weight: 500;
+    }
+  }
 }
 
-.login-link {
-  color: #f4c014;
-  font-weight: 500;
-  font-size: 14px;
-  margin-top: 14px;
+// Modern Form Styling
+.form-container {
+  .name-fields-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+
+    .half-width {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+
+  .input-group {
+    margin-bottom: 20px;
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .input-icon-modern {
+        position: absolute;
+        left: 16px;
+        z-index: 2;
+        color: $usjr-green;
+        font-size: 18px;
+        transition: all 0.3s ease;
+      }
+
+      .modern-input {
+        --background: rgba(44, 84, 63, 0.05);
+        --color: #{$usjr-green};
+        --placeholder-color: rgba(44, 84, 63, 0.6);
+        --border-color: rgba(44, 84, 63, 0.2);
+        --border-radius: 14px;
+        --padding-start: 48px;
+        --padding-end: 16px;
+        height: 52px;
+        font-weight: 500;
+        font-size: 15px;
+        transition: all 0.3s ease;
+
+        &:focus {
+          --border-color: #{$usjr-gold};
+          --background: rgba(244, 192, 20, 0.08);
+          box-shadow: 0 0 0 3px rgba(244, 192, 20, 0.15);
+          transform: translateY(-1px);
+        }
+      }
+
+      .input-focus-line {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: $usjr-gold;
+        transition: width 0.3s ease;
+        border-radius: 1px;
+      }
+
+      &:focus-within {
+        .input-icon-modern {
+          color: $usjr-gold;
+          transform: scale(1.05);
+        }
+
+        .input-focus-line {
+          width: 100%;
+        }
+      }
+    }
+  }
 }
 
-.register-title-animated {
-  color: #f4c014;
-  font-family: 'Avenir', sans-serif;
-  font-weight: bold;
-  font-size: 1.2em;
-  letter-spacing: 1px;
-  animation: fadeInDown 1s cubic-bezier(.77,0,.18,1) both;
+// Action Section
+.action-section {
+  margin-top: 28px;
+
+  .register-btn-modern {
+    --background: linear-gradient(135deg, #{$usjr-gold} 0%, #{$usjr-light-gold} 100%);
+    --color: #{$usjr-green};
+    --border-radius: 14px;
+    height: 52px;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 6px 28px rgba(244, 192, 20, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 35px rgba(244, 192, 20, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    .btn-ripple {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent);
+      animation: ripple 2s infinite;
+    }
+  }
+
+  .divider-section {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(44, 84, 63, 0.2);
+    }
+
+    .divider-text {
+      margin: 0 14px;
+      color: rgba(44, 84, 63, 0.6);
+      font-size: 13px;
+      font-weight: 500;
+    }
+  }
+
+  .login-link-modern {
+    --border-color: #{$usjr-green};
+    --color: #{$usjr-green};
+    --border-radius: 14px;
+    --background: transparent;
+    height: 52px;
+    font-weight: 600;
+    font-size: 15px;
+    
+    transition: all 0.3s ease;
+
+    &:hover {
+      --background: #{$usjr-green};
+      --color: #{$usjr-cream};
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(44, 84, 63, 0.3);
+    }
+  }
 }
 
-.register-btn-text {
-  color: #f4c014;
-  font-family: 'Avenir', sans-serif;
-  font-weight: bold;
-  font-size: 1.1em;
-  letter-spacing: 0.5px;
-  animation: popIn 0.7s cubic-bezier(.77,0,.18,1) both;
+// Footer
+.register-footer {
+  text-align: center;
+  margin-top: 35px;
+  animation: fadeIn 1s ease-out 0.6s both;
+
+  .footer-text {
+    color: rgba(247, 246, 244, 0.8);
+    font-size: 13px;
+    margin: 0 0 3px 0;
+    font-weight: 500;
+  }
+
+  .footer-subtext {
+    color: rgba(247, 246, 244, 0.6);
+    font-size: 11px;
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+// Animations
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes logoFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes underlineGlow {
+  0% {
+    box-shadow: 0 0 4px rgba(244, 192, 20, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(244, 192, 20, 0.8);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .university-header {
+    margin-bottom: 25px;
+
+    .logo-section {
+      .logo-wrapper .university-logo {
+        width: 70px;
+        height: 70px;
+      }
+
+      .university-info .university-name {
+        font-size: 18px;
+      }
+    }
+
+    .josenianlink-branding .app-title {
+      .josenian-text, .link-text {
+        font-size: 24px;
+        letter-spacing: 1.5px;
+      }
+    }
+  }
+
+  .register-card-modern {
+    padding: 28px 22px;
+    max-width: 420px;
+  }
+
+  .form-container .name-fields-row {
+    flex-direction: column;
+    gap: 0;
+
+    .half-width {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 15px;
+  }
+
+  .university-header {
+    .logo-section {
+      .logo-wrapper .university-logo {
+        width: 60px;
+        height: 60px;
+      }
+
+      .university-info .university-name {
+        font-size: 16px;
+      }
+    }
+
+    .josenianlink-branding .app-title {
+      .josenian-text, .link-text {
+        font-size: 20px;
+        letter-spacing: 1px;
+      }
+    }
+  }
+
+  .register-card-modern {
+    padding: 22px 18px;
+    margin: 0 8px;
+
+    .card-header .register-title {
+      font-size: 22px;
+    }
+  }
+
+  .form-container .input-group .input-wrapper .modern-input {
+    height: 48px;
+    font-size: 14px;
+  }
+
+  .action-section {
+    .register-btn-modern, .login-link-modern {
+      height: 48px;
+      font-size: 14px;
+    }
+  }
 }

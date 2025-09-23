@@ -1,81 +1,245 @@
-<ion-header>
-  <ion-toolbar style="--background: #2c543f;">
-    <ion-title>
-      <ion-icon name="person-add" class="ion-margin-end" style="color: #f7f6f4;"></ion-icon>
-      <span style="color: #f7f6f4; font-family: 'Avenir', sans-serif; font-weight: bold;">Register</span>
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<!-- Logo & Title -->
-<div 
-  class="logo-container" 
-  [ngClass]="{'logo-animate-up': isInputFocused}" 
-  *ngIf="!isInputFocused">
-  <img src="assets/usjrlogo.png" alt="USJ-R Seal" class="logo-img" />
-  <h1 class="josenianlink-text">JOSENIAN<span class="link-text">LINK</span> 🟡</h1>
-</div>
-
-<ion-content class="register-content">
-  <div class="register-container">
-    <div class="register-card">
-
-      <ion-item class="form-item" lines="none">
-        <ion-icon name="person-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-input [(ngModel)]="fullName" type="text" required placeholder="Full Name"
-          (focus)="isInputFocused = true" (blur)="checkBlur()"></ion-input>
-      </ion-item>
-
-      <ion-item class="form-item" lines="none">
-        <ion-icon name="card-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-input [(ngModel)]="idNumber" type="text" required placeholder="ID Number"
-          (focus)="isInputFocused = true" (blur)="checkBlur()"></ion-input>
-      </ion-item>
-
-      <ion-item class="form-item" lines="none">
-        <ion-icon name="calendar-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-input [(ngModel)]="yearGraduated" type="number" required placeholder="Year Graduated"
-          (focus)="isInputFocused = true" (blur)="checkBlur()"></ion-input>
-      </ion-item>
-
-      <ion-item class="form-item" lines="none">
-        <ion-icon name="school-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-input [(ngModel)]="program" type="text" required placeholder="Program (e.g. BSIT)"
-          (focus)="isInputFocused = true" (blur)="checkBlur()"></ion-input>
-      </ion-item>
-
-      <ion-item class="form-item" lines="none">
-        <ion-icon name="call-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-input [(ngModel)]="contactNumber" type="tel" required placeholder="Contact Number"
-          (focus)="isInputFocused = true" (blur)="checkBlur()"></ion-input>
-      </ion-item>
-
-      <ion-item class="form-item" lines="none">
-        <ion-icon name="location-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-input [(ngModel)]="address" type="text" required placeholder="Address"
-          (focus)="isInputFocused = true" (blur)="checkBlur()"></ion-input>
-      </ion-item>
-
-      <ion-item class="form-item" lines="none">
-        <ion-icon name="mail-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-input [(ngModel)]="email" type="email" required placeholder="Email"
-          (focus)="isInputFocused = true" (blur)="checkBlur()"></ion-input>
-      </ion-item>
-
-      <ion-item class="form-item" lines="none">
-        <ion-icon name="lock-closed-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-input [(ngModel)]="password" type="password" required placeholder="Password"
-          (focus)="isInputFocused = true" (blur)="checkBlur()"></ion-input>
-      </ion-item>
-
-      <ion-button expand="block" class="register-button" (click)="register()">
-        <ion-icon name="person-add" slot="start"></ion-icon>
-        Register
-      </ion-button>
-
-      <ion-button expand="block" fill="clear" routerLink="/login" class="login-link">
-        <u>Already have an account?</u>
-      </ion-button>
+<!-- Stunning Register Design with USJR Colors -->
+<div class="register-page-wrapper">
+  <!-- Animated Background -->
+  <div class="animated-background">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+      <div class="shape shape-5"></div>
+      <div class="shape shape-6"></div>
     </div>
   </div>
-</ion-content>
+
+  <!-- Main Content -->
+  <ion-content class="register-content">
+    <div class="register-container">
+      <!-- University Branding Header -->
+      <div class="university-header" *ngIf="!isInputFocused">
+        <div class="logo-section">
+          <div class="logo-wrapper">
+            <img src="assets/alumnilogo.webp" alt="USJ-R Seal" class="university-logo" />
+            <div class="logo-glow"></div>
+          </div>
+          <div class="university-info">
+            <h1 class="university-name">University of San Jose - Recoletos</h1>
+            <p class="university-tagline">Join the Josenian Alumni Network</p>
+          </div>
+        </div>
+
+        <div class="josenianlink-branding">
+          <h2 class="app-title">
+            <span class="josenian-text">JOSENIAN</span>
+            <span class="link-text">LINK</span>
+            <div class="title-underline"></div>
+          </h2>
+          <p class="app-subtitle">Create Your Alumni Account</p>
+        </div>
+      </div>
+
+      <!-- Register Card -->
+      <div class="register-card-modern">
+        <div class="card-header">
+          <h3 class="register-title">Join Our Community</h3>
+          <p class="register-subtitle">Connect with fellow Josenian alumni worldwide</p>
+        </div>
+
+        <div class="form-container">
+          <!-- Name Row -->
+          <div class="name-fields-row">
+            <div class="input-group half-width">
+              <div class="input-wrapper">
+                <ion-icon name="person-outline" class="input-icon-modern"></ion-icon>
+                <ion-input
+                  [(ngModel)]="firstName"
+                  type="text"
+                  required
+                  class="modern-input"
+                  placeholder="First Name"
+                  fill="outline"
+                  (focus)="isInputFocused = true"
+                  (blur)="checkBlur()">
+                </ion-input>
+                <div class="input-focus-line"></div>
+              </div>
+            </div>
+
+            <div class="input-group half-width">
+              <div class="input-wrapper">
+                <ion-icon name="person-outline" class="input-icon-modern"></ion-icon>
+                <ion-input
+                  [(ngModel)]="lastName"
+                  type="text"
+                  required
+                  class="modern-input"
+                  placeholder="Last Name"
+                  fill="outline"
+                  (focus)="isInputFocused = true"
+                  (blur)="checkBlur()">
+                </ion-input>
+                <div class="input-focus-line"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ID Number -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="card-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="idNumber"
+                type="text"
+                required
+                class="modern-input"
+                placeholder="Student ID Number"
+                (focus)="isInputFocused = true"
+                (blur)="checkBlur()">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Year Graduated -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="calendar-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="yearGraduated"
+                type="number"
+                required
+                class="modern-input"
+                placeholder="Year Graduated"
+                fill="outline"
+                (focus)="isInputFocused = true"
+                (blur)="checkBlur()">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Program -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="school-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="program"
+                type="text"
+                required
+                class="modern-input"
+                placeholder="Program (e.g. BSIT, BSBA, BSN)"
+                fill="outline"
+                (focus)="isInputFocused = true"
+                (blur)="checkBlur()">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Contact Number -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="call-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="contactNumber"
+                type="tel"
+                required
+                class="modern-input"
+                placeholder="Contact Number"
+                fill="outline"
+                (focus)="isInputFocused = true"
+                (blur)="checkBlur()">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="location-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="address"
+                type="text"
+                required
+                class="modern-input"
+                fill="outline"
+                (focus)="isInputFocused = true"
+                (blur)="checkBlur()">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="mail-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="email"
+                type="email"
+                required
+                class="modern-input"
+                placeholder="Email Address"
+                fill="outline"
+                (focus)="isInputFocused = true"
+                (blur)="checkBlur()">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="lock-closed-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="password"
+                type="password"
+                required
+                class="modern-input"
+                placeholder="Create Password"
+                fill="outline"
+                (focus)="isInputFocused = true"
+                (blur)="checkBlur()">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Action Section -->
+          <div class="action-section">
+            <ion-button
+              expand="block"
+              class="register-btn-modern"
+              (click)="register()">
+              <ion-icon name="person-add-outline" slot="start"></ion-icon>
+              Create Account
+              <div class="btn-ripple"></div>
+            </ion-button>
+
+            <div class="divider-section">
+              <div class="divider-line"></div>
+              <span class="divider-text">or</span>
+              <div class="divider-line"></div>
+            </div>
+
+            <ion-button
+              expand="block"
+              class="login-link-modern"
+              routerLink="/login">
+              <ion-icon name="log-in-outline" slot="start"></ion-icon>
+              Already have an account? Sign In
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="register-footer">
+        <p class="footer-text">© 2024 University of San Jose - Recoletos</p>
+        <p class="footer-subtext">Building Tomorrow's Leaders Today</p>
+      </div>
+    </div>
+  </ion-content>
+</div>

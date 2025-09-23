@@ -1,15 +1,34 @@
-<ion-header class="custom-header">
-  <div class="header-bar">
-    <div class="logo-title">
-      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
-    </div>
-    <div class="header-actions">
-      <ion-button fill="clear" class="header-button" (click)="navigateToSettings()">
-        <ion-icon name="settings" slot="icon-only"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" class="logout-button" (click)="logout()">
-        Log Out
-      </ion-button>
+<ion-header class="modern-header">
+  <div class="header-container">
+    <div class="header-content">
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <div class="logo-wrapper">
+          <div class="university-seal">
+            <img src="assets/alumnilogo.webp" alt="USJR Seal" class="header-logo">
+            <div class="logo-glow"></div>
+          </div>
+          <div class="brand-text">
+            <h1 class="app-title">
+              <span class="josenian-text">JOSENIAN</span>
+              <span class="link-text">LINK</span>
+            </h1>
+            <p class="tagline">Events Calendar</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Section -->
+      <div class="actions-section">
+        <div class="header-actions">
+          <ion-button fill="clear" class="action-btn" (click)="navigateToSettings()">
+            <ion-icon name="settings-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="action-btn logout-btn" (click)="logout()">
+            <ion-icon name="log-out-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
     </div>
   </div>
 </ion-header>
@@ -24,17 +43,26 @@
 
     <!-- Events Cards -->
     <div class="events-grid" *ngIf="(events$ | async) && (events$ | async)!.length > 0">
-      <ion-card class="event-card" *ngFor="let event of events$ | async">
+      <ion-card class="event-card"
+                [class.homecoming-card]="event.title.toLowerCase().includes('homecoming')"
+                *ngFor="let event of events$ | async">
         <div class="event-image">
           <img [src]="event.image || 'assets/default-event.jpg'" alt="Event Image">
-          <div class="event-date-badge">
+          <div class="event-date-badge"
+               [class.homecoming-badge]="event.title.toLowerCase().includes('homecoming')">
             <span class="day">{{ event.date | date:'dd' }}</span>
             <span class="month">{{ event.date | date:'MMM' }}</span>
+          </div>
+          <div class="event-type-badge" *ngIf="event.title.toLowerCase().includes('homecoming')">
+            <ion-icon name="home"></ion-icon>
+            <span>Homecoming</span>
           </div>
         </div>
 
         <ion-card-content>
-          <h2 class="event-title">{{ event.title }}</h2>
+          <h2 class="event-title" [class.homecoming-title]="event.title.toLowerCase().includes('homecoming')">
+            {{ event.title }}
+          </h2>
           <div class="event-details">
             <div class="detail-item">
               <ion-icon name="calendar-outline"></ion-icon>
@@ -52,11 +80,14 @@
           <p class="event-description">{{ event.description || 'Join us for this exciting event!' }}</p>
 
           <div class="event-actions">
-            <ion-button fill="outline" size="small" (click)="viewEvent(event)">
+            <ion-button fill="outline" size="small" (click)="viewEvent(event)"
+                        [class.homecoming-btn-outline]="event.title.toLowerCase().includes('homecoming')">
               <ion-icon name="eye-outline" slot="start"></ion-icon>
               View Details
             </ion-button>
-            <ion-button fill="solid" size="small" color="primary">
+            <ion-button fill="solid" size="small"
+                        [color]="event.title.toLowerCase().includes('homecoming') ? 'warning' : 'primary'"
+                        [class.homecoming-btn]="event.title.toLowerCase().includes('homecoming')">
               <ion-icon name="calendar-outline" slot="start"></ion-icon>
               RSVP
             </ion-button>
@@ -165,23 +196,28 @@
   </div>
 </ion-content>
 
-<ion-footer class="home-footer">
+<ion-footer class="modern-footer">
   <ion-toolbar>
     <div class="footer-buttons">
-      <ion-button fill="clear" routerLink="/home" class="active">
+      <ion-button fill="clear" routerLink="/home" class="footer-nav-btn">
         <ion-icon name="home" slot="icon-only"></ion-icon>
+        <span class="nav-label">Home</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/events">
+      <ion-button fill="clear" routerLink="/events" class="footer-nav-btn active">
         <ion-icon name="calendar" slot="icon-only"></ion-icon>
+        <span class="nav-label">Events</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/notifications">
+      <ion-button fill="clear" routerLink="/notifications" class="footer-nav-btn">
         <ion-icon name="notifications" slot="icon-only"></ion-icon>
+        <span class="nav-label">Notifications</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/profile">
+      <ion-button fill="clear" routerLink="/profile" class="footer-nav-btn">
         <ion-icon name="person" slot="icon-only"></ion-icon>
+        <span class="nav-label">Profile</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/messages">
+      <ion-button fill="clear" routerLink="/messages" class="footer-nav-btn">
         <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
+        <span class="nav-label">Messages</span>
       </ion-button>
     </div>
   </ion-toolbar>

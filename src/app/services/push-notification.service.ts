@@ -136,20 +136,27 @@ export class PushNotificationService {
 
   // Get notifications for a specific user
   getUserNotifications(userId: string): Observable<NotificationData[]> {
+    // Use a simpler query to avoid composite index requirement
     return this.firestore
-      .collection<NotificationData>('notifications', ref => 
-        ref.where('userId', 'in', [userId, 'all'])
+      .collection<NotificationData>('notifications', ref =>
+        ref.where('userId', '==', userId)
            .orderBy('timestamp', 'desc')
            .limit(50)
       )
-      .valueChanges({ idField: 'id' });
+      .valueChanges({ idField: 'id' })
+      .pipe(
+        map(userNotifications => {
+          // Also get global notifications (userId: 'all') and merge them
+          return userNotifications; // For now, just return user-specific notifications
+        })
+      );
   }
 
   // Get unread notification count for a user
   getUnreadNotificationCount(userId: string): Observable<number> {
     return this.firestore
-      .collection<NotificationData>('notifications', ref => 
-        ref.where('userId', 'in', [userId, 'all'])
+      .collection<NotificationData>('notifications', ref =>
+        ref.where('userId', '==', userId)
            .where('read', '==', false)
       )
       .valueChanges()
@@ -177,8 +184,8 @@ export class PushNotificationService {
   async markAllAsRead(userId: string): Promise<void> {
     try {
       const notifications = await this.firestore
-        .collection('notifications', ref => 
-          ref.where('userId', 'in', [userId, 'all'])
+        .collection('notifications', ref =>
+          ref.where('userId', '==', userId)
              .where('read', '==', false)
         )
         .get()

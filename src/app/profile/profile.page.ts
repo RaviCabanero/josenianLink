@@ -52,9 +52,15 @@ export class ProfilePage implements OnInit {
 
   editingJob: any = null;
 
+  // Navigation badge properties
+  unreadNotifications: number = 0;
+  unreadMessages: number = 0;
+
   // Define the user object with additional properties
   user = {
     name: 'mellow w allow',
+    firstName: 'mellow',
+    lastName: 'w allow',
     id: '1233445',
     program: 'BSIT',
     yearGraduated: '2026',
@@ -110,8 +116,16 @@ export class ProfilePage implements OnInit {
 
         console.log('Selected photo URL:', userPhoto); // Debug log
 
+        // Parse first and last name from fullName if available
+        const fullName = profile.fullName || profile.name || 'mellow w allow';
+        const nameParts = fullName.split(' ');
+        const firstName = profile.firstName || nameParts[0] || 'mellow';
+        const lastName = profile.lastName || nameParts.slice(1).join(' ') || 'w allow';
+
         this.user = {
-          name: profile.fullName || 'mellow w allow',
+          name: fullName,
+          firstName: firstName,
+          lastName: lastName,
           id: profile.idNumber || '1233445',
           program: profile.program || 'BSIT',
           yearGraduated: profile.yearGraduated || '2026',
@@ -172,20 +186,81 @@ export class ProfilePage implements OnInit {
         return;
       }
 
-      // Create file reader to convert to base64
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.editUser.photo = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      // Show loading toast
+      this.presentToast('Processing image...', 'primary');
+
+      // Compress and resize the image
+      this.compressImage(file).then(compressedDataUrl => {
+        this.editUser.photo = compressedDataUrl;
+        this.presentToast('Image processed successfully!', 'success');
+      }).catch(error => {
+        console.error('Error compressing image:', error);
+        this.presentToast('Error processing image. Please try again.', 'danger');
+      });
     }
+  }
+
+  // Compress image to reduce file size
+  private compressImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.onload = () => {
+        // Calculate new dimensions (max 400x400)
+        const maxSize = 400;
+        let { width, height } = img;
+
+        if (width > height) {
+          if (width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Convert to base64 with compression (0.8 quality)
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Check if still too large (Firebase limit is ~1MB for document fields)
+        if (compressedDataUrl.length > 800000) { // ~800KB limit
+          // Further compress
+          const furtherCompressed = canvas.toDataURL('image/jpeg', 0.6);
+          resolve(furtherCompressed);
+        } else {
+          resolve(compressedDataUrl);
+        }
+      };
+
+      img.onerror = () => reject(new Error('Failed to load image'));
+
+      // Create object URL for the image
+      img.src = URL.createObjectURL(file);
+    });
   }
 
   // Save profile changes
   async saveProfile() {
     // Validate required fields
-    if (!this.editUser.name.trim()) {
-      this.presentToast('Name is required', 'warning');
+    if (!this.editUser.firstName?.trim()) {
+      this.presentToast('First name is required', 'warning');
+      return;
+    }
+
+    if (!this.editUser.lastName?.trim()) {
+      this.presentToast('Last name is required', 'warning');
       return;
     }
 
@@ -211,12 +286,21 @@ export class ProfilePage implements OnInit {
     }
 
     try {
+      // Combine first and last name for fullName
+      const fullName = `${this.editUser.firstName?.trim() || ''} ${this.editUser.lastName?.trim() || ''}`.trim();
+
       // Update user object
-      this.user = { ...this.editUser };
+      this.user = {
+        ...this.editUser,
+        name: fullName // Update the display name
+      };
 
       // Save to Firebase
       await this.authService.updateUserProfile({
-        fullName: this.editUser.name,
+        firstName: this.editUser.firstName?.trim(),
+        lastName: this.editUser.lastName?.trim(),
+        fullName: fullName,
+        name: fullName, // For compatibility
         email: this.editUser.email,
         address: this.editUser.address,
         contactNumber: this.editUser.contactNumber,

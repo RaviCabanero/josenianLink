@@ -1,62 +1,115 @@
-<ion-header>
-  <ion-toolbar style="--background: #2c543f;">
-  </ion-toolbar>
-</ion-header>
-<div class="logo-container">
-  <img src="assets/usjrlogo.png" alt="USJ-R Seal" class="logo-img" />
-  <h1 class="josenianlink-text">JOSENIAN<span class="link-text">LINK</span> 🔗</h1>
-</div>
-
-
-
-
-<ion-content class="login-content">
-  <div class="login-container">
-    <div class="login-card">
-      <ion-item class="form-item" lines="full">
-        <ion-icon name="mail" slot="start" class="input-icon"></ion-icon>
-        <ion-label position="floating" class="input-label">Email Address</ion-label>
-        <ion-input 
-          [(ngModel)]="email" 
-          type="email" 
-          required
-          class="custom-input"
-          placeholder="Enter your email">
-        </ion-input>
-      </ion-item>
-
-      <ion-item class="form-item" lines="full">
-        <ion-icon name="key" slot="start" class="input-icon"></ion-icon>
-        <ion-label position="floating" class="input-label">Password</ion-label>
-        <ion-input 
-          [(ngModel)]="password" 
-          type="password" 
-          required
-          class="custom-input"
-          placeholder="Enter your password">
-        </ion-input>
-      </ion-item>
-
-      <div class="action-buttons">
-        <ion-button 
-          expand="block" 
-          style="--background: #f4c014; color: 2c543f;" 
-          class="login-button"
-          (click)="login()">
-          <ion-icon name="log-in" slot="start"></ion-icon>
-          Login
-        </ion-button>
-        
-        <ion-button 
-          expand="block" 
-          fill="outline" 
-          color="dark" 
-          class="register-button"
-          routerLink="/register">
-          <ion-icon name="person-add" slot="start"></ion-icon>
-          Sign Up
-        </ion-button>
-      </div>
+<!-- Stunning Login Design with USJR Colors -->
+<div class="login-page-wrapper">
+  <!-- Animated Background -->
+  <div class="animated-background">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+      <div class="shape shape-5"></div>
     </div>
   </div>
-</ion-content>
+
+  <!-- Main Content -->
+  <ion-content class="login-content">
+    <div class="login-container">
+      <!-- University Branding Header -->
+      <div class="university-header">
+        <div class="logo-section">
+          <div class="logo-wrapper">
+            <img src="assets/alumnilogo.webp" alt="USJ-R Seal" class="university-logo" />
+            <div class="logo-glow"></div>
+          </div>
+          <div class="university-info">
+            <h1 class="university-name">University of San Jose - Recoletos</h1>
+            <p class="university-tagline">Excellence in Education Since 1947</p>
+          </div>
+        </div>
+
+        <div class="josenianlink-branding">
+          <h2 class="app-title">
+            <span class="josenian-text">JOSENIAN</span>
+            <span class="link-text">LINK</span>
+            <div class="title-underline"></div>
+          </h2>
+          <p class="app-subtitle">Alumni Network Portal</p>
+        </div>
+      </div>
+
+      <!-- Login Card -->
+      <div class="login-card-modern">
+        <div class="card-header">
+          <h3 class="login-title">Welcome Back</h3>
+          <p class="login-subtitle">Sign in to your alumni account</p>
+        </div>
+
+        <div class="form-container">
+          <!-- Email Input -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="mail-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="email"
+                type="email"
+                required
+                class="modern-input"
+                placeholder="Email Address"
+                fill="outline">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="lock-closed-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="password"
+                type="password"
+                required
+                class="modern-input"
+                placeholder="Password"
+                fill="outline">
+              </ion-input>
+              <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-section">
+            <ion-button
+              expand="block"
+              class="login-btn-modern"
+              (click)="login()">
+              <ion-icon name="log-in-outline" slot="start"></ion-icon>
+              Sign In
+              <div class="btn-ripple"></div>
+            </ion-button>
+
+            <div class="divider-section">
+              <div class="divider-line"></div>
+              <span class="divider-text">or</span>
+              <div class="divider-line"></div>
+            </div>
+
+            <ion-button
+              expand="block"
+              class="register-btn-modern"
+              routerLink="/register">
+              <ion-icon name="person-add-outline" slot="start"></ion-icon>
+              Create Account
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <p class="footer-text">© 2024 University of San Jose - Recoletos</p>
+        <p class="footer-subtext">Connecting Josenian Alumni Worldwide</p>
+      </div>
+    </div>
+  </ion-content>
+</div>

@@ -1,3 +1,4 @@
+
 <ion-header class="custom-header">
   <div class="header-bar">
     <div class="logo-title">
@@ -42,10 +43,20 @@
         maxlength="500"
         class="post-input">
       </ion-textarea>
-      
+
+      <!-- Image Preview Section -->
+      <div class="image-preview-section" *ngIf="selectedImage">
+        <div class="image-preview-container">
+          <img [src]="selectedImage" alt="Selected image" class="preview-image">
+          <ion-button fill="clear" class="remove-image-btn" (click)="removeSelectedImage()">
+            <ion-icon name="close-circle" color="danger"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
       <div class="post-actions">
         <div class="action-buttons">
-          <ion-button fill="clear" class="action-button">
+          <ion-button fill="clear" class="action-button" (click)="selectImage()">
             <ion-icon name="image" color="primary"></ion-icon>
             Photo
           </ion-button>
@@ -53,16 +64,23 @@
             <ion-icon name="videocam" color="danger"></ion-icon>
             Video
           </ion-button>
+          <ion-button fill="clear" class="action-button" (click)="cancelPost()">
+            <ion-icon name="close" color="medium"></ion-icon>
+            Cancel
+          </ion-button>
         </div>
-        <ion-button 
-          (click)="submitPost()" 
-          [disabled]="loading || !newPost.trim()"
+        <ion-button
+          (click)="submitPost()"
+          [disabled]="loading || (!newPost.trim() && !selectedImage)"
           class="post-button"
           shape="round">
           {{ loading ? 'Posting...' : 'Post' }}
         </ion-button>
       </div>
     </div>
+
+    <!-- Hidden file input -->
+    <input type="file" #fileInput accept="image/*" (change)="onImageSelected($event)" style="display: none;">
   </ion-card>
 
   <!-- Posts Feed -->
@@ -102,7 +120,12 @@
         </div>
 
         <div class="post-content">
-          <p>{{ post.content }}</p>
+          <p *ngIf="post.content">{{ post.content }}</p>
+
+          <!-- Post Image -->
+          <div class="post-image-container" *ngIf="post.imageUrl">
+            <img [src]="post.imageUrl" alt="Post image" class="post-image" (click)="viewFullImage(post.imageUrl)">
+          </div>
         </div>
 
         <!-- Removed like, comment, share, and react count -->
@@ -125,60 +148,28 @@
   </div>
 </ion-content>
 
-<ion-footer class="home-footer">
+<ion-footer class="modern-footer">
   <ion-toolbar>
     <div class="footer-buttons">
-      <ion-button fill="clear" routerLink="/home">
+      <ion-button fill="clear" routerLink="/home" class="active">
         <ion-icon name="home" slot="icon-only"></ion-icon>
+        <span class="nav-label">Home</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/alumni">
-        <ion-icon name="people" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" routerLink="/events">
+        <ion-icon name="calendar" slot="icon-only"></ion-icon>
       </ion-button>
-      <!-- QR Code Scanner Button -->
-      <ion-button fill="clear" (click)="openQrScannerModal()">
-        <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" routerLink="/notifications">
+        <ion-icon name="notifications" slot="icon-only"></ion-icon>
       </ion-button>
-      <ion-button fill="clear" routerLink="/profile" class="active">
+      <ion-button fill="clear" routerLink="/profile">
         <ion-icon name="person" slot="icon-only"></ion-icon>
+        <span class="nav-label">Profile</span>
       </ion-button>
-      <ion-button fill="clear" routerLink="/messages">
+      <ion-button fill="clear" routerLink="/messages" class="footer-nav-btn">
         <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
+        <span class="nav-label">Messages</span>
+        <div class="notification-badge" *ngIf="unreadMessages > 0">{{ unreadMessages }}</div>
       </ion-button>
     </div>
   </ion-toolbar>
 </ion-footer>
-
-<!-- QR Code Scanner Modal -->
-<ion-modal [isOpen]="isQrScannerModalOpen" (didDismiss)="closeQrScannerModal()">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>QR Code Scanner</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeQrScannerModal()">
-            <ion-icon name="close"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="qr-scanner-modal-content">
-      <div class="qr-scanner-container">
-        <!-- You can use a camera plugin here for actual scanning -->
-        <ion-input [(ngModel)]="qrText" placeholder="Enter text to generate QR"></ion-input>
-        <ion-button expand="block" (click)="generateQrCode()">Generate QR Code</ion-button>
-        <div *ngIf="qrCodeUrl">
-          <img [src]="qrCodeUrl" alt="QR Code" style="margin-top:16px;max-width:200px;" />
-        </div>
-      </div>
-
-      <!-- Inside your QR Code Scanner Modal -->
-      <div class="qr-scanner-container">
-        <input type="file" accept="image/*" (change)="onQrImageSelected($event)" />
-        <ion-button expand="block" (click)="scanQrImage()" [disabled]="!selectedQrImage">Scan QR Code</ion-button>
-        <div *ngIf="scannedQrText">
-          <p>Scanned Text: {{ scannedQrText }}</p>
-        </div>
-      </div>
-    </ion-content>
-  </ng-template>
-</ion-modal>
