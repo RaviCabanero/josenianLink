@@ -464,6 +464,7 @@ export class AdminPage implements OnInit {
     ];
     this.totals.events = this.eventsList.length;
   }
+  
 
   loadIdRequestsList() {
     // Use the first 5 alumni ID requests for the list

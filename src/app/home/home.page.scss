@@ -545,6 +545,11 @@
   font-size: 14px;
 }
 
+.post-input-container {
+  flex-grow: 1;
+  margin-left: 12px;
+}
+
 .create-post-footer {
   padding: 0 16px 16px;
 }
@@ -552,9 +557,26 @@
 .post-input {
   --padding-start: 12px;
   --padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
   --background: #f9f9f9;
   border-radius: 8px;
   margin-bottom: 12px;
+  font-size: 14px;
+
+  &::part(native) {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+  }
+
+  &:focus-within {
+    --background: #ffffff;
+
+    &::part(native) {
+      border-color: #2c543f;
+      box-shadow: 0 0 0 2px rgba(44, 84, 63, 0.1);
+    }
+  }
 }
 
 .post-actions {

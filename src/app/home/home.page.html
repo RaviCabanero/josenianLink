@@ -61,20 +61,21 @@
       <ion-avatar class="post-avatar">
         <img [src]="userProfile?.photoURL || 'assets/default-avatar.png'" />
       </ion-avatar>
-      <ion-button fill="outline" class="post-prompt" (click)="focusPostInput()">
-        Share something with Josenians...
-      </ion-button>
+      <div class="post-input-container">
+        <ion-textarea
+          [(ngModel)]="newPost"
+          placeholder="Share something with Josenians..."
+          rows="2"
+          autoGrow
+          maxlength="500"
+          class="post-input"
+          (ionFocus)="focusPostInput()">
+        </ion-textarea>
+      </div>
     </div>
-    
+
     <div class="create-post-footer" *ngIf="showPostInput">
-      <ion-textarea
-        [(ngModel)]="newPost"
-        placeholder="What's on your mind?"
-        rows="3"
-        autoGrow
-        maxlength="500"
-        class="post-input">
-      </ion-textarea>
+      <!-- Additional options shown when focused -->
 
       <!-- Image Preview Section -->
       <div class="image-preview-section" *ngIf="selectedImage">
