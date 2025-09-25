@@ -27,6 +27,13 @@ export class HomePage implements OnInit {
   unreadMessages: number = 5;
   selectedImage: string | null = null;
   selectedImageFile: File | null = null;
+  
+  // QR Code related properties
+  isQrScannerModalOpen: boolean = false;
+  qrText: string = '';
+  qrCodeUrl: string = '';
+  selectedQrImage: File | null = null;
+  scannedQrText: string = '';
 
   async clickLink(post: any) {
     if (!this.userProfile) {
@@ -54,13 +61,6 @@ export class HomePage implements OnInit {
   navigateToSettings() {
     this.router.navigate(['/settings']);
   }
-  newPost: string = '';
-  posts$!: Observable<any[]>;
-  userProfile: any = null;
-  loading: boolean = false;
-  showPostInput: boolean = false;
-  unreadNotifications: number = 0;
-  unreadMessages: number = 5;
 
   private firestore = inject(AngularFirestore);
   private authService = inject(AuthService);
