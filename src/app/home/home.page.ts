@@ -27,6 +27,13 @@ export class HomePage implements OnInit {
   unreadMessages: number = 5;
   selectedImage: string | null = null;
   selectedImageFile: File | null = null;
+  
+  // QR Code related properties
+  isQrScannerModalOpen: boolean = false;
+  qrText: string = '';
+  qrCodeUrl: string = '';
+  selectedQrImage: File | null = null;
+  scannedQrText: string = '';
 
   async clickLink(post: any) {
     if (!this.userProfile) {
@@ -368,5 +375,48 @@ export class HomePage implements OnInit {
 
   logout() {
     this.authService.logout();
+  }
+
+  
+  openQrScannerModal() {
+    this.isQrScannerModalOpen = true;
+  }
+
+  closeQrScannerModal() {
+    this.isQrScannerModalOpen = false;
+  }
+
+  generateQrCode() {
+    if (this.qrText.trim()) {
+      const encoded = encodeURIComponent(this.qrText.trim());
+      this.qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encoded}&size=200x200`;
+    }
+  }
+
+  openNotifications() {
+    this.router.navigate(['/notifications']);
+  }
+
+  onQrImageSelected(event: any) {
+    const file = event.target.files[0];
+    this.selectedQrImage = file ? file : null;
+  }
+
+  async scanQrImage() {
+    if (!this.selectedQrImage) return;
+
+    const formData = new FormData();
+    formData.append('file', this.selectedQrImage);
+
+    try {
+      const response = await fetch('https://api.qrserver.com/v1/read-qr-code/', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+      this.scannedQrText = result[0]?.symbol[0]?.data || 'No QR code found';
+    } catch (error) {
+      this.scannedQrText = 'Error reading QR code';
+    }
   }
 }
