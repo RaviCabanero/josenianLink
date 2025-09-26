@@ -100,39 +100,177 @@
             </div>
           </div>
 
-          <!-- Year Graduated -->
+          <!-- Date Graduated -->
           <div class="input-group">
-            <div class="input-wrapper">
-              <ion-icon name="calendar-outline" class="input-icon-modern"></ion-icon>
-              <ion-input
-                [(ngModel)]="yearGraduated"
-                type="number"
-                required
-                class="modern-input"
-                placeholder="Year Graduated"
-                fill="outline"
-                (focus)="isInputFocused = true"
-                (blur)="checkBlur()">
-              </ion-input>
-              <div class="input-focus-line"></div>
+            <div class="date-picker-wrapper">
+              <div class="date-picker-trigger" [class.active]="isDatePickerOpen" (click)="toggleDatePicker()">
+                <ion-icon name="calendar-outline" class="input-icon-modern"></ion-icon>
+                <span class="date-picker-text" [class.placeholder]="!graduationDate">
+                  {{ graduationDate ? formatGraduationDate(graduationDate) : 'Date Graduated' }}
+                </span>
+                <ion-icon
+                  name="chevron-down-outline"
+                  class="dropdown-arrow"
+                  [class.rotated]="isDatePickerOpen">
+                </ion-icon>
+              </div>
+
+              <div class="date-picker-modal" [class.open]="isDatePickerOpen">
+                <!-- Calendar Header -->
+                <div class="calendar-header">
+                  <ion-button
+                    fill="clear"
+                    (click)="previousMonth()"
+                    class="nav-btn">
+                    <ion-icon name="chevron-back"></ion-icon>
+                  </ion-button>
+
+                  <div class="month-year-title" (click)="toggleYearPicker()">
+                    {{ getMonthYearTitle() }}
+                    <ion-icon name="chevron-down" class="year-dropdown-icon"></ion-icon>
+                  </div>
+
+                  <ion-button
+                    fill="clear"
+                    (click)="nextMonth()"
+                    class="nav-btn">
+                    <ion-icon name="chevron-forward"></ion-icon>
+                  </ion-button>
+                </div>
+
+                <!-- Year Picker Dropdown -->
+                <div class="year-picker-dropdown" [class.open]="isYearPickerOpen">
+                  <div class="year-list">
+                    <div
+                      *ngFor="let year of availableYears"
+                      class="year-option"
+                      [class.selected]="year === currentCalendarDate.getFullYear()"
+                      (click)="selectYear(year)">
+                      {{ year }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="calendar-grid">
+                  <!-- Weekday Headers -->
+                  <div class="weekday-headers">
+                    <div class="weekday-header" *ngFor="let day of weekDays">{{ day }}</div>
+                  </div>
+
+                  <!-- Calendar Days -->
+                  <div class="calendar-days">
+                    <div
+                      *ngFor="let day of calendarDays"
+                      class="calendar-day"
+                      [class.other-month]="!day.isCurrentMonth"
+                      [class.selected]="day.isSelected"
+                      [class.today]="day.isToday"
+                      [class.disabled]="day.isDisabled"
+                      (click)="selectDay(day)">
+                      {{ day.day }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Confirm Button -->
+                <div class="calendar-confirm">
+                  <ion-button
+                    (click)="confirmDate()"
+                    [disabled]="!selectedCalendarDate"
+                    expand="block"
+                    class="confirm-date-btn">
+                    Confirm
+                  </ion-button>
+                </div>
+
+                <!-- Calendar Actions -->
+                <div class="calendar-actions">
+                  <ion-button
+                    fill="clear"
+                    (click)="clearDate()"
+                    class="cancel-btn">
+                    Cancel
+                  </ion-button>
+                </div>
+              </div>
+
+              <div class="date-validation" *ngIf="showDateError">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                <span>Please select graduation date</span>
+              </div>
             </div>
           </div>
 
-          <!-- Program -->
+          <!-- Program Selection -->
           <div class="input-group">
-            <div class="input-wrapper">
-              <ion-icon name="school-outline" class="input-icon-modern"></ion-icon>
-              <ion-input
-                [(ngModel)]="program"
-                type="text"
-                required
-                class="modern-input"
-                placeholder="Program (e.g. BSIT, BSBA, BSN)"
-                fill="outline"
-                (focus)="isInputFocused = true"
-                (blur)="checkBlur()">
-              </ion-input>
-              <div class="input-focus-line"></div>
+            <div class="program-dropdown-wrapper">
+              <div class="dropdown-trigger" [class.active]="isProgramDropdownOpen" (click)="toggleProgramDropdown()">
+                <ion-icon name="school-outline" class="input-icon-modern"></ion-icon>
+                <span class="dropdown-text" [class.placeholder]="!program">
+                  {{ program ? getProgramDisplayName(program) : 'Select Program' }}
+                </span>
+                <ion-icon
+                  name="chevron-down-outline"
+                  class="dropdown-arrow"
+                  [class.rotated]="isProgramDropdownOpen">
+                </ion-icon>
+              </div>
+
+              <div class="dropdown-options" [class.open]="isProgramDropdownOpen">
+                <div
+                  class="dropdown-option"
+                  [class.selected]="program === 'BSIT'"
+                  (click)="selectProgram('BSIT')">
+                  <div class="option-icon">
+                    <ion-icon name="laptop-outline"></ion-icon>
+                  </div>
+                  <div class="option-content">
+                    <span class="option-code">BSIT</span>
+                    <span class="option-name">Bachelor of Science in Information Technology</span>
+                  </div>
+                  <div class="option-check" *ngIf="program === 'BSIT'">
+                    <ion-icon name="checkmark"></ion-icon>
+                  </div>
+                </div>
+
+                <div
+                  class="dropdown-option"
+                  [class.selected]="program === 'BSBA'"
+                  (click)="selectProgram('BSBA')">
+                  <div class="option-icon">
+                    <ion-icon name="briefcase-outline"></ion-icon>
+                  </div>
+                  <div class="option-content">
+                    <span class="option-code">BSBA</span>
+                    <span class="option-name">Bachelor of Science in Business Administration</span>
+                  </div>
+                  <div class="option-check" *ngIf="program === 'BSBA'">
+                    <ion-icon name="checkmark"></ion-icon>
+                  </div>
+                </div>
+
+                <div
+                  class="dropdown-option"
+                  [class.selected]="program === 'BSN'"
+                  (click)="selectProgram('BSN')">
+                  <div class="option-icon">
+                    <ion-icon name="medical-outline"></ion-icon>
+                  </div>
+                  <div class="option-content">
+                    <span class="option-code">BSN</span>
+                    <span class="option-name">Bachelor of Science in Nursing</span>
+                  </div>
+                  <div class="option-check" *ngIf="program === 'BSN'">
+                    <ion-icon name="checkmark"></ion-icon>
+                  </div>
+                </div>
+              </div>
+
+              <div class="program-validation" *ngIf="showProgramError">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                <span>Please select a program</span>
+              </div>
             </div>
           </div>
 

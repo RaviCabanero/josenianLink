@@ -386,6 +386,621 @@ $usjr-soft-gold: #fef3c7;
         }
       }
     }
+
+    // Program Dropdown Styles
+    .program-dropdown-wrapper {
+      position: relative;
+
+      .dropdown-trigger {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 52px;
+        background: rgba(44, 84, 63, 0.05);
+        border: 2px solid rgba(44, 84, 63, 0.2);
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: rgba(244, 192, 20, 0.4);
+          background: rgba(44, 84, 63, 0.08);
+          transform: translateY(-1px);
+        }
+
+        &.active {
+          border-color: $usjr-gold;
+          background: rgba(244, 192, 20, 0.08);
+          box-shadow: 0 0 0 3px rgba(244, 192, 20, 0.15);
+
+          .input-icon-modern {
+            color: $usjr-gold;
+            transform: scale(1.05);
+          }
+        }
+
+        .input-icon-modern {
+          color: $usjr-green;
+          font-size: 18px;
+          margin-right: 12px;
+          transition: color 0.3s ease;
+        }
+
+        .dropdown-text {
+          flex: 1;
+          color: $usjr-green;
+          font-weight: 500;
+          font-size: 15px;
+
+          &.placeholder {
+            color: rgba(44, 84, 63, 0.6);
+          }
+        }
+
+        .dropdown-arrow {
+          color: $usjr-green;
+          font-size: 16px;
+          transition: transform 0.3s ease;
+
+          &.rotated {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      .dropdown-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 2px solid rgba(44, 84, 63, 0.2);
+        border-top: none;
+        border-radius: 0 0 14px 14px;
+        box-shadow: 0 4px 12px rgba(44, 84, 63, 0.15);
+        z-index: 1000;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+
+        &.open {
+          max-height: 300px;
+          border-color: $usjr-gold;
+        }
+
+        .dropdown-option {
+          display: flex;
+          align-items: center;
+          padding: 12px 16px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          border-bottom: 1px solid rgba(44, 84, 63, 0.1);
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &:hover {
+            background: rgba(44, 84, 63, 0.05);
+          }
+
+          &.selected {
+            background: rgba(244, 192, 20, 0.1);
+
+            .option-icon ion-icon {
+              color: $usjr-gold;
+            }
+
+            .option-code {
+              color: $usjr-gold;
+            }
+          }
+
+          .option-icon {
+            margin-right: 12px;
+
+            ion-icon {
+              font-size: 20px;
+              color: $usjr-green;
+              transition: color 0.3s ease;
+            }
+          }
+
+          .option-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+
+            .option-code {
+              font-weight: 600;
+              font-size: 15px;
+              color: $usjr-green;
+              margin-bottom: 2px;
+              transition: color 0.3s ease;
+            }
+
+            .option-name {
+              font-size: 13px;
+              color: rgba(44, 84, 63, 0.7);
+              line-height: 1.2;
+            }
+          }
+
+          .option-check {
+            ion-icon {
+              font-size: 18px;
+              color: $usjr-gold;
+              animation: checkmarkPop 0.3s ease;
+            }
+          }
+        }
+      }
+
+      .program-validation {
+        display: flex;
+        align-items: center;
+        margin-top: 8px;
+        color: #e74c3c;
+        font-size: 14px;
+
+        ion-icon {
+          margin-right: 6px;
+          font-size: 16px;
+        }
+      }
+    }
+
+    // Date Picker Styles
+    .date-picker-wrapper {
+      position: relative;
+
+      .date-picker-trigger {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 52px;
+        background: rgba(44, 84, 63, 0.05);
+        border: 2px solid rgba(44, 84, 63, 0.2);
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: rgba(244, 192, 20, 0.4);
+          background: rgba(44, 84, 63, 0.08);
+          transform: translateY(-1px);
+        }
+
+        &.active {
+          border-color: $usjr-gold;
+          background: rgba(244, 192, 20, 0.08);
+          box-shadow: 0 0 0 3px rgba(244, 192, 20, 0.15);
+
+          .input-icon-modern {
+            color: $usjr-gold;
+            transform: scale(1.05);
+          }
+        }
+
+        .input-icon-modern {
+          color: $usjr-green;
+          font-size: 18px;
+          margin-right: 12px;
+          transition: all 0.3s ease;
+        }
+
+        .date-picker-text {
+          flex: 1;
+          color: $usjr-green;
+          font-weight: 500;
+          font-size: 15px;
+
+          &.placeholder {
+            color: rgba(44, 84, 63, 0.6);
+          }
+        }
+
+        .dropdown-arrow {
+          color: $usjr-green;
+          font-size: 16px;
+          transition: transform 0.3s ease;
+
+          &.rotated {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      .date-picker-modal {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 2px solid rgba(44, 84, 63, 0.2);
+        border-top: none;
+        border-radius: 0 0 14px 14px;
+        box-shadow: 0 8px 24px rgba(44, 84, 63, 0.15);
+        z-index: 1000;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+
+        // Set CSS variables for ion-datetime
+        --ion-color-primary: #{$usjr-gold};
+        --ion-color-primary-rgb: 244, 192, 20;
+        --ion-color-primary-contrast: white;
+        --ion-color-primary-contrast-rgb: 255, 255, 255;
+        --ion-color-primary-shade: #d4a512;
+        --ion-color-primary-tint: #f5c73a;
+
+        &.open {
+          max-height: 550px;
+          border-color: $usjr-gold;
+          overflow-y: auto;
+        }
+
+        // Calendar Header
+        .calendar-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px 20px;
+          background: $usjr-green;
+          color: white;
+
+          .month-year-title {
+            margin: 0;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.1);
+            }
+
+            .year-dropdown-icon {
+              font-size: 16px;
+              transition: transform 0.3s ease;
+            }
+          }
+
+          .nav-btn {
+            --color: white;
+            --padding-start: 8px;
+            --padding-end: 8px;
+            min-height: 40px;
+            min-width: 40px;
+
+            ion-icon {
+              font-size: 20px;
+            }
+          }
+        }
+
+        // Year Picker Dropdown
+        .year-picker-dropdown {
+          position: absolute;
+          top: 60px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: white;
+          border: 1px solid rgba(44, 84, 63, 0.2);
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          z-index: 1000;
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+          width: 200px;
+
+          &.open {
+            max-height: 300px;
+            overflow-y: auto;
+          }
+
+          .year-list {
+            padding: 8px 0;
+
+            .year-option {
+              padding: 12px 20px;
+              cursor: pointer;
+              font-size: 16px;
+              font-weight: 500;
+              color: $usjr-green;
+              transition: all 0.2s ease;
+
+              &:hover {
+                background: rgba(244, 192, 20, 0.1);
+              }
+
+              &.selected {
+                background: $usjr-gold;
+                color: white;
+                font-weight: 600;
+              }
+            }
+          }
+        }
+
+        // Calendar Grid
+        .calendar-grid {
+          background: white;
+          padding: 16px;
+
+          .weekday-headers {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+
+            .weekday-header {
+              text-align: center;
+              font-size: 14px;
+              font-weight: 600;
+              color: rgba(44, 84, 63, 0.7);
+              padding: 8px 4px;
+            }
+          }
+
+          .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+
+            .calendar-day {
+              aspect-ratio: 1;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 16px;
+              font-weight: 500;
+              border-radius: 8px;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              color: $usjr-green;
+              background: transparent;
+              border: 1px solid transparent;
+
+              &:hover:not(.disabled) {
+                background: rgba(244, 192, 20, 0.1);
+                border-color: rgba(244, 192, 20, 0.3);
+              }
+
+              &.other-month {
+                color: rgba(44, 84, 63, 0.3);
+              }
+
+              &.today {
+                background: rgba(244, 192, 20, 0.2);
+                border-color: $usjr-gold;
+                font-weight: 700;
+              }
+
+              &.selected {
+                background: $usjr-gold;
+                color: white;
+                font-weight: 700;
+                transform: scale(1.05);
+              }
+
+              &.disabled {
+                color: rgba(44, 84, 63, 0.2);
+                cursor: not-allowed;
+
+                &:hover {
+                  background: transparent;
+                  border-color: transparent;
+                }
+              }
+            }
+          }
+        }
+
+        .graduation-datetime {
+          --background: white;
+          --color: #{$usjr-green};
+          --ion-color-primary: #{$usjr-gold};
+          --ion-color-primary-contrast: white;
+          padding: 16px;
+          background: white;
+
+          // Customize the date picker appearance
+          ::ng-deep {
+            // Main calendar container
+            .datetime-calendar {
+              background: white;
+            }
+
+            // Calendar header (month/year navigation)
+            .datetime-header {
+              color: $usjr-green !important;
+              font-weight: 600;
+            }
+
+            // Month/year buttons
+            .datetime-header-button {
+              color: $usjr-green !important;
+            }
+
+            // Calendar weekday headers (S M T W T F S)
+            .calendar-weekday {
+              color: $usjr-green !important;
+              font-weight: 600;
+              font-size: 14px;
+            }
+
+            // Calendar day numbers
+            .calendar-day {
+              color: $usjr-green !important;
+              font-weight: 500;
+
+              &:hover {
+                background: rgba(244, 192, 20, 0.1) !important;
+                color: $usjr-green !important;
+              }
+
+              &.calendar-day-active {
+                background: $usjr-gold !important;
+                color: white !important;
+                font-weight: 700;
+              }
+
+              &.calendar-day-today {
+                color: $usjr-gold !important;
+                font-weight: 700;
+              }
+
+              &.calendar-day-disabled {
+                color: rgba(44, 84, 63, 0.3) !important;
+              }
+            }
+
+            // Month/year picker
+            .datetime-year,
+            .datetime-month {
+              color: $usjr-green !important;
+
+              &.datetime-active {
+                background: $usjr-gold !important;
+                color: white !important;
+                border-radius: 8px;
+              }
+            }
+
+            // Navigation arrows
+            .datetime-button {
+              color: $usjr-green !important;
+
+              &:hover {
+                background: rgba(244, 192, 20, 0.1) !important;
+              }
+            }
+
+            // Additional selectors to ensure text visibility
+            .datetime-text,
+            .datetime-placeholder,
+            .calendar-day-button,
+            .datetime-button-inner {
+              color: $usjr-green !important;
+            }
+
+            // Make sure the calendar background is white
+            .datetime-calendar,
+            .calendar-month,
+            .calendar-year {
+              background: white !important;
+            }
+
+            // Ensure all text elements are visible
+            span, div, button {
+              color: $usjr-green !important;
+
+              &.calendar-day-active,
+              &.datetime-active {
+                color: white !important;
+              }
+            }
+          }
+        }
+
+        // Calendar Confirm Button
+        .calendar-confirm {
+          padding: 16px 20px 8px 20px;
+          background: white;
+
+          .confirm-date-btn {
+            --background: #{$usjr-gold};
+            --color: #{$usjr-green};
+            --border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            height: 48px;
+
+            &[disabled] {
+              --background: rgba(44, 84, 63, 0.2);
+              --color: rgba(44, 84, 63, 0.5);
+            }
+          }
+        }
+
+        // Calendar Actions
+        .calendar-actions {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 8px 20px 16px 20px;
+          background: white;
+
+          .cancel-btn {
+            --color: rgba(44, 84, 63, 0.7);
+            fill: clear;
+            font-size: 16px;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .date-validation {
+        display: flex;
+        align-items: center;
+        margin-top: 8px;
+        color: #e74c3c;
+        font-size: 14px;
+
+        ion-icon {
+          margin-right: 6px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+// Global ion-datetime styling to ensure text visibility
+ion-datetime {
+  --color: #{$usjr-green} !important;
+
+  &.graduation-datetime {
+    color: $usjr-green !important;
+
+    // Force text color on all child elements
+    * {
+      color: $usjr-green !important;
+    }
+
+    // Selected state
+    .calendar-day-active,
+    .datetime-active {
+      background: $usjr-gold !important;
+      color: white !important;
+    }
+  }
+}
+
+@keyframes checkmarkPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -650,6 +1265,124 @@ $usjr-soft-gold: #fef3c7;
     .register-btn-modern, .login-link-modern {
       height: 48px;
       font-size: 14px;
+    }
+  }
+
+  // Program dropdown responsive styles
+  .program-dropdown-wrapper {
+    .dropdown-trigger {
+      height: 48px;
+      padding: 0 12px;
+
+      .dropdown-text {
+        font-size: 14px;
+      }
+    }
+
+    .dropdown-options {
+      .dropdown-option {
+        padding: 10px 12px;
+
+        .option-icon ion-icon {
+          font-size: 18px;
+        }
+
+        .option-content {
+          .option-code {
+            font-size: 14px;
+          }
+
+          .option-name {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+
+  // Date picker responsive styles
+  .date-picker-wrapper {
+    .date-picker-trigger {
+      height: 48px;
+      padding: 0 12px;
+
+      .date-picker-text {
+        font-size: 14px;
+      }
+    }
+
+    .date-picker-modal {
+      &.open {
+        max-height: 520px;
+      }
+
+      .calendar-header {
+        padding: 12px 16px;
+
+        .month-year-title {
+          font-size: 16px;
+          gap: 6px;
+          padding: 6px;
+
+          .year-dropdown-icon {
+            font-size: 14px;
+          }
+        }
+
+        .nav-btn {
+          min-height: 36px;
+          min-width: 36px;
+
+          ion-icon {
+            font-size: 18px;
+          }
+        }
+      }
+
+      .year-picker-dropdown {
+        top: 50px;
+        width: 160px;
+
+        &.open {
+          max-height: 250px;
+        }
+
+        .year-list .year-option {
+          padding: 10px 16px;
+          font-size: 14px;
+        }
+      }
+
+      .calendar-grid {
+        padding: 12px;
+
+        .weekday-headers .weekday-header {
+          font-size: 12px;
+          padding: 6px 2px;
+        }
+
+        .calendar-days .calendar-day {
+          font-size: 14px;
+          border-radius: 6px;
+        }
+      }
+
+      .calendar-confirm {
+        padding: 12px 16px 6px 16px;
+
+        .confirm-date-btn {
+          font-size: 14px;
+          height: 44px;
+        }
+      }
+
+      .calendar-actions {
+        padding: 6px 16px 12px 16px;
+
+        .cancel-btn {
+          font-size: 14px;
+        }
+      }
     }
   }
 }
