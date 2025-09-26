@@ -17,7 +17,11 @@ export class ProfilePage implements OnInit {
   isCreatePostModalOpen: boolean = false;
   isEditPostModalOpen: boolean = false;
   isAddJobModalOpen: boolean = false;
+  isEmploymentModalOpen: boolean = false;
+  isEditingEmployment: boolean = false;
+  editingEmploymentId: string = '';
   isQrScannerModalOpen = false;
+  currentlyWorking: boolean = false;
   userPosts: any[] | undefined = undefined; // undefined = loading, [] = no posts
   currentJobs: any[] = [];
   pastJobs: any[] = [];
@@ -50,7 +54,21 @@ export class ProfilePage implements OnInit {
     email: ''
   };
 
+  employmentForm = {
+    title: '',
+    company: '',
+    employmentType: 'full-time',
+    startMonth: '',
+    startYear: '',
+    endMonth: '',
+    endYear: '',
+    location: '',
+    skills: '',
+    current: false
+  };
+
   editingJob: any = null;
+  editingJobId: string = '';
 
   // Navigation badge properties
   unreadNotifications: number = 0;
@@ -160,9 +178,78 @@ export class ProfilePage implements OnInit {
     this.isEditModalOpen = true;
   }
 
-  // Close edit modal
-  closeEditModal() {
-    this.isEditModalOpen = false;
+  // Close edit modal with confirmation
+  async closeEditModal() {
+    // Check if there are unsaved changes
+    if (this.hasUnsavedChanges()) {
+      await this.showCancelConfirmation();
+    } else {
+      this.isEditModalOpen = false;
+    }
+  }
+
+  // Handle modal dismissal (swipe down or tap outside)
+  async onModalDismiss() {
+    // Check if there are unsaved changes
+    if (this.hasUnsavedChanges()) {
+      // Reopen the modal and show confirmation
+      setTimeout(() => {
+        this.isEditModalOpen = true;
+      }, 100);
+      await this.showCancelConfirmation();
+    } else {
+      this.isEditModalOpen = false;
+    }
+  }
+
+  // Check if there are unsaved changes in the form
+  hasUnsavedChanges(): boolean {
+    // Compare current form values with original user data
+    const originalFirstName = this.user.name?.split(' ')[0] || '';
+    const originalLastName = this.user.name?.split(' ').slice(1).join(' ') || '';
+    
+    return (
+      this.editUser.firstName !== originalFirstName ||
+      this.editUser.lastName !== originalLastName ||
+      this.editUser.email !== this.user.email ||
+      this.editUser.program !== this.user.program ||
+      this.editUser.yearGraduated !== this.user.yearGraduated ||
+      this.editUser.address !== this.user.address ||
+      this.editUser.contactNumber !== this.user.contactNumber ||
+      this.editUser.photo !== this.user.photo
+    );
+  }
+
+  // Show confirmation dialog when canceling
+  async showCancelConfirmation() {
+    const alert = await this.alertController.create({
+      header: 'Unsaved Changes',
+      message: 'You have unsaved changes. Are you sure you want to cancel editing? Your changes will be lost.',
+      cssClass: 'cancel-confirmation-alert',
+      buttons: [
+        {
+          text: 'Continue Editing',
+          role: 'cancel',
+          cssClass: 'alert-button-confirm'
+        },
+        {
+          text: 'Discard Changes',
+          role: 'destructive',
+          cssClass: 'alert-button-destructive',
+          handler: () => {
+            this.resetEditForm();
+            this.isEditModalOpen = false;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  // Reset the edit form to original values
+  resetEditForm() {
+    this.editUser = { ...this.user }; // Reset to original user data
   }
 
   // Handle photo selection
@@ -464,10 +551,16 @@ export class ProfilePage implements OnInit {
 
   // Load employment history
   loadEmploymentHistory() {
-    this.authService.getUserEmploymentHistory().subscribe(jobs => {
-      this.currentJobs = jobs.filter(job => job.type === 'current');
-      this.pastJobs = jobs.filter(job => job.type === 'past');
-    }, error => {
+    this.authService.getUserEmploymentHistory().subscribe((jobs: any) => {
+      this.currentJobs = jobs.filter((job: any) => {
+        // Check both old format (type) and new format (currentlyWorking)
+        return job.type === 'current' || job.currentlyWorking === true;
+      });
+      this.pastJobs = jobs.filter((job: any) => {
+        // Check both old format (type) and new format (currentlyWorking)
+        return job.type === 'past' || job.currentlyWorking === false;
+      });
+    }, (error: any) => {
       console.error('Error loading employment history:', error);
     });
   }
@@ -631,20 +724,57 @@ export class ProfilePage implements OnInit {
     }
   }
 
-  // Edit job
-  editJob(job: any) {
-    this.editingJob = { ...job };
-    this.newJob = {
-      type: job.type,
-      companyName: job.companyName || '',
-      position: job.position || '',
-      startDate: job.startDate || '',
-      endDate: job.endDate || '',
-      address: job.address || '',
-      contactNumber: job.contactNumber || '',
-      email: job.email || ''
+  // Edit employment
+  editEmployment(job: any) {
+    // Pre-populate the form with existing job data
+    this.employmentForm = {
+      title: job.title || job.position || '',
+      company: job.company || job.companyName || '',
+      employmentType: job.employmentType || 'Full-time',
+      startMonth: job.startMonth || '',
+      startYear: job.startYear || '',
+      endMonth: job.endMonth || '',
+      endYear: job.endYear || '',
+      location: job.location || job.address || '',
+      skills: job.skills || '',
+      current: job.currentlyWorking || job.type === 'current' || false
     };
-    this.isAddJobModalOpen = true;
+    
+    this.currentlyWorking = job.currentlyWorking || job.type === 'current' || false;
+    this.editingJobId = job.id; // Store the ID for updating
+    this.openEmploymentModal();
+  }
+
+  // Edit job (legacy method)
+  editJob(job: any) {
+    this.editEmployment(job);
+  }
+
+  // Delete employment
+  deleteEmployment(job: any) {
+    this.alertController.create({
+      header: 'Delete Employment',
+      message: 'Are you sure you want to delete this employment record?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          handler: async () => {
+            try {
+              await this.authService.deleteEmploymentHistory(job);
+              this.presentToast('Employment deleted successfully', 'success');
+              this.loadEmploymentHistory(); // Reload the data
+            } catch (error) {
+              console.error('Error deleting employment:', error);
+              this.presentToast('Error deleting employment', 'danger');
+            }
+          }
+        }
+      ]
+    }).then(alert => alert.present());
   }
 
   // Delete job
@@ -783,5 +913,158 @@ export class ProfilePage implements OnInit {
 
   openNotifications() {
     this.router.navigate(['/notifications']);
+  }
+
+  openEmploymentModal() {
+    this.currentlyWorking = false;
+    this.employmentForm = {
+      title: '',
+      company: '',
+      employmentType: 'full-time',
+      startMonth: '',
+      startYear: '',
+      endMonth: '',
+      endYear: '',
+      location: '',
+      skills: '',
+      current: false
+    };
+    this.isEditingEmployment = false;
+    this.editingJobId = '';
+    this.isEmploymentModalOpen = true;
+  }
+
+  closeEmploymentModal() {
+    this.isEmploymentModalOpen = false;
+    this.isEditingEmployment = false;
+    this.editingEmploymentId = '';
+    this.editingJobId = '';
+  }
+
+  async saveEmployment() {
+    if (!this.employmentForm.title || !this.employmentForm.company || !this.employmentForm.employmentType || 
+        !this.employmentForm.startMonth || !this.employmentForm.startYear || 
+        !this.employmentForm.location) {
+      this.showToast('Please fill in all required fields');
+      return;
+    }
+
+    if (!this.currentlyWorking && (!this.employmentForm.endMonth || !this.employmentForm.endYear)) {
+      this.showToast('Please fill in the end date or mark as currently working');
+      return;
+    }
+
+    // Validate that end date is not earlier than start date
+    if (!this.currentlyWorking && this.employmentForm.startMonth && this.employmentForm.startYear && 
+        this.employmentForm.endMonth && this.employmentForm.endYear) {
+      const startDate = this.getDateFromMonthYear(this.employmentForm.startMonth, parseInt(this.employmentForm.startYear));
+      const endDate = this.getDateFromMonthYear(this.employmentForm.endMonth, parseInt(this.employmentForm.endYear));
+      
+      if (endDate < startDate) {
+        this.showToast('End date cannot be earlier than start date');
+        return;
+      }
+    }
+
+    try {
+      const currentUser = await this.authService.getCurrentUser();
+      if (!currentUser?.uid) return;
+
+      // Create employment data that works with existing system
+      const employmentData = {
+        // New format fields
+        title: this.employmentForm.title,
+        company: this.employmentForm.company,
+        employmentType: this.employmentForm.employmentType,
+        startMonth: this.employmentForm.startMonth,
+        startYear: this.employmentForm.startYear,
+        endMonth: this.currentlyWorking ? '' : this.employmentForm.endMonth,
+        endYear: this.currentlyWorking ? '' : this.employmentForm.endYear,
+        location: this.employmentForm.location,
+        skills: this.employmentForm.skills,
+        currentlyWorking: this.currentlyWorking,
+        
+        // Legacy format fields for compatibility
+        type: this.currentlyWorking ? 'current' : 'past',
+        companyName: this.employmentForm.company,
+        position: this.employmentForm.title,
+        startDate: `${this.employmentForm.startMonth} ${this.employmentForm.startYear}`,
+        endDate: this.currentlyWorking ? '' : `${this.employmentForm.endMonth} ${this.employmentForm.endYear}`,
+        address: this.employmentForm.location,
+        contactNumber: '',
+        email: '',
+        
+        userId: currentUser.uid,
+        userName: this.user.name,
+        userProgram: this.user.program,
+        userEmail: this.user.email,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      if (this.editingJobId) {
+        // Update existing employment
+        const jobToUpdate = [...this.currentJobs, ...this.pastJobs].find(job => job.id === this.editingJobId);
+        if (jobToUpdate) {
+          await this.authService.updateEmploymentHistory(jobToUpdate, employmentData);
+          this.presentToast('Employment updated successfully!', 'success');
+        }
+      } else {
+        // Add new employment
+        await this.authService.addEmploymentHistory(employmentData);
+        this.presentToast('Employment added successfully!', 'success');
+      }
+
+      this.closeEmploymentModal();
+      this.loadEmploymentHistory();
+    } catch (error) {
+      console.error('Error saving employment:', error);
+      this.presentToast('Error saving employment', 'danger');
+    }
+  }
+
+  onCurrentlyWorkingChange() {
+    if (this.currentlyWorking) {
+      this.employmentForm.endMonth = '';
+      this.employmentForm.endYear = '';
+    }
+  }
+
+  // Method to validate end date when user changes it
+  onEndDateChange() {
+    if (this.employmentForm.startMonth && this.employmentForm.startYear && 
+        this.employmentForm.endMonth && this.employmentForm.endYear) {
+      const startDate = this.getDateFromMonthYear(this.employmentForm.startMonth, parseInt(this.employmentForm.startYear));
+      const endDate = this.getDateFromMonthYear(this.employmentForm.endMonth, parseInt(this.employmentForm.endYear));
+      
+      if (endDate < startDate) {
+        this.presentToast('End date cannot be earlier than start date', 'warning');
+      }
+    }
+  }
+
+  getYears(): number[] {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = currentYear; year >= currentYear - 50; year--) {
+      years.push(year);
+    }
+    return years;
+  }
+
+  showToast(message: string) {
+    this.presentToast(message, 'primary');
+  }
+
+  // Helper method to convert month name and year to Date object for comparison
+  getDateFromMonthYear(monthName: string, year: number): Date {
+    const monthMap: { [key: string]: number } = {
+      'January': 0, 'February': 1, 'March': 2, 'April': 3,
+      'May': 4, 'June': 5, 'July': 6, 'August': 7,
+      'September': 8, 'October': 9, 'November': 10, 'December': 11
+    };
+    
+    const monthIndex = monthMap[monthName];
+    return new Date(year, monthIndex, 1); // Use day 1 for comparison
   }
 }

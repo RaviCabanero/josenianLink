@@ -129,9 +129,29 @@
           </div>
         </div>
 
-        <!-- Removed like, comment, share, and react count -->
+        <!-- Post Actions -->
+        <div class="post-actions">
+          <!-- Like Button -->
+          <ion-button fill="clear" [class.liked]="isPostLiked(post)" class="post-action" (click)="toggleLike(post)">
+            <ion-icon 
+              [name]="isPostLiked(post) ? 'heart' : 'heart-outline'">
+            </ion-icon>
+            <span class="action-count">{{ post.likes || 0 }}</span>
+          </ion-button>
 
-        <div class="post-actions" style="justify-content: flex-end;">
+          <!-- Comment Button -->
+          <ion-button fill="clear" class="post-action" (click)="openComments(post)">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+            <span class="action-count">{{ post.commentsCount || 0 }}</span>
+          </ion-button>
+
+          <!-- Share Button -->
+          <ion-button fill="clear" class="post-action" (click)="sharePost(post)">
+            <ion-icon name="arrow-redo-outline"></ion-icon>
+            <span class="action-count">{{ post.sharesCount || 0 }}</span>
+          </ion-button>
+
+          <!-- Link Clicks -->
           <ion-button fill="clear" class="post-action" style="margin-left: auto;" (click)="clickLink(post)">
             <ion-icon name="link-outline" style="color: #057609;"></ion-icon>
             <span style="margin-left: 6px; color: #057609; font-weight: 600;">{{ post.linkClicks || 0 }}</span>

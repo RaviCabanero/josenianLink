@@ -1,7 +1,7 @@
 <ion-header class="custom-header">
   <div class="header-bar">
     <div class="logo-title">
-      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span> 🔗
+      <strong class="logo-green">JOSENIAN</strong><span class="logo-yellow">LINK</span>
     </div>
     <div class="header-actions">
       <ion-button fill="clear" class="header-button" (click)="navigateToSettings()">
@@ -130,33 +130,41 @@
   <div class="employment-section" *ngIf="activeTab === 'employment'">
     <!-- Add New Job Button -->
     <div class="add-job-container">
-      <ion-button expand="block" fill="outline" class="add-job-btn" (click)="openAddJobModal()">
+      <ion-button expand="block" fill="outline" class="add-job-btn" (click)="openEmploymentModal()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        New Job +
+        Add Employment
       </ion-button>
     </div>
 
     <!-- Current Employment -->
     <div class="employment-category" *ngIf="currentJobs.length > 0">
-      <h3 class="category-title">Current</h3>
+      <h3 class="category-title">Current Employment</h3>
       <div class="job-entry" *ngFor="let job of currentJobs">
         <div class="job-status">
           <span class="status-indicator current"></span>
         </div>
         <div class="job-details">
-          <h4 class="company-name">{{ job.companyName }}</h4>
-          <p class="work-date">{{ job.startDate }}</p>
-          <p class="job-position">{{ job.position }}</p>
-          <p class="job-address">{{ job.address }}</p>
-          <p class="job-contact">Phone: {{ job.contactNumber }}</p>
-          <p class="job-email">{{ job.email }}</p>
+          <h4 class="job-title">{{ job.title || job.position }}</h4>
+          <p class="company-name">{{ job.company || job.companyName || 'Company' }}</p>
+          <p class="employment-type">{{ job.employmentType || 'Full-time' }}</p>
+          <p class="work-date" *ngIf="job.startMonth && job.startYear">
+            {{ job.startMonth }} {{ job.startYear }} - Present
+          </p>
+          <p class="work-date" *ngIf="job.startDate && !job.startMonth">{{ job.startDate }}</p>
+          <p class="job-location" *ngIf="job.location">📍 {{ job.location }}</p>
+          <p class="job-address" *ngIf="job.address && !job.location">📍 {{ job.address }}</p>
+          <p class="job-skills" *ngIf="job.skills">💼 {{ job.skills }}</p>
+          <div class="job-contact" *ngIf="job.contactNumber || job.email">
+            <p *ngIf="job.contactNumber">📞 {{ job.contactNumber }}</p>
+            <p *ngIf="job.email">✉️ {{ job.email }}</p>
+          </div>
         </div>
         <div class="job-actions">
-          <ion-button fill="clear" size="small" (click)="editJob(job)">
+          <ion-button fill="clear" size="small" (click)="editEmployment(job)">
             <ion-icon name="create-outline" slot="icon-only"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" size="small" (click)="deleteJob(job)">
-            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          <ion-button fill="clear" size="small" (click)="deleteEmployment(job)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </div>
       </div>
@@ -164,25 +172,35 @@
 
     <!-- Past Employment -->
     <div class="employment-category" *ngIf="pastJobs.length > 0">
-      <h3 class="category-title">Past</h3>
+      <h3 class="category-title">Experience</h3>
       <div class="job-entry" *ngFor="let job of pastJobs">
         <div class="job-status">
           <span class="status-indicator past"></span>
         </div>
         <div class="job-details">
-          <h4 class="company-name">{{ job.companyName }}</h4>
-          <p class="work-date">{{ job.startDate }} - {{ job.endDate }}</p>
-          <p class="job-position">{{ job.position }}</p>
-          <p class="job-address">{{ job.address }}</p>
-          <p class="job-contact">Phone: {{ job.contactNumber }}</p>
-          <p class="job-email">{{ job.email }}</p>
+          <h4 class="job-title">{{ job.title || job.position }}</h4>
+          <p class="company-name">{{ job.companyName || 'Company' }}</p>
+          <p class="employment-type">{{ job.employmentType || 'Full-time' }}</p>
+          <p class="work-date" *ngIf="job.startMonth && job.startYear && job.endMonth && job.endYear">
+            {{ job.startMonth }} {{ job.startYear }} - {{ job.endMonth }} {{ job.endYear }}
+          </p>
+          <p class="work-date" *ngIf="job.startDate && job.endDate && !job.startMonth">
+            {{ job.startDate }} - {{ job.endDate }}
+          </p>
+          <p class="job-location" *ngIf="job.location">📍 {{ job.location }}</p>
+          <p class="job-address" *ngIf="job.address && !job.location">📍 {{ job.address }}</p>
+          <p class="job-skills" *ngIf="job.skills">💼 {{ job.skills }}</p>
+          <div class="job-contact" *ngIf="job.contactNumber || job.email">
+            <p *ngIf="job.contactNumber">📞 {{ job.contactNumber }}</p>
+            <p *ngIf="job.email">✉️ {{ job.email }}</p>
+          </div>
         </div>
         <div class="job-actions">
-          <ion-button fill="clear" size="small" (click)="editJob(job)">
+          <ion-button fill="clear" size="small" (click)="editEmployment(job)">
             <ion-icon name="create-outline" slot="icon-only"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" size="small" (click)="deleteJob(job)">
-            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          <ion-button fill="clear" size="small" (click)="deleteEmployment(job)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </div>
       </div>
@@ -253,7 +271,7 @@
 </ion-content>
 
 <!-- Edit Profile Modal -->
-<ion-modal [isOpen]="isEditModalOpen" (didDismiss)="closeEditModal()">
+<ion-modal [isOpen]="isEditModalOpen" (didDismiss)="onModalDismiss()">
   <ng-template>
     <ion-header>
       <ion-toolbar>
@@ -272,10 +290,16 @@
         <div class="photo-section">
           <div class="current-photo">
             <img [src]="editUser.photo" class="edit-avatar" (error)="onImageError($event)" />
-            <div class="photo-overlay">
-              <ion-button fill="clear" class="change-photo-btn" (click)="selectPhoto()">
-                <ion-icon name="camera" slot="icon-only"></ion-icon>
-              </ion-button>
+            <!-- Always visible edit indicator -->
+            <div class="edit-indicator" (click)="selectPhoto()">
+              <ion-icon name="camera" class="edit-icon"></ion-icon>
+            </div>
+            <!-- Hover overlay with logo -->
+            <div class="photo-overlay" (click)="selectPhoto()">
+              <div class="upload-content">
+                <img src="assets/usjrlogo.png" alt="USJR Logo" class="upload-logo" />
+                <div class="upload-text">Change Photo</div>
+              </div>
             </div>
           </div>
           <input type="file" #fileInput accept="image/*" (change)="onPhotoSelected($event)" style="display: none;">
@@ -546,3 +570,119 @@
     </div>
   </ion-toolbar>
 </ion-footer>
+
+<!-- Employment Modal -->
+<ion-modal [isOpen]="isEmploymentModalOpen" (didDismiss)="closeEmploymentModal()" class="employment-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ isEditingEmployment ? 'Edit' : 'Add' }} Employment</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEmploymentModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding employment-modal-content">
+      <ion-item>
+        <ion-label position="stacked">Job Title *</ion-label>
+        <ion-input [(ngModel)]="employmentForm.title" placeholder="e.g., Software Engineer"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Company or Organization *</ion-label>
+        <ion-input [(ngModel)]="employmentForm.company" placeholder="e.g., USJR, Google, Microsoft"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Employment Type *</ion-label>
+        <ion-select [(ngModel)]="employmentForm.employmentType" placeholder="Select employment type">
+          <ion-select-option value="full-time">Full-time</ion-select-option>
+          <ion-select-option value="part-time">Part-time</ion-select-option>
+          <ion-select-option value="contract">Contract</ion-select-option>
+          <ion-select-option value="internship">Internship</ion-select-option>
+          <ion-select-option value="freelance">Freelance</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-checkbox [(ngModel)]="currentlyWorking" (ionChange)="onCurrentlyWorkingChange()"></ion-checkbox>
+        <ion-label class="ion-margin-start">I'm currently working in this role</ion-label>
+      </ion-item>
+
+      <div class="date-section">
+        <h3>Start Date *</h3>
+        <div class="date-row">
+          <ion-item>
+            <ion-label position="stacked">Month</ion-label>
+            <ion-select [(ngModel)]="employmentForm.startMonth" placeholder="Month" (ionChange)="onEndDateChange()">
+              <ion-select-option value="January">January</ion-select-option>
+              <ion-select-option value="February">February</ion-select-option>
+              <ion-select-option value="March">March</ion-select-option>
+              <ion-select-option value="April">April</ion-select-option>
+              <ion-select-option value="May">May</ion-select-option>
+              <ion-select-option value="June">June</ion-select-option>
+              <ion-select-option value="July">July</ion-select-option>
+              <ion-select-option value="August">August</ion-select-option>
+              <ion-select-option value="September">September</ion-select-option>
+              <ion-select-option value="October">October</ion-select-option>
+              <ion-select-option value="November">November</ion-select-option>
+              <ion-select-option value="December">December</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Year</ion-label>
+            <ion-select [(ngModel)]="employmentForm.startYear" placeholder="Year" (ionChange)="onEndDateChange()">
+              <ion-select-option *ngFor="let year of getYears()" [value]="year">{{ year }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="date-section" *ngIf="!currentlyWorking">
+        <h3>End Date *</h3>
+        <div class="date-row">
+          <ion-item>
+            <ion-label position="stacked">Month</ion-label>
+            <ion-select [(ngModel)]="employmentForm.endMonth" placeholder="Month" (ionChange)="onEndDateChange()">
+              <ion-select-option value="January">January</ion-select-option>
+              <ion-select-option value="February">February</ion-select-option>
+              <ion-select-option value="March">March</ion-select-option>
+              <ion-select-option value="April">April</ion-select-option>
+              <ion-select-option value="May">May</ion-select-option>
+              <ion-select-option value="June">June</ion-select-option>
+              <ion-select-option value="July">July</ion-select-option>
+              <ion-select-option value="August">August</ion-select-option>
+              <ion-select-option value="September">September</ion-select-option>
+              <ion-select-option value="October">October</ion-select-option>
+              <ion-select-option value="November">November</ion-select-option>
+              <ion-select-option value="December">December</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Year</ion-label>
+            <ion-select [(ngModel)]="employmentForm.endYear" placeholder="Year" (ionChange)="onEndDateChange()">
+              <ion-select-option *ngFor="let year of getYears()" [value]="year">{{ year }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Location *</ion-label>
+        <ion-input [(ngModel)]="employmentForm.location" placeholder="e.g., Cebu City, Philippines"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Skills</ion-label>
+        <ion-textarea [(ngModel)]="employmentForm.skills" placeholder="e.g., JavaScript, Angular, Node.js" rows="3"></ion-textarea>
+      </ion-item>
+
+      <ion-button expand="block" (click)="saveEmployment()" class="ion-margin-top">
+        {{ isEditingEmployment ? 'Update' : 'Add' }} Employment
+      </ion-button>
+    </ion-content>
+  </ng-template>
+</ion-modal>

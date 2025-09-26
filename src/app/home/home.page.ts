@@ -150,7 +150,12 @@ export class HomePage implements OnInit {
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         likes: 0,
         likedBy: [] as string[],
-        comments: []
+        comments: [],
+        commentsCount: 0,
+        sharesCount: 0,
+        sharedBy: [] as string[],
+        linkClicks: 0,
+        clickedBy: [] as string[]
       };
 
       const docRef = await this.firestore.collection('posts').add(post);
@@ -241,6 +246,74 @@ export class HomePage implements OnInit {
     const email = this.userProfile?.email;
     const likedBy: string[] = post.likedBy || [];
     return !!email && likedBy.includes(email);
+  }
+
+  // Toggle like functionality (wrapper for likePost)
+  async toggleLike(post: any) {
+    await this.likePost(post);
+  }
+
+  // Open comments modal/section
+  async openComments(post: any) {
+    // For now, show a toast - you can implement a full modal later
+    await this.presentToast(`Comments for this post: ${post.comments?.length || 0}`, 'primary');
+    
+    // TODO: Implement full comments modal with:
+    // - List of existing comments
+    // - Add new comment functionality
+    // - Real-time updates
+  }
+
+  // Share post functionality
+  async sharePost(post: any) {
+    try {
+      if (!this.userProfile) {
+        await this.presentToast('Please log in to share posts', 'warning');
+        return;
+      }
+
+      const shareData = {
+        title: 'JosenianLink Post',
+        text: `Check out this post by ${post.authorName}: ${post.content?.substring(0, 100)}...`,
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        // Use native sharing if available
+        await navigator.share(shareData);
+        
+        // Update share count
+        const userEmail = this.userProfile.email;
+        const sharedBy: string[] = post.sharedBy || [];
+        
+        if (!sharedBy.includes(userEmail)) {
+          await this.firestore.collection('posts').doc(post.id).update({
+            sharesCount: (post.sharesCount || 0) + 1,
+            sharedBy: [...sharedBy, userEmail]
+          });
+        }
+        
+        await this.presentToast('Post shared successfully!', 'success');
+      } else {
+        // Fallback: Copy link to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        await this.presentToast('Link copied to clipboard!', 'success');
+        
+        // Still update share count
+        const userEmail = this.userProfile.email;
+        const sharedBy: string[] = post.sharedBy || [];
+        
+        if (!sharedBy.includes(userEmail)) {
+          await this.firestore.collection('posts').doc(post.id).update({
+            sharesCount: (post.sharesCount || 0) + 1,
+            sharedBy: [...sharedBy, userEmail]
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error sharing post:', error);
+      await this.presentToast('Failed to share post', 'danger');
+    }
   }
 
   getTimeAgo(timestamp: any): string {

@@ -699,10 +699,15 @@
   display: flex;
   align-items: center;
   margin-right: 16px;
+  font-size: 14px;
+  color: #65676b;
+  font-weight: 500;
 }
 
 .likes-count ion-icon {
   margin-right: 4px;
+  color: #e91e63;
+  font-size: 16px;
 }
 
 .post-actions {
@@ -716,10 +721,48 @@
   --padding-end: 0;
   font-size: 13px;
   color: #65676b;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    transform: scale(1.05);
+  }
+  
+  &.liked {
+    color: #e91e63;
+    
+    ion-icon {
+      color: #e91e63;
+    }
+  }
+  
+  &.commented {
+    color: #1976d2;
+    
+    ion-icon {
+      color: #1976d2;
+    }
+  }
+  
+  &.shared {
+    color: #2c543f;
+    
+    ion-icon {
+      color: #2c543f;
+    }
+  }
 }
 
 .post-action ion-icon {
   margin-right: 6px;
+  transition: color 0.2s ease;
+}
+
+.action-count {
+  font-weight: 500;
+  font-size: 13px;
+  margin-left: 4px;
 }
 
 // Modern Footer Styles
