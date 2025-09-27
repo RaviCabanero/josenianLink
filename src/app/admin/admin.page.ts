@@ -112,7 +112,11 @@ export class AdminPage implements OnInit {
   async loadAllUsers() {
     this.loading = true;
     try {
-      this.firestore.collection('users').valueChanges({ idField: 'uid' }).subscribe(users => {
+      // Load users from main users collection (since lastname subcollections are dynamic)
+      this.firestore.collection('users', ref =>
+        ref.where('role', '==', 'user')
+           .orderBy('fullName')
+      ).valueChanges({ idField: 'uid' }).subscribe(users => {
         this.alumniList = users.map((user: any) => ({
           id: user.idNumber || 'N/A',
           name: user.fullName || user.name || 'Unknown User',
@@ -131,8 +135,12 @@ export class AdminPage implements OnInit {
         this.filteredAlumniList = [...this.alumniList];
         this.loading = false;
         this.loadStats(); // Update stats after alumni are loaded
+      }, error => {
+        console.error('Error loading users:', error);
+        this.loading = false;
       });
     } catch (error) {
+      console.error('Error loading users from main users collection:', error);
       this.loading = false;
     }
   }

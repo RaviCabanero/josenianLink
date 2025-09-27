@@ -231,24 +231,7 @@ export class RegisterComponent {
     this.isYearPickerOpen = false;
   }
 
-  // Helper method to get collection name based on program
-  getProgramCollectionName(program: string): string {
-    console.log(`getProgramCollectionName called with program: "${program}"`);
-    switch (program) {
-      case 'BSIT':
-        console.log('Returning BSIT collection');
-        return 'BSIT';
-      case 'BSBA':
-        console.log('Returning BSBA collection');
-        return 'BSBA';
-      case 'BSN':
-        console.log('Returning BSN collection');
-        return 'BSN';
-      default:
-        console.log('Returning default users collection');
-        return 'users'; // Fallback to default users collection
-    }
-  }
+
 
   formatGraduationDate(date: Date): string {
     const options: Intl.DateTimeFormatOptions = {
@@ -303,10 +286,7 @@ export class RegisterComponent {
 
         // Store additional user profile data in Firestore
         if (userCredential.user) {
-          // Determine collection name based on program
-          const collectionName = this.getProgramCollectionName(this.program);
           console.log(`Selected program: ${this.program}`);
-          console.log(`Collection name: ${collectionName}`);
 
           const userData = {
             uid: userCredential.user.uid,
@@ -324,21 +304,24 @@ export class RegisterComponent {
             photoURL: userCredential.user.photoURL || null,
             verified: false,
             role: 'user',
-            createdAt: new Date()
+            createdAt: new Date(),
+            updatedAt: new Date()
           };
 
           try {
-            // Save to program-specific collection
-            console.log(`Saving to ${collectionName} collection...`);
-            await this.firestore.collection(collectionName).doc(userCredential.user.uid).set(userData);
-            console.log(`Successfully saved to ${collectionName} collection`);
+            // Save alumni data in users collection under program document using lastname as subcollection
+            const lastNameCollection = this.lastName.trim() || 'Unknown';
+            console.log(`Saving alumni data to users/${this.program}/${lastNameCollection} document...`);
 
-            // Also save to main users collection for backward compatibility and cross-program queries
-            console.log('Saving to users collection...');
+            // Save to users collection under program document with lastname as subcollection
+            await this.firestore.collection('users').doc(this.program).collection(lastNameCollection).doc(userCredential.user.uid).set(userData);
+            console.log(`Successfully saved to users/${this.program}/${lastNameCollection}/${userCredential.user.uid}`);
+
+            // Also save to main users collection for individual user access
             await this.firestore.collection('users').doc(userCredential.user.uid).set(userData);
-            console.log('Successfully saved to users collection');
+            console.log(`Also saved to users/${userCredential.user.uid} for direct access`);
 
-            console.log(`User profile saved to both ${collectionName} and users collections`);
+            console.log(`Alumni data saved under users/${this.program}/${lastNameCollection} document structure`);
           } catch (firestoreError) {
             console.error('Firestore save error:', firestoreError);
             throw firestoreError;

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 @Injectable({
@@ -27,6 +27,7 @@ export class AuthService {
     return this.afAuth.authState.pipe(
       switchMap(user => {
         if (user) {
+          // Get user profile from main users collection (this is the primary source)
           return this.firestore.collection('users').doc(user.uid).valueChanges();
         } else {
           return new Observable(observer => observer.next(null));
@@ -89,11 +90,43 @@ export class AuthService {
     return this.firestore.collection('users').valueChanges();
   }
 
+  // Get all users from main users collection (since lastname subcollections are dynamic)
+  getAllUsersByProgram(): Observable<any[]> {
+    return this.firestore.collection('users', ref =>
+      ref.where('role', '==', 'user')
+    ).valueChanges({ idField: 'uid' });
+  }
+
+  // Get users by specific program from main users collection
+  getUsersByProgram(program: string): Observable<any[]> {
+    return this.firestore.collection('users', ref =>
+      ref.where('program', '==', program)
+         .where('role', '==', 'user')
+    ).valueChanges({ idField: 'uid' });
+  }
+
   // Update user profile
   async updateUserProfile(profileData: any): Promise<void> {
     const user = await this.afAuth.currentUser;
     if (user) {
-      return this.firestore.collection('users').doc(user.uid).update(profileData);
+      // Get current user profile to determine program and lastname
+      const currentProfile = await this.firestore.collection('users').doc(user.uid).get().toPromise();
+      const userData = currentProfile?.data() as any;
+
+      // Update main users collection
+      await this.firestore.collection('users').doc(user.uid).update(profileData);
+
+      // If user has a program and lastname, also update program document subcollection
+      if (userData && userData.program && userData.lastName) {
+        const program = userData.program;
+        const lastName = userData.lastName;
+        try {
+          await this.firestore.collection('users').doc(program).collection(lastName).doc(user.uid).update(profileData);
+          console.log(`Profile updated in both users/${user.uid} and users/${program}/${lastName}/${user.uid}`);
+        } catch (error) {
+          console.log(`Could not update users/${program}/${lastName} subcollection, profile updated in main users collection only`);
+        }
+      }
     } else {
       throw new Error('No authenticated user found');
     }
