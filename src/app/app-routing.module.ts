@@ -28,7 +28,8 @@ const routes: Routes = [
     },
     {
       path: 'events',
-      loadChildren: () => import('./calendar-events/calendar-events.module').then(m => m.CalendarEventsPageModule)
+      loadChildren: () => import('./calendar-events/calendar-events.module').then(m => m.CalendarEventsPageModule),
+      canActivate: [AuthGuard]
     },
   {
     path: 'employee-list',

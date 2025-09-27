@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
@@ -28,12 +28,15 @@ export class CalendarEventsPage implements OnInit {
   loading = false;
   requestSuccess = false;
   userProfile: any = null;
+  existingRequest: any = null;
+  hasExistingRequest: boolean = false;
 
   constructor(
     private router: Router,
     private firestore: AngularFirestore,
     private authService: AuthService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -41,6 +44,37 @@ export class CalendarEventsPage implements OnInit {
     this.authService.getUserProfile().subscribe(profile => {
       this.userProfile = profile;
     });
+    
+    // Check for existing alumni ID requests
+    this.checkExistingRequest();
+    console.log('Initial state - hasExistingRequest:', this.hasExistingRequest);
+    console.log('Initial state - existingRequest:', this.existingRequest);
+  }
+
+  async checkExistingRequest() {
+    try {
+      const currentUser = await this.authService.getCurrentUser();
+      if (currentUser) {
+        this.firestore.collection('alumniIdRequests', ref => 
+          ref.where('userId', '==', currentUser.uid)
+             .orderBy('timestamp', 'desc')
+             .limit(1)
+        ).valueChanges({ idField: 'id' }).subscribe(requests => {
+          if (requests && requests.length > 0) {
+            this.existingRequest = requests[0];
+            this.hasExistingRequest = true;
+            console.log('Found existing request:', this.existingRequest);
+          } else {
+            this.hasExistingRequest = false;
+            this.existingRequest = null;
+            console.log('No existing request found');
+          }
+          this.cdr.detectChanges();
+        });
+      }
+    } catch (error) {
+      console.error('Error checking existing request:', error);
+    }
   }
 
   navigateToSettings() {
@@ -78,6 +112,7 @@ export class CalendarEventsPage implements OnInit {
   }
 
   async submitAlumniIdRequest() {
+    console.log('Submitting alumni ID request...');
     this.loading = true;
     try {
       // Get current user information
@@ -96,12 +131,36 @@ export class CalendarEventsPage implements OnInit {
         userPhoto: (userProfile as any)?.photoURL || currentUser?.photoURL
       };
 
-      await this.firestore.collection('alumniIdRequests').add(requestData);
+      console.log('Request data:', requestData);
+
+      const docRef = await this.firestore.collection('alumniIdRequests').add(requestData);
+      console.log('Request submitted with ID:', docRef.id);
+      
+      // Immediately set the existing request to show the pending status
+      this.existingRequest = {
+        id: docRef.id,
+        ...requestData
+      };
+      this.hasExistingRequest = true;
       this.requestSuccess = true;
+      
+      console.log('Updated state - hasExistingRequest:', this.hasExistingRequest);
+      console.log('Updated state - existingRequest:', this.existingRequest);
+      
+      // Force change detection to update the UI
+      this.cdr.detectChanges();
+      
       this.alumniIdRequest = { name: '', email: '', yearGraduated: '', course: '', studentId: '', contactNumber: '' };
-      setTimeout(() => this.requestSuccess = false, 3000);
+      
+      // Hide success message and ensure the status is displayed
+      setTimeout(() => {
+        this.requestSuccess = false;
+        this.cdr.detectChanges();
+      }, 3000);
+      
     } catch (error) {
       console.error('Error submitting alumni ID request:', error);
+      alert('Error submitting request. Please try again.');
     }
     this.loading = false;
   }
@@ -115,6 +174,59 @@ export class CalendarEventsPage implements OnInit {
       this.alumniIdRequest.studentId &&
       this.alumniIdRequest.contactNumber
     );
+  }
+
+  getRequestStatusText(): string {
+    if (!this.existingRequest) return '';
+    
+    switch (this.existingRequest.status) {
+      case 'pending':
+        return 'PENDING';
+      case 'approved':
+        return 'APPROVED';
+      case 'rejected':
+        return 'REJECTED';
+      default:
+        return 'UNKNOWN';
+    }
+  }
+
+  getRequestDate(): string {
+    if (!this.existingRequest || !this.existingRequest.timestamp) return '';
+    
+    const timestamp = this.existingRequest.timestamp;
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString();
+  }
+
+  getProcessingMessage(): string {
+    if (!this.existingRequest) return '';
+    
+    switch (this.existingRequest.status) {
+      case 'pending':
+        return 'Your request is being processed by the alumni office.';
+      case 'approved':
+        return 'Congratulations! Your alumni ID has been approved.';
+      case 'rejected':
+        return 'Your request has been rejected. Please contact the alumni office.';
+      default:
+        return 'Request status unknown.';
+    }
+  }
+
+  async viewAlumniId() {
+    if (this.existingRequest && this.existingRequest.status === 'approved') {
+      const modal = await this.modalController.create({
+        component: AlumniIdModalComponent,
+        componentProps: {
+          alumniId: this.existingRequest.alumniId,
+          userName: this.existingRequest.userName || this.existingRequest.name,
+          userEmail: this.existingRequest.userEmail || this.existingRequest.email,
+          userPhoto: this.existingRequest.userPhoto || this.userProfile?.photoURL || 'assets/default-avatar.png'
+        }
+      });
+      return await modal.present();
+    }
   }
 
 

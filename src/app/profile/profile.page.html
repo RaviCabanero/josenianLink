@@ -27,8 +27,11 @@
         <p class="profile-id">{{ user.id }}</p>
         <p class="profile-program">{{ user.program }}</p>
       </div>
-      <ion-button fill="outline" class="edit-profile-button" (click)="updateProfile()">
+      <ion-button *ngIf="isOwnProfile" fill="outline" class="edit-profile-button" (click)="updateProfile()">
         Edit Profile
+      </ion-button>
+      <ion-button *ngIf="isViewingOtherUser" fill="clear" class="back-button" (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
       </ion-button>
     </div>
   </div>
@@ -65,7 +68,7 @@
   <!-- Post Section -->
   <div class="post-section" *ngIf="activeTab === 'post'">
     <!-- Create Post Button -->
-    <div class="create-post-container">
+    <div *ngIf="isOwnProfile" class="create-post-container">
       <ion-button expand="block" fill="outline" class="create-post-btn" (click)="openCreatePostModal()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Create Post
@@ -100,7 +103,7 @@
             {{ formatTimestamp(post.timestamp) }}
           </p>
         </div>
-        <div class="post-actions">
+        <div *ngIf="isOwnProfile" class="post-actions">
           <ion-button fill="clear" size="small" (click)="editPost(post)">
             <ion-icon name="create-outline" slot="icon-only"></ion-icon>
           </ion-button>
@@ -129,7 +132,7 @@
   <!-- Employment History Section -->
   <div class="employment-section" *ngIf="activeTab === 'employment'">
     <!-- Add New Job Button -->
-    <div class="add-job-container">
+    <div *ngIf="isOwnProfile" class="add-job-container">
       <ion-button expand="block" fill="outline" class="add-job-btn" (click)="openEmploymentModal()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Add Employment
@@ -159,7 +162,7 @@
             <p *ngIf="job.email">✉️ {{ job.email }}</p>
           </div>
         </div>
-        <div class="job-actions">
+        <div *ngIf="isOwnProfile" class="job-actions">
           <ion-button fill="clear" size="small" (click)="editEmployment(job)">
             <ion-icon name="create-outline" slot="icon-only"></ion-icon>
           </ion-button>
@@ -195,7 +198,7 @@
             <p *ngIf="job.email">✉️ {{ job.email }}</p>
           </div>
         </div>
-        <div class="job-actions">
+        <div *ngIf="isOwnProfile" class="job-actions">
           <ion-button fill="clear" size="small" (click)="editEmployment(job)">
             <ion-icon name="create-outline" slot="icon-only"></ion-icon>
           </ion-button>

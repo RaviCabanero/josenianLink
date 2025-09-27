@@ -492,4 +492,15 @@ export class HomePage implements OnInit {
       this.scannedQrText = 'Error reading QR code';
     }
   }
+
+  // Navigate to user profile
+  viewUserProfile(post: any) {
+    if (post.authorId && post.authorId !== this.userProfile?.uid) {
+      // Navigate to other user's profile
+      this.router.navigate(['/profile', post.authorId]);
+    } else {
+      // Navigate to current user's own profile
+      this.router.navigate(['/profile']);
+    }
+  }
 }
