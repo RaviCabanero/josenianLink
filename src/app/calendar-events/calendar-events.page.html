@@ -134,64 +134,118 @@
           <div class="card-header-content">
             <ion-icon name="card-outline" class="header-icon"></ion-icon>
             <div>
-              <ion-card-title>Request Alumni ID</ion-card-title>
-              <ion-card-subtitle>Get your official USJR Alumni identification</ion-card-subtitle>
+              <ion-card-title>{{ hasExistingRequest ? 'Alumni ID Request Status' : 'Request Alumni ID' }}</ion-card-title>
+              <ion-card-subtitle>{{ hasExistingRequest ? 'Track your request progress' : 'Get your official USJR Alumni identification' }}</ion-card-subtitle>
             </div>
           </div>
         </ion-card-header>
 
-      <ion-card-content>
-        <form class="alumni-form">
-          <div class="form-row">
-            <ion-item class="form-item">
-              <ion-label position="floating">Full Name</ion-label>
-              <ion-input [(ngModel)]="alumniIdRequest.name" name="name" required></ion-input>
-            </ion-item>
-            <ion-item class="form-item">
-              <ion-label position="floating">Email Address</ion-label>
-              <ion-input [(ngModel)]="alumniIdRequest.email" name="email" type="email" required></ion-input>
-            </ion-item>
+        <ion-card-content>
+          <!-- Request Status Display (when user has existing request) -->
+          <div *ngIf="hasExistingRequest" class="request-status-section">
+            <div class="status-header">
+              <div class="status-badge" [ngClass]="'status-' + existingRequest.status">
+                <ion-icon 
+                  [name]="existingRequest.status === 'pending' ? 'time-outline' : 
+                          existingRequest.status === 'approved' ? 'checkmark-circle' : 'close-circle'">
+                </ion-icon>
+                <span>{{ getRequestStatusText() }}</span>
+              </div>
+            </div>
+            
+            <div class="status-details">
+              <h3>{{ existingRequest.status === 'pending' ? 'Your request is being processed' : getProcessingMessage() }}</h3>
+              <p class="processing-message">{{ getProcessingMessage() }}</p>
+              
+              <div class="request-info">
+                <div class="info-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span>Submitted: {{ getRequestDate() }}</span>
+                </div>
+                <div class="info-item">
+                  <ion-icon name="person-outline"></ion-icon>
+                  <span>Name: {{ existingRequest.userName || existingRequest.name }}</span>
+                </div>
+                <div class="info-item">
+                  <ion-icon name="school-outline"></ion-icon>
+                  <span>Course: {{ existingRequest.course }}</span>
+                </div>
+                <div class="info-item">
+                  <ion-icon name="calendar-number-outline"></ion-icon>
+                  <span>Year: {{ existingRequest.yearGraduated }}</span>
+                </div>
+              </div>
+
+              <div *ngIf="existingRequest.status === 'approved' && existingRequest.alumniId" class="approved-section">
+                <div class="alumni-id-display">
+                  <h4>Your Alumni ID:</h4>
+                  <div class="id-number">{{ existingRequest.alumniId }}</div>
+                  <ion-button fill="outline" (click)="viewAlumniId()">
+                    <ion-icon name="card" slot="start"></ion-icon>
+                    View Alumni ID Card
+                  </ion-button>
+                </div>
+              </div>
+
+              <div *ngIf="existingRequest.status === 'pending'" class="pending-note">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                <span>We'll notify you once your request is reviewed. This typically takes 3-5 business days.</span>
+              </div>
+            </div>
           </div>
 
-          <div class="form-row">
-            <ion-item class="form-item">
-              <ion-label position="floating">Year Graduated</ion-label>
-              <ion-input [(ngModel)]="alumniIdRequest.yearGraduated" name="year" type="number" required></ion-input>
-            </ion-item>
-            <ion-item class="form-item">
-              <ion-label position="floating">Course/Program</ion-label>
-              <ion-input [(ngModel)]="alumniIdRequest.course" name="course" required></ion-input>
-            </ion-item>
-          </div>
+          <!-- Request Form (when no existing request) -->
+          <form class="alumni-form" *ngIf="!hasExistingRequest">
+            <div class="form-row">
+              <ion-item class="form-item">
+                <ion-label position="floating">Full Name</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.name" name="name" required></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-label position="floating">Email Address</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.email" name="email" type="email" required></ion-input>
+              </ion-item>
+            </div>
 
-          <div class="form-row">
-            <ion-item class="form-item">
-              <ion-label position="floating">Student ID Number</ion-label>
-              <ion-input [(ngModel)]="alumniIdRequest.studentId" name="studentId" required></ion-input>
-            </ion-item>
-            <ion-item class="form-item">
-              <ion-label position="floating">Contact Number</ion-label>
-              <ion-input [(ngModel)]="alumniIdRequest.contactNumber" name="contact" type="tel" required></ion-input>
-            </ion-item>
-          </div>
+            <div class="form-row">
+              <ion-item class="form-item">
+                <ion-label position="floating">Year Graduated</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.yearGraduated" name="year" type="number" required></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-label position="floating">Course/Program</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.course" name="course" required></ion-input>
+              </ion-item>
+            </div>
 
-          <ion-button
-            expand="block"
-            color="primary"
-            class="submit-button"
-            (click)="submitAlumniIdRequest()"
-            [disabled]="loading || !isFormValid()">
-            <ion-icon name="send" slot="start"></ion-icon>
-            {{ loading ? 'Submitting...' : 'Submit Request' }}
-          </ion-button>
+            <div class="form-row">
+              <ion-item class="form-item">
+                <ion-label position="floating">Student ID Number</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.studentId" name="studentId" required></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-label position="floating">Contact Number</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.contactNumber" name="contact" type="tel" required></ion-input>
+              </ion-item>
+            </div>
 
-          <div *ngIf="requestSuccess" class="success-message">
-            <ion-icon name="checkmark-circle" color="success"></ion-icon>
-            <span>Your Alumni ID request has been submitted successfully!</span>
-          </div>
-        </form>
-      </ion-card-content>
-    </ion-card>
+            <ion-button
+              expand="block"
+              color="primary"
+              class="submit-button"
+              (click)="submitAlumniIdRequest()"
+              [disabled]="loading || !isFormValid()">
+              <ion-icon name="send" slot="start"></ion-icon>
+              {{ loading ? 'Submitting...' : 'Submit Request' }}
+            </ion-button>
+
+            <div *ngIf="requestSuccess" class="success-message">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              <span>Your Alumni ID request has been submitted successfully!</span>
+            </div>
+          </form>
+        </ion-card-content>
+      </ion-card>
     </div> <!-- Close alumni-id-section -->
   </div>
 </ion-content>

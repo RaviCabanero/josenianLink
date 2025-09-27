@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-profile',
@@ -74,6 +75,11 @@ export class ProfilePage implements OnInit {
   unreadNotifications: number = 0;
   unreadMessages: number = 0;
 
+  // Profile viewing properties
+  viewingUserId: string | null = null;
+  isViewingOtherUser: boolean = false;
+  isOwnProfile: boolean = true;
+
   // Define the user object with additional properties
   user = {
     name: 'mellow w allow',
@@ -101,63 +107,89 @@ export class ProfilePage implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
+    private firestore: AngularFirestore,
     private alertController: AlertController,
     private toastController: ToastController,
   ) {}
 
   ngOnInit() {
-    // Load user profile from Firebase
-    this.loadUserProfile();
-    // Load user posts
-    this.loadUserPosts();
-    // Load employment history
-    this.loadEmploymentHistory();
-    // Load user activities and level
-    this.loadUserActivities();
+    // Check if viewing another user's profile
+    this.route.params.subscribe(params => {
+      this.viewingUserId = params['userId'] || null;
+      this.isViewingOtherUser = !!this.viewingUserId;
+      this.isOwnProfile = !this.isViewingOtherUser;
+      
+      // Load the appropriate profile
+      this.loadUserProfile();
+      // Load user posts
+      this.loadUserPosts();
+      // Load employment history
+      this.loadEmploymentHistory();
+      // Load user activities and level
+      this.loadUserActivities();
+    });
   }
 
   async loadUserProfile() {
-    // Get both profile data and auth user data
-    const authUser = await this.authService.getCurrentUser();
-    console.log('Auth user:', authUser); // Debug log
+    if (this.isViewingOtherUser && this.viewingUserId) {
+      // Load other user's profile
+      this.firestore.collection('users').doc(this.viewingUserId).get().subscribe(doc => {
+        if (doc.exists) {
+          const profile = doc.data() as any;
+          this.setUserFromProfile(profile);
+        }
+      });
+    } else {
+      // Load current user's profile
+      const authUser = await this.authService.getCurrentUser();
+      console.log('Auth user:', authUser); // Debug log
 
-    this.authService.getUserProfile().subscribe(profile => {
-      console.log('Profile data from Firestore:', profile); // Debug log
+      this.authService.getUserProfile().subscribe(profile => {
+        console.log('Profile data from Firestore:', profile); // Debug log
+        if (profile) {
+          this.setUserFromProfile(profile, authUser);
+        }
+      });
+    }
+  }
 
-      if (profile) {
-        // Try multiple sources for the photo
-        let userPhoto = profile.photoURL ||
-                       profile.photo ||
-                       profile.profilePicture ||
-                       authUser?.photoURL ||
-                       this.getDefaultAvatar();
+  private setUserFromProfile(profile: any, authUser?: any) {
+    // Try multiple sources for the photo
+    let userPhoto = profile.photoURL ||
+                   profile.photo ||
+                   profile.profilePicture ||
+                   authUser?.photoURL ||
+                   this.getDefaultAvatar();
 
-        console.log('Selected photo URL:', userPhoto); // Debug log
+    console.log('Selected photo URL:', userPhoto); // Debug log
 
-        // Parse first and last name from fullName if available
-        const fullName = profile.fullName || profile.name || 'mellow w allow';
-        const nameParts = fullName.split(' ');
-        const firstName = profile.firstName || nameParts[0] || 'mellow';
-        const lastName = profile.lastName || nameParts.slice(1).join(' ') || 'w allow';
+    // Parse first and last name from fullName if available
+    const fullName = profile.fullName || profile.name || 'Josenian Alumni';
+    const nameParts = fullName.split(' ');
+    const firstName = profile.firstName || nameParts[0] || 'Josenian';
+    const lastName = profile.lastName || nameParts.slice(1).join(' ') || 'Alumni';
 
-        this.user = {
-          name: fullName,
-          firstName: firstName,
-          lastName: lastName,
-          id: profile.idNumber || '1233445',
-          program: profile.program || 'BSIT',
-          yearGraduated: profile.yearGraduated || '2026',
-          email: profile.email || 'mellow@gmail.com',
-          address: profile.address || 'mao nani',
-          contactNumber: profile.contactNumber || '+63 912 345 6789',
-          photo: userPhoto,
-          postText: profile.postText || 'We have an opportunity for a software engineer at our company. Feel free to get in touch if you\'re interested.',
-          isPublic: profile.isPublic !== undefined ? profile.isPublic : true
-        };
-        this.editUser = { ...this.user };
-        console.log('Final user object:', this.user); // Debug log
-      }
-    });
+    this.user = {
+      name: fullName,
+      firstName: firstName,
+      lastName: lastName,
+      id: profile.idNumber || '1233445',
+      program: profile.program || 'BSIT',
+      yearGraduated: profile.yearGraduated || '2026',
+      email: profile.email || 'alumni@usjr.edu.ph',
+      address: profile.address || 'Cebu City',
+      contactNumber: profile.contactNumber || '+63 912 345 6789',
+      photo: userPhoto,
+      postText: profile.postText || 'Welcome to my profile!',
+      isPublic: profile.isPublic !== undefined ? profile.isPublic : true
+    };
+    
+    if (this.isOwnProfile) {
+      this.editUser = { ...this.user };
+    }
+    
+    console.log('Final user object:', this.user); // Debug log
   }
 
   setActiveTab(tab: string) {
@@ -170,6 +202,11 @@ export class ProfilePage implements OnInit {
 
   logout() {
     this.authService.logout();
+  }
+
+  // Go back to previous page
+  goBack() {
+    this.router.navigate(['/home']);
   }
 
   // Method to handle profile update (opens the edit modal)
@@ -409,18 +446,33 @@ export class ProfilePage implements OnInit {
     console.log('Loading user posts...'); // Debug log
     this.userPosts = undefined; // Set to loading state
 
-    this.authService.getUserPosts().subscribe(posts => {
-      console.log('Loaded posts:', posts); // Debug log
-      this.userPosts = posts.sort((a, b) => {
-        const aTime = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp);
-        const bTime = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp);
-        return bTime.getTime() - aTime.getTime();
+    if (this.isViewingOtherUser && this.viewingUserId) {
+      // Load other user's posts
+      this.firestore.collection('posts', ref => 
+        ref.where('authorId', '==', this.viewingUserId)
+           .orderBy('timestamp', 'desc')
+      ).valueChanges({ idField: 'id' }).subscribe(posts => {
+        console.log('Loaded other user posts:', posts); // Debug log
+        this.userPosts = posts;
+      }, error => {
+        console.error('Error loading other user posts:', error);
+        this.userPosts = []; // Set to empty array on error
       });
-      console.log('Sorted posts:', this.userPosts); // Debug log
-    }, error => {
-      console.error('Error loading posts:', error);
-      this.userPosts = []; // Set to empty array on error
-    });
+    } else {
+      // Load current user's posts
+      this.authService.getUserPosts().subscribe(posts => {
+        console.log('Loaded posts:', posts); // Debug log
+        this.userPosts = posts.sort((a, b) => {
+          const aTime = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp);
+          const bTime = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp);
+          return bTime.getTime() - aTime.getTime();
+        });
+        console.log('Sorted posts:', this.userPosts); // Debug log
+      }, error => {
+        console.error('Error loading posts:', error);
+        this.userPosts = []; // Set to empty array on error
+      });
+    }
   }
 
   // Open create post modal
@@ -551,18 +603,37 @@ export class ProfilePage implements OnInit {
 
   // Load employment history
   loadEmploymentHistory() {
-    this.authService.getUserEmploymentHistory().subscribe((jobs: any) => {
-      this.currentJobs = jobs.filter((job: any) => {
-        // Check both old format (type) and new format (currentlyWorking)
-        return job.type === 'current' || job.currentlyWorking === true;
+    if (this.isViewingOtherUser && this.viewingUserId) {
+      // Load other user's employment history
+      this.firestore.collection('employment', ref => 
+        ref.where('userId', '==', this.viewingUserId)
+      ).valueChanges({ idField: 'id' }).subscribe((jobs: any) => {
+        this.currentJobs = jobs.filter((job: any) => {
+          return job.type === 'current' || job.currentlyWorking === true;
+        });
+        this.pastJobs = jobs.filter((job: any) => {
+          return job.type === 'past' || job.currentlyWorking === false;
+        });
+      }, (error: any) => {
+        console.error('Error loading other user employment history:', error);
+        this.currentJobs = [];
+        this.pastJobs = [];
       });
-      this.pastJobs = jobs.filter((job: any) => {
-        // Check both old format (type) and new format (currentlyWorking)
-        return job.type === 'past' || job.currentlyWorking === false;
+    } else {
+      // Load current user's employment history
+      this.authService.getUserEmploymentHistory().subscribe((jobs: any) => {
+        this.currentJobs = jobs.filter((job: any) => {
+          // Check both old format (type) and new format (currentlyWorking)
+          return job.type === 'current' || job.currentlyWorking === true;
+        });
+        this.pastJobs = jobs.filter((job: any) => {
+          // Check both old format (type) and new format (currentlyWorking)
+          return job.type === 'past' || job.currentlyWorking === false;
+        });
+      }, (error: any) => {
+        console.error('Error loading employment history:', error);
       });
-    }, (error: any) => {
-      console.error('Error loading employment history:', error);
-    });
+    }
   }
 
   // Load user activities and calculate level
