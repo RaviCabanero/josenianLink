@@ -551,6 +551,54 @@ $usjr-soft-gold: #fef3c7;
       }
     }
 
+    // Password Validation Styles
+    .password-validation {
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+      color: #e74c3c;
+      font-size: 14px;
+      animation: fadeInError 0.3s ease-in-out;
+
+      ion-icon {
+        margin-right: 6px;
+        font-size: 16px;
+      }
+    }
+
+    // Error state for input wrapper
+    .input-wrapper {
+      &.error {
+        .modern-input {
+          border-color: #e74c3c !important;
+
+          &:focus {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1) !important;
+          }
+        }
+
+        .input-focus-line {
+          &.error {
+            background: #e74c3c;
+            transform: scaleX(1);
+          }
+        }
+      }
+    }
+
+    // Error animation
+    @keyframes fadeInError {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     // Date Picker Styles
     .date-picker-wrapper {
       position: relative;

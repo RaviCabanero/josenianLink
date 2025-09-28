@@ -36,8 +36,10 @@ export class RegisterComponent {
   address: string = '';
   email: string = '';
   password: string = '';
+  confirmPassword: string = '';
 
   isInputFocused: boolean = false;
+  showPasswordMismatchError: boolean = false;
   showProgramError: boolean = false;
   isProgramDropdownOpen: boolean = false;
   isDatePickerOpen: boolean = false;
@@ -80,6 +82,26 @@ export class RegisterComponent {
     setTimeout(() => {
       this.isInputFocused = false;
     }, 100);
+  }
+
+  onPasswordChange() {
+    // Check password match when password changes
+    if (this.confirmPassword) {
+      this.validatePasswordMatch();
+    }
+  }
+
+  onConfirmPasswordChange() {
+    // Check password match when confirm password changes
+    this.validatePasswordMatch();
+  }
+
+  validatePasswordMatch() {
+    if (this.password && this.confirmPassword) {
+      this.showPasswordMismatchError = this.password !== this.confirmPassword;
+    } else {
+      this.showPasswordMismatchError = false;
+    }
   }
 
   toggleProgramDropdown() {
@@ -277,7 +299,25 @@ export class RegisterComponent {
         return;
       }
 
-      if (this.email && this.password && this.firstName && this.lastName && this.program && this.graduationDate) {
+      // Validate password confirmation
+      if (!this.confirmPassword) {
+        await this.presentToast('Please confirm your password', 'warning');
+        return;
+      }
+
+      if (this.password !== this.confirmPassword) {
+        this.showPasswordMismatchError = true;
+        await this.presentToast('Passwords do not match', 'warning');
+        return;
+      }
+
+      // Validate password strength (optional)
+      if (this.password.length < 6) {
+        await this.presentToast('Password must be at least 6 characters long', 'warning');
+        return;
+      }
+
+      if (this.email && this.password && this.confirmPassword && this.firstName && this.lastName && this.program && this.graduationDate) {
         const userCredential = await this.afAuth.createUserWithEmailAndPassword(this.email, this.password);
         console.log('User registered successfully:', userCredential.user);
 
@@ -309,33 +349,30 @@ export class RegisterComponent {
           };
 
           try {
-            // Save alumni data in users collection under program document using lastname as subcollection
-            const lastNameCollection = this.lastName.trim() || 'Unknown';
-            console.log(`Saving alumni data to users/${this.program}/${lastNameCollection} document...`);
+            // Save alumni data to registry-approval collection for admin approval
+            console.log(`Saving alumni data to registry-approval collection for approval...`);
 
-            // Save to users collection under program document with lastname as subcollection
-            await this.firestore.collection('users').doc(this.program).collection(lastNameCollection).doc(userCredential.user.uid).set(userData);
-            console.log(`Successfully saved to users/${this.program}/${lastNameCollection}/${userCredential.user.uid}`);
+            // Save to registry-approval collection
+            await this.firestore.collection('registry-approval').doc(userCredential.user.uid).set(userData);
+            console.log(`Successfully saved to registry-approval/${userCredential.user.uid}`);
 
-            // Also save to main users collection for individual user access
-            await this.firestore.collection('users').doc(userCredential.user.uid).set(userData);
-            console.log(`Also saved to users/${userCredential.user.uid} for direct access`);
-
-            console.log(`Alumni data saved under users/${this.program}/${lastNameCollection} document structure`);
+            console.log(`Alumni data saved to registry-approval collection for admin review`);
           } catch (firestoreError) {
             console.error('Firestore save error:', firestoreError);
             throw firestoreError;
           }
         }
 
-        // Show success message
-        await this.presentToast('Registration successful! Please log in with your credentials.', 'success');
+        // Show success message with 5-second timeout
+        await this.presentToast("You've successfully created an account! Please wait for admin confirmation.", 'success', 5000);
 
-        // Navigate to login page after successful registration
-        this.router.navigate(['/login']);
+        // Navigate to login page after 5 seconds
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 5000);
       } else {
         console.error('Please fill in all required fields');
-        await this.presentToast('Please fill in all required fields (First Name, Last Name, Email, Password, Program, Graduation Date)', 'warning');
+        await this.presentToast('Please fill in all required fields (First Name, Last Name, Email, Password, Confirm Password, Program, Graduation Date)', 'warning');
       }
     } catch (error: any) {
       console.error('Registration error:', error.message);
@@ -343,10 +380,10 @@ export class RegisterComponent {
     }
   }
 
-  async presentToast(message: string, color: string = 'primary') {
+  async presentToast(message: string, color: string = 'primary', duration: number = 3000) {
     const toast = await this.toastController.create({
       message: message,
-      duration: 3000,
+      duration: duration,
       position: 'top',
       color: color
     });

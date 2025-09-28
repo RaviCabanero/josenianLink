@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -64,11 +64,19 @@ export class AdminPage implements OnInit {
   isEventQrCodeModalOpen: boolean = false;
   editingEventId: string | null = null; // Track the event being edited
 
+  // Registry Approval properties
+  pendingRegistrations: any[] = [];
+  loadingRegistryRequests: boolean = false;
+  approvedToday: number = 0;
+  declinedToday: number = 0;
+  totalRegistryRequests: number = 0;
+
   private afAuth = inject(AngularFireAuth);
   private router = inject(Router);
   private authService = inject(AuthService);
   private firestore = inject(AngularFirestore);
   private pushNotificationService = inject(PushNotificationService);
+  private toastController = inject(ToastController);
 
   constructor() {}
 
@@ -107,6 +115,11 @@ export class AdminPage implements OnInit {
   // Tab switching
   switchTab(tab: string) {
     this.activeTab = tab;
+
+    // Load data when switching to registry approval tab
+    if (tab === 'registry-approval') {
+      this.loadRegistryRequests();
+    }
   }
 
   async loadAllUsers() {
@@ -699,4 +712,132 @@ export class AdminPage implements OnInit {
     this.editingEventId = event.id; // Add this property to your class
     this.isEventQrCodeModalOpen = true; // Optionally open modal for editing
   }
+
+  // Registry Approval Methods
+  async loadRegistryRequests() {
+    this.loadingRegistryRequests = true;
+    try {
+      const snapshot = await this.firestore.collection('registry-approval').get().toPromise();
+      this.pendingRegistrations = snapshot?.docs.map(doc => {
+        const data = doc.data() as any;
+        return {
+          id: doc.id,
+          ...data
+        };
+      }) || [];
+
+      this.totalRegistryRequests = this.pendingRegistrations.length;
+
+      // Calculate today's stats
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      this.approvedToday = 0; // Will be calculated from approved collection if needed
+      this.declinedToday = 0; // Will be calculated from declined collection if needed
+
+    } catch (error) {
+      console.error('Error loading registry requests:', error);
+    } finally {
+      this.loadingRegistryRequests = false;
+    }
+  }
+
+  async refreshRegistryRequests() {
+    await this.loadRegistryRequests();
+  }
+
+  async approveRegistration(request: any) {
+    try {
+      request.__busy = true;
+
+      // Move data to users collection with lastname subcollection structure
+      const lastNameCollection = request.lastName?.trim() || 'Unknown';
+
+      const userData = {
+        ...request,
+        verified: true,
+        approvedAt: new Date(),
+        approvedBy: this.adminProfile?.uid || 'admin'
+      };
+
+      // Remove the temporary id from registry-approval
+      delete userData.id;
+
+      // Save to users collection under program document with lastname as subcollection
+      await this.firestore.collection('users').doc(request.program).collection(lastNameCollection).doc(request.uid).set(userData);
+
+      // Also save to main users collection for individual user access
+      await this.firestore.collection('users').doc(request.uid).set(userData);
+
+      // Remove from registry-approval collection
+      await this.firestore.collection('registry-approval').doc(request.id).delete();
+
+      // Refresh the list
+      await this.loadRegistryRequests();
+
+      // Show success message
+      const toast = await this.toastController.create({
+        message: `Registration approved for ${request.fullName || request.name}`,
+        duration: 3000,
+        color: 'success',
+        position: 'top'
+      });
+      await toast.present();
+
+    } catch (error) {
+      console.error('Error approving registration:', error);
+      const toast = await this.toastController.create({
+        message: 'Error approving registration',
+        duration: 3000,
+        color: 'danger',
+        position: 'top'
+      });
+      await toast.present();
+    } finally {
+      request.__busy = false;
+    }
+  }
+
+  async declineRegistration(request: any) {
+    try {
+      request.__busy = true;
+
+      // Optionally save to declined collection for record keeping
+      const declinedData = {
+        ...request,
+        declinedAt: new Date(),
+        declinedBy: this.adminProfile?.uid || 'admin'
+      };
+
+      await this.firestore.collection('registry-declined').doc(request.id).set(declinedData);
+
+      // Remove from registry-approval collection
+      await this.firestore.collection('registry-approval').doc(request.id).delete();
+
+      // Refresh the list
+      await this.loadRegistryRequests();
+
+      // Show success message
+      const toast = await this.toastController.create({
+        message: `Registration declined for ${request.fullName || request.name}`,
+        duration: 3000,
+        color: 'warning',
+        position: 'top'
+      });
+      await toast.present();
+
+    } catch (error) {
+      console.error('Error declining registration:', error);
+      const toast = await this.toastController.create({
+        message: 'Error declining registration',
+        duration: 3000,
+        color: 'danger',
+        position: 'top'
+      });
+      await toast.present();
+    } finally {
+      request.__busy = false;
+    }
+  }
+
 }

@@ -85,6 +85,32 @@ export class AuthService {
     );
   }
 
+  // Check if user is approved (exists in users collection)
+  async isUserApproved(uid: string): Promise<{ approved: boolean; pending: boolean; message: string }> {
+    try {
+      // Check if user exists in approved users collection
+      const userDoc = await this.firestore.collection('users').doc(uid).get().toPromise();
+
+      if (userDoc && userDoc.exists) {
+        return { approved: true, pending: false, message: 'User is approved' };
+      }
+
+      // Check if user is pending approval
+      const pendingDoc = await this.firestore.collection('registry-approval').doc(uid).get().toPromise();
+
+      if (pendingDoc && pendingDoc.exists) {
+        return { approved: false, pending: true, message: 'Account is pending admin approval' };
+      }
+
+      // User doesn't exist in either collection
+      return { approved: false, pending: false, message: 'Account not found' };
+
+    } catch (error) {
+      console.error('Error checking user approval status:', error);
+      return { approved: false, pending: false, message: 'Error checking account status' };
+    }
+  }
+
   // Get all registered users for featured alumni
   getAllUsers(): Observable<any[]> {
     return this.firestore.collection('users').valueChanges();

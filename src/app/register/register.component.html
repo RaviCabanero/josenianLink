@@ -301,6 +301,7 @@
                 type="text"
                 required
                 class="modern-input"
+                placeholder="Address"
                 fill="outline"
                 (focus)="isInputFocused = true"
                 (blur)="checkBlur()">
@@ -339,9 +340,34 @@
                 placeholder="Create Password"
                 fill="outline"
                 (focus)="isInputFocused = true"
-                (blur)="checkBlur()">
+                (blur)="checkBlur()"
+                (ionInput)="onPasswordChange()">
               </ion-input>
               <div class="input-focus-line"></div>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <ion-icon name="lock-closed-outline" class="input-icon-modern"></ion-icon>
+              <ion-input
+                [(ngModel)]="confirmPassword"
+                type="password"
+                required
+                class="modern-input"
+                [class.error]="showPasswordMismatchError"
+                placeholder="Confirm Password"
+                fill="outline"
+                (focus)="isInputFocused = true"
+                (blur)="checkBlur()"
+                (ionInput)="onConfirmPasswordChange()">
+              </ion-input>
+              <div class="input-focus-line" [class.error]="showPasswordMismatchError"></div>
+            </div>
+            <div class="password-validation" *ngIf="showPasswordMismatchError">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>Passwords do not match</span>
             </div>
           </div>
 

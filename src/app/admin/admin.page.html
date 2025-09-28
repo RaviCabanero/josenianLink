@@ -18,6 +18,10 @@
           <ion-icon name="people-outline"></ion-icon>
           <span>Alumni</span>
         </div>
+        <div class="nav-item" [class.active]="activeTab === 'registry-approval'" (click)="switchTab('registry-approval')">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>Registry Approval</span>
+        </div>
         <div class="nav-item" [class.active]="activeTab === 'reports'" (click)="switchTab('reports')">
           <ion-icon name="document-text-outline"></ion-icon>
           <span>Reports</span>
@@ -443,6 +447,163 @@
           </ion-buttons>
         </div>
         </div> <!-- End Alumni Tab -->
+
+        <!-- Registry Approval Tab -->
+        <div *ngIf="activeTab === 'registry-approval'">
+          <div class="panel-header">
+            <div>
+              <h2>Registry Approval</h2>
+              <p class="breadcrumb">Dashboard / Registry Approval</p>
+            </div>
+            <div class="header-actions">
+              <ion-button fill="outline" size="small" color="primary" (click)="refreshRegistryRequests()">
+                <ion-icon name="refresh" slot="start"></ion-icon>
+                Refresh
+              </ion-button>
+              <ion-button fill="clear" class="notification-btn">
+                <ion-icon name="notifications-outline"></ion-icon>
+                <ion-badge color="danger" *ngIf="pendingRegistrations.length > 0">{{ pendingRegistrations.length }}</ion-badge>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Stats Row -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon"><ion-icon name="hourglass-outline"></ion-icon></div>
+              <div class="stat-meta">
+                <div class="stat-label">Pending Registrations</div>
+                <div class="stat-value">{{ pendingRegistrations.length || 0 }}</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><ion-icon name="checkmark-circle"></ion-icon></div>
+              <div class="stat-meta">
+                <div class="stat-label">Approved Today</div>
+                <div class="stat-value">{{ approvedToday || 0 }}</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><ion-icon name="close-circle"></ion-icon></div>
+              <div class="stat-meta">
+                <div class="stat-label">Declined Today</div>
+                <div class="stat-value">{{ declinedToday || 0 }}</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><ion-icon name="people"></ion-icon></div>
+              <div class="stat-meta">
+                <div class="stat-label">Total Requests</div>
+                <div class="stat-value">{{ totalRegistryRequests || 0 }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Registrations -->
+          <div class="panel-subheader">
+            <h3>
+              <ion-icon name="hourglass-outline"></ion-icon>
+              Pending Alumni Registrations
+            </h3>
+            <p class="muted">Review and approve or decline registration requests below.</p>
+          </div>
+
+          <div class="table-container">
+            <div *ngIf="loadingRegistryRequests" class="loading-state">
+              <ion-spinner name="crescent"></ion-spinner>
+              <p>Loading registration requests...</p>
+            </div>
+
+            <div class="requests-grid" *ngIf="!loadingRegistryRequests">
+              <div class="request-card" *ngFor="let request of pendingRegistrations">
+                <div class="request-header">
+                  <div class="user-info">
+                    <div class="user-avatar">
+                      <ion-icon name="person-circle" *ngIf="!request.photoURL"></ion-icon>
+                      <img [src]="request.photoURL" *ngIf="request.photoURL" alt="User Photo">
+                    </div>
+                    <div class="user-details">
+                      <h4 class="user-name">{{ request.fullName || request.name }}</h4>
+                      <p class="user-email">{{ request.email }}</p>
+                      <span class="status-badge pending">Pending Approval</span>
+                    </div>
+                  </div>
+                  <div class="request-date">
+                    <span class="date-label">Requested</span>
+                    <span class="date-value">{{ request.createdAt?.toDate?.() ? (request.createdAt.toDate() | date:'MMM d, y') : (request.createdAt | date:'MMM d, y') }}</span>
+                  </div>
+                </div>
+
+                <div class="request-body">
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <ion-icon name="school-outline"></ion-icon>
+                      <div>
+                        <span class="info-label">Program</span>
+                        <span class="info-value">{{ request.program || 'Not specified' }}</span>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <ion-icon name="calendar-outline"></ion-icon>
+                      <div>
+                        <span class="info-label">Year Graduated</span>
+                        <span class="info-value">{{ request.yearGraduated || 'Not specified' }}</span>
+                      </div>
+                    </div>
+                    <div class="info-item" *ngIf="request.idNumber">
+                      <ion-icon name="id-card-outline"></ion-icon>
+                      <div>
+                        <span class="info-label">Student ID</span>
+                        <span class="info-value">{{ request.idNumber }}</span>
+                      </div>
+                    </div>
+                    <div class="info-item" *ngIf="request.contactNumber">
+                      <ion-icon name="call-outline"></ion-icon>
+                      <div>
+                        <span class="info-label">Contact Number</span>
+                        <span class="info-value">{{ request.contactNumber }}</span>
+                      </div>
+                    </div>
+                    <div class="info-item" *ngIf="request.address">
+                      <ion-icon name="location-outline"></ion-icon>
+                      <div>
+                        <span class="info-label">Address</span>
+                        <span class="info-value">{{ request.address }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="request-actions">
+                  <ion-button
+                    color="danger"
+                    fill="outline"
+                    size="small"
+                    (click)="declineRegistration(request)"
+                    [disabled]="request.__busy">
+                    <ion-icon name="close" slot="start"></ion-icon>
+                    Decline
+                  </ion-button>
+                  <ion-button
+                    color="success"
+                    fill="solid"
+                    size="small"
+                    (click)="approveRegistration(request)"
+                    [disabled]="request.__busy">
+                    <ion-icon name="checkmark" slot="start"></ion-icon>
+                    Approve
+                  </ion-button>
+                </div>
+              </div>
+
+              <div class="empty-requests" *ngIf="pendingRegistrations.length === 0">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                <h3>No Pending Registrations</h3>
+                <p>All registration requests have been processed or no new requests have been submitted.</p>
+              </div>
+            </div>
+          </div>
+        </div> <!-- End Registry Approval Tab -->
 
         <!-- Edit Role Modal -->
         <ion-modal [isOpen]="isEditRoleModalOpen" (didDismiss)="closeEditRoleModal()">
