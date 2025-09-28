@@ -1411,6 +1411,41 @@ $usjr-deep-green: #0f1f17;
               }
             }
 
+            &.notification-btn {
+              .notification-badge {
+                position: absolute;
+                top: 6px;
+                right: 6px;
+                background: #ef4444;
+                color: white;
+                min-width: 18px;
+                height: 18px;
+                font-size: 10px;
+                font-weight: 700;
+                border-radius: 9px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: badgePulse 2s ease-in-out infinite;
+
+                @media (max-width: 768px) {
+                  top: 4px;
+                  right: 4px;
+                  min-width: 16px;
+                  height: 16px;
+                  font-size: 9px;
+                }
+
+                @media (max-width: 480px) {
+                  top: 3px;
+                  right: 3px;
+                  min-width: 14px;
+                  height: 14px;
+                  font-size: 8px;
+                }
+              }
+            }
+
             &.logout-btn {
               --color: #{$usjr-gold};
               --background-hover: rgba(244, 192, 20, 0.1);

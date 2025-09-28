@@ -200,6 +200,10 @@ export class ProfilePage implements OnInit {
     this.router.navigate(['/settings']);
   }
 
+  navigateToNotifications() {
+    this.router.navigate(['/notifications']);
+  }
+
   logout() {
     this.authService.logout();
   }
