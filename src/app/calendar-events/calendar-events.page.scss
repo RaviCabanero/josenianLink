@@ -543,6 +543,16 @@ $usjr-deep-green: #0f1f17;
           --color: #1e293b;
           font-weight: 500;
         }
+
+        ion-select {
+          --color: #1e293b;
+          font-weight: 500;
+        }
+
+        ion-datetime {
+          --color: #1e293b;
+          font-weight: 500;
+        }
       }
 
       .submit-button {
@@ -799,25 +809,25 @@ $usjr-deep-green: #0f1f17;
             position: relative;
 
             @media (max-width: 768px) {
-              height: 40px;
-              width: 40px;
+              height: 44px;
+              width: 44px;
             }
 
             @media (max-width: 480px) {
-              height: 36px;
-              width: 36px;
+              height: 48px;
+              width: 48px;
             }
 
             ion-icon {
-              font-size: 1.4rem;
+              font-size: 1.8rem;
               transition: all 0.3s ease;
 
               @media (max-width: 768px) {
-                font-size: 1.3rem;
+                font-size: 1.8rem;
               }
 
               @media (max-width: 480px) {
-                font-size: 1.2rem;
+                font-size: 2.0rem;
               }
             }
 

@@ -116,35 +116,46 @@ export class AdminPage implements OnInit {
   switchTab(tab: string) {
     this.activeTab = tab;
 
-    // Load data when switching to registry approval tab
+    // Load data when switching to specific tabs
     if (tab === 'registry-approval') {
       this.loadRegistryRequests();
+    } else if (tab === 'alumni') {
+      this.loadAllUsers();
     }
   }
 
   async loadAllUsers() {
     this.loading = true;
     try {
-      // Load users from main users collection (since lastname subcollections are dynamic)
-      this.firestore.collection('users', ref =>
-        ref.where('role', '==', 'user')
-           .orderBy('fullName')
-      ).valueChanges({ idField: 'uid' }).subscribe(users => {
-        this.alumniList = users.map((user: any) => ({
-          id: user.idNumber || 'N/A',
+      console.log('Loading all users...');
+      // Load users from main users collection
+      this.firestore.collection('users').valueChanges({ idField: 'uid' }).subscribe(users => {
+        console.log('Raw users from Firestore:', users);
+        
+        // Filter for users with role 'user' (alumni) and exclude admin accounts
+        const filteredUsers = users.filter((user: any) => 
+          user.role === 'user' || (!user.role && user.fullName) // Include users without explicit role but with fullName
+        );
+        
+        console.log('Filtered users:', filteredUsers);
+        
+        this.alumniList = filteredUsers.map((user: any) => ({
+          id: user.idNumber || user.studentId || 'N/A',
           name: user.fullName || user.name || 'Unknown User',
           firstName: user.firstName || this.getFirstName(user.fullName || user.name || 'Unknown User'),
           lastName: user.lastName || this.getLastName(user.fullName || user.name || 'Unknown User'),
           email: user.email || 'No email',
-          year: user.yearGraduated || 'N/A',
-          program: user.program || 'N/A',
-          contact: user.contactNumber || 'N/A',
+          year: user.yearGraduated || user.graduationYear || 'N/A',
+          program: user.program || user.course || 'N/A',
+          contact: user.contactNumber || user.phoneNumber || 'N/A',
           address: user.address || 'N/A',
           photo: user.photoURL || user.photo || 'https://via.placeholder.com/40x40/cccccc/ffffff?text=👤',
           verified: user.verified || false,
           uid: user.uid,
           role: user.role || 'user'
         }));
+        
+        console.log('Processed alumni list:', this.alumniList);
         this.filteredAlumniList = [...this.alumniList];
         this.loading = false;
         this.loadStats(); // Update stats after alumni are loaded

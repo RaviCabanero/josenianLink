@@ -89,14 +89,21 @@
               <ion-icon name="card-outline" class="input-icon-modern"></ion-icon>
               <ion-input
                 [(ngModel)]="idNumber"
-                type="text"
+                type="tel"
                 required
+                maxlength="10"
+                pattern="[0-9]{10}"
                 class="modern-input"
-                placeholder="Student ID Number"
+                placeholder="Student ID Number (10 digits)"
                 (focus)="isInputFocused = true"
-                (blur)="checkBlur()">
+                (blur)="checkBlur()"
+                (ionInput)="validateStudentId($event)">
               </ion-input>
               <div class="input-focus-line"></div>
+            </div>
+            <div class="id-validation" *ngIf="showIdError">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>Student ID must be exactly 10 numbers</span>
             </div>
           </div>
 
@@ -282,13 +289,22 @@
                 [(ngModel)]="contactNumber"
                 type="tel"
                 required
+                maxlength="11"
+                pattern="[0-9]*"
+                inputmode="numeric"
                 class="modern-input"
-                placeholder="Contact Number"
+                placeholder="Contact Number (11 digits starting with 0)"
                 fill="outline"
                 (focus)="isInputFocused = true"
-                (blur)="checkBlur()">
+                (blur)="checkBlur()"
+                (ionInput)="validateContactNumber($event)"
+                (keypress)="onlyNumbers($event)">
               </ion-input>
               <div class="input-focus-line"></div>
+            </div>
+            <div class="contact-validation" *ngIf="showContactError">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              <span>Contact number must start with 0 and be exactly 11 digits</span>
             </div>
           </div>
 

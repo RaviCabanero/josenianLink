@@ -3,10 +3,11 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <img src="assets/usjrlogo.png" class="sidebar-logo-img" />
+        <img src="assets/alumnilogo.webp" alt="USJ-R Alumni Logo" class="sidebar-logo-img" />
         <h1 class="logo-text">
-          <span class="green">JOSENIAN</span><span class="yellow">LINK</span> 🔗
+          <span class="green">JOSENIAN</span><span class="yellow">LINK</span> 
         </h1>
+        <p class="tagline">Admin Portal</p>
       </div>
 
       <div class="nav-links">
@@ -33,6 +34,14 @@
         <div class="nav-item" [class.active]="activeTab === 'freedom-wall'" (click)="switchTab('freedom-wall')">
           <ion-icon name="chatbubbles-outline"></ion-icon>
           <span>Freedom Wall</span>
+        </div>
+      </div>
+      
+      <!-- Logout Button -->
+      <div class="sidebar-footer">
+        <div class="nav-item logout-item" (click)="logout()">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
         </div>
       </div>
     </div>
@@ -334,49 +343,43 @@
             <table class="alumni-table">
               <thead>
                 <tr>
-                  <th class="user-col-enhanced">Alumni Information</th>
-                  <th class="year-col">Year</th>
-                  <th class="contact-col">Contact</th>
+                  <th class="firstname-col">First Name</th>
+                  <th class="lastname-col">Last Name</th>
+                  <th class="id-col">ID Number</th>
+                  <th class="program-col">Program</th>
                   <th class="status-col">Status</th>
                   <th class="role-col">Role</th>
-                  <th class="actions-col">Actions</th>
+                  <th class="actions-col">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let alumni of filteredAlumniList; trackBy: trackByUid" class="alumni-row">
-                  <!-- User Column with Enhanced Layout -->
-                  <td class="user-cell">
-                    <div class="user-info-enhanced">
-                      <div class="user-avatar-circle">
+                  <!-- First Name -->
+                  <td class="firstname-cell">
+                    <div class="name-info">
+                      <div class="user-avatar-small">
                         <img [src]="alumni.photo" [alt]="alumni.name" />
                         <div class="status-dot" [class.verified]="alumni.verified" [class.pending]="!alumni.verified"></div>
                       </div>
-                      <div class="user-details-enhanced">
-                        <div class="name-section">
-                          <span class="first-name">{{ getFirstName(alumni.name) }}</span>
-                          <span class="last-name">{{ getLastName(alumni.name) }}</span>
-                        </div>
-                        <div class="info-section">
-                          <span class="course-info">{{ alumni.program }}</span>
-                          <span class="id-info">ID: {{ alumni.id }}</span>
-                        </div>
-                        <div class="email-section">
-                          <span class="user-email">{{ alumni.email }}</span>
-                        </div>
-                      </div>
+                      <span class="first-name">{{ getFirstName(alumni.name) }}</span>
                     </div>
                   </td>
 
-                  <!-- Year -->
-                  <td class="year-cell">
-                    <span class="year-text">{{ alumni.year }}</span>
+                  <!-- Last Name -->
+                  <td class="lastname-cell">
+                    <span class="last-name">{{ getLastName(alumni.name) }}</span>
                   </td>
 
-                  <!-- Contact -->
-                  <td class="contact-cell">
-                    <div class="contact-info">
-                      <span class="contact-number">{{ alumni.contact }}</span>
-                      <span class="contact-address" *ngIf="alumni.address">{{ alumni.address }}</span>
+                  <!-- ID Number -->
+                  <td class="id-cell">
+                    <span class="id-number">{{ alumni.id }}</span>
+                  </td>
+
+                  <!-- Program -->
+                  <td class="program-cell">
+                    <div class="program-info">
+                      <span class="program-name">{{ alumni.program }}</span>
+                      <span class="graduation-year">{{ alumni.year }}</span>
                     </div>
                   </td>
 
@@ -406,13 +409,13 @@
                   <!-- Actions -->
                   <td class="actions-cell">
                     <div class="action-buttons">
-                      <ion-button fill="clear" size="small" color="primary" (click)="viewUserDetails(alumni)" class="action-btn">
+                      <ion-button fill="clear" size="small" color="primary" (click)="viewUserDetails(alumni)" class="action-btn" title="View Details">
                         <ion-icon name="eye-outline" slot="icon-only"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" size="small" color="warning" (click)="editUser(alumni)" class="action-btn">
+                      <ion-button fill="clear" size="small" color="warning" (click)="editUser(alumni)" class="action-btn" title="Edit User">
                         <ion-icon name="create-outline" slot="icon-only"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" size="small" color="danger" (click)="deleteUser(alumni.uid)" class="action-btn">
+                      <ion-button fill="clear" size="small" color="danger" (click)="deleteUser(alumni.uid)" class="action-btn" title="Delete User">
                         <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                       </ion-button>
                     </div>

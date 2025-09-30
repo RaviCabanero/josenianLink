@@ -17,8 +17,11 @@ export class CalendarEventsPage implements OnInit {
     { title: 'Career Fair', date: new Date(2025, 10, 5), location: 'USJR Gymnasium' }
   ]);
 
+  currentYear = new Date().getFullYear();
+
   alumniIdRequest = {
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     yearGraduated: '',
     course: '',
@@ -123,10 +126,11 @@ export class CalendarEventsPage implements OnInit {
 
       const requestData = {
         ...this.alumniIdRequest,
+        name: `${this.alumniIdRequest.firstName} ${this.alumniIdRequest.lastName}`.trim(),
         status: 'pending',
         timestamp: new Date(),
         userId: currentUser?.uid,
-        userName: (userProfile as any)?.fullName || currentUser?.displayName || this.alumniIdRequest.name,
+        userName: (userProfile as any)?.fullName || currentUser?.displayName || `${this.alumniIdRequest.firstName} ${this.alumniIdRequest.lastName}`.trim(),
         userEmail: (userProfile as any)?.email || currentUser?.email || this.alumniIdRequest.email,
         userPhoto: (userProfile as any)?.photoURL || currentUser?.photoURL
       };
@@ -150,7 +154,7 @@ export class CalendarEventsPage implements OnInit {
       // Force change detection to update the UI
       this.cdr.detectChanges();
       
-      this.alumniIdRequest = { name: '', email: '', yearGraduated: '', course: '', studentId: '', contactNumber: '' };
+      this.alumniIdRequest = { firstName: '', lastName: '', email: '', yearGraduated: '', course: '', studentId: '', contactNumber: '' };
       
       // Hide success message and ensure the status is displayed
       setTimeout(() => {
@@ -167,7 +171,8 @@ export class CalendarEventsPage implements OnInit {
 
   isFormValid(): boolean {
     return !!(
-      this.alumniIdRequest.name &&
+      this.alumniIdRequest.firstName &&
+      this.alumniIdRequest.lastName &&
       this.alumniIdRequest.email &&
       this.alumniIdRequest.yearGraduated &&
       this.alumniIdRequest.course &&
@@ -220,7 +225,7 @@ export class CalendarEventsPage implements OnInit {
         component: AlumniIdModalComponent,
         componentProps: {
           alumniId: this.existingRequest.alumniId,
-          userName: this.existingRequest.userName || this.existingRequest.name,
+          userName: this.existingRequest.userName || this.existingRequest.name || `${this.existingRequest.firstName} ${this.existingRequest.lastName}`.trim(),
           userEmail: this.existingRequest.userEmail || this.existingRequest.email,
           userPhoto: this.existingRequest.userPhoto || this.userProfile?.photoURL || 'assets/default-avatar.png'
         }

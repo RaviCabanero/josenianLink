@@ -1216,7 +1216,7 @@ $usjr-deep-green: #0f1f17;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0 0 24px 24px;
+    border-radius: 0 0 10px 10px;
     box-shadow: 0 8px 32px rgba(44, 84, 63, 0.4);
     position: relative;
     overflow: hidden;
@@ -1380,25 +1380,25 @@ $usjr-deep-green: #0f1f17;
             position: relative;
 
             @media (max-width: 768px) {
-              height: 40px;
-              width: 40px;
+              height: 44px;
+              width: 44px;
             }
 
             @media (max-width: 480px) {
-              height: 36px;
-              width: 36px;
+              height: 48px;
+              width: 48px;
             }
 
             ion-icon {
-              font-size: 1.4rem;
+              font-size: 1.8rem;
               transition: all 0.3s ease;
 
               @media (max-width: 768px) {
-                font-size: 1.3rem;
+                font-size: 1.8rem;
               }
 
               @media (max-width: 480px) {
-                font-size: 1.2rem;
+                font-size: 2.0rem;
               }
             }
 
@@ -1549,26 +1549,26 @@ $usjr-deep-green: #0f1f17;
         justify-content: center;
 
         @media (max-width: 768px) {
-          height: 50px;
-          min-width: 55px;
+          height: 54px;
+          min-width: 60px;
         }
 
         @media (max-width: 480px) {
-          height: 46px;
-          min-width: 50px;
+          height: 58px;
+          min-width: 64px;
         }
 
         ion-icon {
-          font-size: 1.5rem;
+          font-size: 1.8rem;
           transition: all 0.3s ease;
           margin-bottom: 2px;
 
           @media (max-width: 768px) {
-            font-size: 1.4rem;
+            font-size: 1.8rem;
           }
 
           @media (max-width: 480px) {
-            font-size: 1.3rem;
+            font-size: 2.0rem;
             margin-bottom: 1px;
           }
         }

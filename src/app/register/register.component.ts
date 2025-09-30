@@ -41,6 +41,8 @@ export class RegisterComponent {
   isInputFocused: boolean = false;
   showPasswordMismatchError: boolean = false;
   showProgramError: boolean = false;
+  showIdError: boolean = false;
+  showContactError: boolean = false;
   isProgramDropdownOpen: boolean = false;
   isDatePickerOpen: boolean = false;
   showDateError: boolean = false;
@@ -102,6 +104,66 @@ export class RegisterComponent {
     } else {
       this.showPasswordMismatchError = false;
     }
+  }
+
+  validateStudentId(event: any) {
+    const value = event.target.value;
+    // Remove any non-numeric characters
+    const numericValue = value.replace(/[^0-9]/g, '');
+    
+    // Update the model with only numeric characters
+    this.idNumber = numericValue;
+    
+    // Show error if not exactly 10 digits
+    if (numericValue.length > 0 && numericValue.length !== 10) {
+      this.showIdError = true;
+    } else {
+      this.showIdError = false;
+    }
+  }
+
+  validateContactNumber(event: any) {
+    const value = event.target.value;
+    // Remove any non-numeric characters
+    let numericValue = value.replace(/[^0-9]/g, '');
+    
+    // Limit to 11 characters
+    if (numericValue.length > 11) {
+      numericValue = numericValue.substring(0, 11);
+    }
+    
+    // Update the model
+    this.contactNumber = numericValue;
+    
+    // Validate format: must start with 0 and be exactly 11 digits
+    const isValid = /^0\d{10}$/.test(numericValue);
+    
+    if (numericValue.length > 0 && numericValue.length !== 11) {
+      this.showContactError = true;
+    } else if (numericValue.length === 11 && !isValid) {
+      this.showContactError = true;
+    } else {
+      this.showContactError = false;
+    }
+  }
+
+  onlyNumbers(event: KeyboardEvent): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    // Allow: backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(charCode) !== -1 ||
+        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (charCode === 65 && event.ctrlKey === true) ||
+        (charCode === 67 && event.ctrlKey === true) ||
+        (charCode === 86 && event.ctrlKey === true) ||
+        (charCode === 88 && event.ctrlKey === true)) {
+      return true;
+    }
+    // Ensure that it is a number and stop the keypress
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
   }
 
   toggleProgramDropdown() {
@@ -290,6 +352,20 @@ export class RegisterComponent {
       if (!this.program) {
         this.showProgramError = true;
         await this.presentToast('Please select a program', 'warning');
+        return;
+      }
+
+      // Validate student ID
+      if (!this.idNumber || this.idNumber.length !== 10 || !/^\d{10}$/.test(this.idNumber)) {
+        this.showIdError = true;
+        await this.presentToast('Student ID must be exactly 10 numbers', 'warning');
+        return;
+      }
+
+      // Validate contact number
+      if (!this.contactNumber || !/^0\d{10}$/.test(this.contactNumber)) {
+        this.showContactError = true;
+        await this.presentToast('Contact number must start with 0 and be exactly 11 digits', 'warning');
         return;
       }
 

@@ -549,6 +549,34 @@ $usjr-soft-gold: #fef3c7;
           font-size: 16px;
         }
       }
+
+      .id-validation {
+        display: flex;
+        align-items: center;
+        margin-top: 8px;
+        color: #e74c3c;
+        font-size: 14px;
+        animation: fadeInError 0.3s ease-in-out;
+
+        ion-icon {
+          margin-right: 6px;
+          font-size: 16px;
+        }
+      }
+
+      .contact-validation {
+        display: flex;
+        align-items: center;
+        margin-top: 8px;
+        color: #e74c3c;
+        font-size: 14px;
+        animation: fadeInError 0.3s ease-in-out;
+
+        ion-icon {
+          margin-right: 6px;
+          font-size: 16px;
+        }
+      }
     }
 
     // Password Validation Styles

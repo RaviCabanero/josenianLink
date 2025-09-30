@@ -198,23 +198,52 @@
           <form class="alumni-form" *ngIf="!hasExistingRequest">
             <div class="form-row">
               <ion-item class="form-item">
-                <ion-label position="floating">Full Name</ion-label>
-                <ion-input [(ngModel)]="alumniIdRequest.name" name="name" required></ion-input>
+                <ion-label position="floating">First Name</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.firstName" name="firstName" required></ion-input>
               </ion-item>
+              <ion-item class="form-item">
+                <ion-label position="floating">Last Name</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.lastName" name="lastName" required></ion-input>
+              </ion-item>
+            </div>
+
+            <div class="form-row">
               <ion-item class="form-item">
                 <ion-label position="floating">Email Address</ion-label>
                 <ion-input [(ngModel)]="alumniIdRequest.email" name="email" type="email" required></ion-input>
+              </ion-item>
+              <ion-item class="form-item">
+                <ion-label position="floating">Contact Number</ion-label>
+                <ion-input [(ngModel)]="alumniIdRequest.contactNumber" name="contact" type="tel" required></ion-input>
               </ion-item>
             </div>
 
             <div class="form-row">
               <ion-item class="form-item">
                 <ion-label position="floating">Year Graduated</ion-label>
-                <ion-input [(ngModel)]="alumniIdRequest.yearGraduated" name="year" type="number" required></ion-input>
+                <ion-datetime 
+                  [(ngModel)]="alumniIdRequest.yearGraduated" 
+                  name="yearGraduated" 
+                  presentation="year"
+                  [max]="currentYear"
+                  [min]="1950"
+                  required>
+                </ion-datetime>
               </ion-item>
               <ion-item class="form-item">
-                <ion-label position="floating">Course/Program</ion-label>
-                <ion-input [(ngModel)]="alumniIdRequest.course" name="course" required></ion-input>
+                <ion-label position="stacked">Course/Program</ion-label>
+                <ion-select 
+                  [(ngModel)]="alumniIdRequest.course" 
+                  name="course" 
+                  required 
+                  placeholder="Select Program"
+                  interface="popover"
+                  okText="Okay"
+                  cancelText="Cancel">
+                  <ion-select-option value="BSIT">BSIT - Bachelor of Science in Information Technology</ion-select-option>
+                  <ion-select-option value="BSBA">BSBA - Bachelor of Science in Business Administration</ion-select-option>
+                  <ion-select-option value="BSN">BSN - Bachelor of Science in Nursing</ion-select-option>
+                </ion-select>
               </ion-item>
             </div>
 
@@ -222,10 +251,6 @@
               <ion-item class="form-item">
                 <ion-label position="floating">Student ID Number</ion-label>
                 <ion-input [(ngModel)]="alumniIdRequest.studentId" name="studentId" required></ion-input>
-              </ion-item>
-              <ion-item class="form-item">
-                <ion-label position="floating">Contact Number</ion-label>
-                <ion-input [(ngModel)]="alumniIdRequest.contactNumber" name="contact" type="tel" required></ion-input>
               </ion-item>
             </div>
 
@@ -255,23 +280,23 @@
     <div class="footer-buttons">
       <ion-button fill="clear" routerLink="/home" class="footer-nav-btn">
         <ion-icon name="home" slot="icon-only"></ion-icon>
-        <span class="nav-label">Home</span>
+        <span class="nav-label"></span>
       </ion-button>
       <ion-button fill="clear" routerLink="/events" class="footer-nav-btn active">
         <ion-icon name="calendar" slot="icon-only"></ion-icon>
-        <span class="nav-label">Events</span>
+        <span class="nav-label"></span>
       </ion-button>
       <ion-button fill="clear" routerLink="/notifications" class="footer-nav-btn">
         <ion-icon name="notifications" slot="icon-only"></ion-icon>
-        <span class="nav-label">Notifications</span>
+        <span class="nav-label"></span>
       </ion-button>
       <ion-button fill="clear" routerLink="/profile" class="footer-nav-btn">
         <ion-icon name="person" slot="icon-only"></ion-icon>
-        <span class="nav-label">Profile</span>
+        <span class="nav-label"></span>
       </ion-button>
       <ion-button fill="clear" routerLink="/messages" class="footer-nav-btn">
         <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
-        <span class="nav-label">Messages</span>
+        <span class="nav-label"></span>
       </ion-button>
     </div>
   </ion-toolbar>

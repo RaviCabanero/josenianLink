@@ -1,20 +1,29 @@
+// USJR Color Palette (matching login page)
+$usjr-green: #2c543f;
+$usjr-gold: #f4c014;
+$usjr-cream: #f7f6f4;
+$usjr-dark-green: #1a3329;
+$usjr-light-gold: #f8d558;
+$usjr-deep-green: #0f1f17;
+
 .admin-layout {
-  --sidebar-width: 280px;
+  --sidebar-width: 300px;
   --header-height: 80px;
-  --primary-color: #4361ee;
-  --secondary-color: #3f37c9;
-  --success-color: #4cc9f0;
-  --danger-color: #f72585;
-  --warning-color: #f8961e;
-  --light-color: #f8f9fa;
-  --dark-color: #212529;
-  --border-radius: 12px;
-  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  --transition: all 0.3s ease;
+  --primary-color: #{$usjr-green};
+  --secondary-color: #{$usjr-dark-green};
+  --accent-color: #{$usjr-gold};
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --warning-color: #{$usjr-gold};
+  --light-color: #{$usjr-cream};
+  --dark-color: #{$usjr-deep-green};
+  --border-radius: 16px;
+  --box-shadow: 0 8px 32px rgba(44, 84, 63, 0.12);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   height: 100vh;
-  background-color: #f5f7fa;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #{$usjr-cream};
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
   .layout-container {
     display: flex;
@@ -22,88 +31,225 @@
 
     .sidebar {
       width: var(--sidebar-width);
-      background: #2c543f;
+      background: linear-gradient(135deg, #{$usjr-green} 0%, #{$usjr-dark-green} 50%, #{$usjr-deep-green} 100%);
       color: white;
       height: 100%;
       position: relative;
       flex-shrink: 0;
-      padding: 20px 0;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      padding: 0;
+      box-shadow: 2px 0 24px rgba(44, 84, 63, 0.4);
       z-index: 10;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(244, 192, 20, 0.08) 50%, transparent 70%);
+        animation: sidebarShimmer 4s ease-in-out infinite;
+      }
 
       &-header {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0 20px 30px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 40px 32px 32px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        background: transparent;
+        position: relative;
+        z-index: 2;
 
         .sidebar-logo-img {
-          width: 80px;
-          height: auto;
-          margin-bottom: 15px;
+          width: 90px;
+          height: 90px;
           border-radius: 50%;
-          border: 3px solid rgba(255, 255, 255, 0.1);
+          border: 4px solid #{$usjr-gold};
+          box-shadow: 0 8px 24px rgba(244, 192, 20, 0.2);
+          margin-bottom: 24px;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(244, 192, 20, 0.3);
+          }
         }
 
         .logo-text {
-          font-size: 1.5rem;
-          margin: 0;
-          font-weight: 700;
-          letter-spacing: 0.5px;
+          font-size: 1.8rem;
+          margin: 0 0 8px 0;
+          font-weight: 800;
+          letter-spacing: 1px;
+          text-align: center;
+          line-height: 1.2;
 
           .green {
-            color: #4cc9f0;
+            color: white;
+            font-weight: 900;
           }
 
           .yellow {
-            color: #f8961e;
+            color: #{$usjr-gold};
+            font-weight: 900;
+            margin-left: 4px;
           }
+        }
+
+        .tagline {
+          font-size: 0.9rem;
+          color: white;
+          opacity: 0.8;
+          margin: 0;
+          font-weight: 500;
+          letter-spacing: 0.5px;
         }
       }
 
       .nav-links {
-        margin-top: 20px;
-        padding: 0 15px;
+        padding: 24px 20px;
+        position: relative;
+        z-index: 2;
 
         .nav-item {
           display: flex;
           align-items: center;
-          padding: 12px 20px;
-          margin-bottom: 5px;
-          border-radius: 8px;
+          padding: 16px 20px;
+          margin-bottom: 4px;
+          border-radius: 12px;
           cursor: pointer;
-          transition: var(--transition);
-          color: rgba(255, 255, 255, 0.8);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          color: white;
+          position: relative;
+          font-weight: 500;
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 0;
+            background: #{$usjr-gold};
+            border-radius: 2px;
+            transition: height 0.3s ease;
+          }
 
           ion-icon {
-            font-size: 1.2rem;
-            margin-right: 12px;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            margin-right: 16px;
+            color: white;
+            opacity: 0.8;
+            transition: all 0.3s ease;
           }
 
           span {
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
           }
 
           &:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
+            transform: translateX(4px);
+
+            &::before {
+              height: 32px;
+            }
 
             ion-icon {
-              color: white;
+              color: #{$usjr-gold};
+              opacity: 1;
+              transform: scale(1.1);
+            }
+
+            span {
+              font-weight: 700;
             }
           }
 
           &.active {
-            background-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.15);
             color: white;
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+            transform: translateX(8px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+
+            &::before {
+              height: 100%;
+              background: #{$usjr-gold};
+            }
 
             ion-icon {
-              color: white;
+              color: #{$usjr-gold};
+              opacity: 1;
+              transform: scale(1.15);
             }
+
+            span {
+              color: white;
+              font-weight: 700;
+            }
+          }
+        }
+      }
+
+      .sidebar-footer {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+
+        .logout-item {
+          display: flex;
+          align-items: center;
+          padding: 16px 20px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          color: #ff6b6b;
+          font-weight: 500;
+          border: 2px solid rgba(255, 107, 107, 0.2);
+          background: rgba(255, 107, 107, 0.05);
+
+          ion-icon {
+            font-size: 1.5rem;
+            margin-right: 16px;
+            color: #ff6b6b;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+          }
+
+          span {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+          }
+
+          &:hover {
+            background: rgba(255, 107, 107, 0.15);
+            border-color: rgba(255, 107, 107, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+
+            ion-icon {
+              opacity: 1;
+              transform: scale(1.1);
+            }
+
+            span {
+              font-weight: 700;
+            }
+          }
+
+          &:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
           }
         }
       }
@@ -112,36 +258,60 @@
     .main-content {
       flex: 1;
       overflow-y: auto;
-      padding: 20px;
-      background-color: #f5f7fa;
+      padding: 32px;
+      background: #{$usjr-cream};
+      position: relative;
 
       .main-panel {
         max-width: 100%;
-        background-color: white;
+        background: white;
         border-radius: var(--border-radius);
         box-shadow: var(--box-shadow);
-        padding: 20px;
-        margin-bottom: 20px;
+        padding: 32px;
+        margin-bottom: 24px;
+        position: relative;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(44, 84, 63, 0.08);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 40px rgba(44, 84, 63, 0.15);
+        }
 
         .panel-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 25px;
-          padding-bottom: 15px;
-          border-bottom: 1px solid #eee;
+          margin-bottom: 32px;
+          padding-bottom: 24px;
+          border-bottom: 3px solid #{$usjr-cream};
+          position: relative;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: #{$usjr-gold};
+            border-radius: 2px;
+          }
 
           h2 {
             margin: 0;
-            color: var(--dark-color);
-            font-size: 1.8rem;
-            font-weight: 700;
+            color: #{$usjr-deep-green};
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
           }
 
           .breadcrumb {
-            margin: 5px 0 0;
-            font-size: 0.85rem;
-            color: #6c757d;
+            margin: 8px 0 0;
+            font-size: 0.95rem;
+            color: #{$usjr-dark-green};
+            opacity: 0.7;
+            font-weight: 500;
           }
 
           .header-actions {
@@ -459,12 +629,13 @@
                   text-transform: uppercase;
                   letter-spacing: 0.5px;
 
-                  &.user-col-enhanced { width: 40%; }
-                  &.year-col { width: 10%; }
-                  &.contact-col { width: 15%; }
+                  &.firstname-col { width: 20%; }
+                  &.lastname-col { width: 15%; }
+                  &.id-col { width: 12%; }
+                  &.program-col { width: 20%; }
                   &.status-col { width: 12%; }
                   &.role-col { width: 12%; }
-                  &.actions-col { width: 11%; }
+                  &.actions-col { width: 9%; }
                 }
               }
 
@@ -742,7 +913,7 @@
                       --border-radius: 8px;
                       --padding-start: 8px;
                       --padding-end: 8px;
-                      --color: #374151;
+                      --color: #{$usjr-deep-green};
                       font-weight: 500;
                       font-size: 12px;
                       min-width: 90px;
@@ -955,12 +1126,40 @@
 // User Detail Modal Styles
 .user-detail-content {
   --background: #f8f9fa;
+  color: #{$usjr-deep-green};
 }
 
 .user-detail-container {
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
+  color: #{$usjr-deep-green};
+}
+
+// Ensure modal elements have proper text color
+ion-modal {
+  ion-header {
+    ion-toolbar {
+      --color: #{$usjr-deep-green};
+      
+      ion-title {
+        color: #{$usjr-deep-green} !important;
+      }
+      
+      ion-button {
+        --color: #{$usjr-deep-green};
+      }
+    }
+  }
+  
+  ion-content {
+    --color: #{$usjr-deep-green};
+    color: #{$usjr-deep-green} !important;
+    
+    * {
+      color: inherit;
+    }
+  }
 }
 
 .profile-section {
@@ -969,6 +1168,7 @@
   padding: 24px;
   margin-bottom: 20px;
   box-shadow: var(--box-shadow);
+  color: #{$usjr-deep-green};
 }
 
 .profile-header {
@@ -990,15 +1190,19 @@
 
     h2 {
       margin: 0 0 8px 0;
-      color: var(--dark-color);
+      color: #{$usjr-deep-green} !important;
       font-size: 24px;
       font-weight: 600;
     }
 
     .email {
       margin: 0 0 12px 0;
-      color: #6c757d;
+      color: #{$usjr-dark-green} !important;
       font-size: 16px;
+    }
+    
+    p {
+      color: #{$usjr-dark-green} !important;
     }
   }
 }
@@ -1038,15 +1242,16 @@
     }
 
     .label {
-      font-weight: 500;
-      color: var(--dark-color);
+      font-weight: 600;
+      color: #{$usjr-deep-green} !important;
       min-width: 140px;
     }
 
     .value {
-      color: #6c757d;
+      color: #{$usjr-dark-green} !important;
       text-align: right;
       flex: 1;
+      font-weight: 500;
     }
   }
 }
@@ -1056,17 +1261,18 @@
   border-radius: var(--border-radius);
   padding: 24px;
   box-shadow: var(--box-shadow);
+  color: #{$usjr-deep-green};
 
   h3 {
     margin: 0 0 20px 0;
-    color: var(--dark-color);
+    color: #{$usjr-deep-green} !important;
     font-size: 20px;
     font-weight: 600;
   }
 
   h4 {
     margin: 0 0 16px 0;
-    color: #2c543f;
+    color: #{$usjr-green} !important;
     font-size: 16px;
     font-weight: 600;
   }
@@ -1075,10 +1281,14 @@
 .loading-jobs {
   text-align: center;
   padding: 40px;
-  color: #6c757d;
+  color: #{$usjr-dark-green} !important;
 
   ion-spinner {
     margin-bottom: 16px;
+  }
+  
+  p {
+    color: #{$usjr-dark-green} !important;
   }
 }
 
@@ -1101,6 +1311,7 @@
   padding: 16px;
   background: #fafafa;
   transition: var(--transition);
+  color: #{$usjr-deep-green};
 
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -1123,7 +1334,7 @@
 
   h5 {
     margin: 0;
-    color: var(--dark-color);
+    color: #{$usjr-deep-green} !important;
     font-size: 16px;
     font-weight: 600;
   }
@@ -1149,7 +1360,7 @@
 
 .company {
   margin: 0 0 12px 0;
-  color: #2c543f;
+  color: #{$usjr-green} !important;
   font-weight: 500;
   font-size: 14px;
 }
@@ -1164,28 +1375,33 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #6c757d;
+  color: #{$usjr-dark-green} !important;
 
   ion-icon {
     font-size: 14px;
-    color: #2c543f;
+    color: #{$usjr-green} !important;
+  }
+  
+  span {
+    color: #{$usjr-dark-green} !important;
   }
 }
 
 .no-jobs {
   text-align: center;
   padding: 40px;
-  color: #6c757d;
+  color: #{$usjr-dark-green} !important;
 
   ion-icon {
     font-size: 48px;
     margin-bottom: 16px;
-    color: #ccc;
+    color: #{$usjr-green} !important;
   }
 
   p {
     margin: 0;
     font-size: 16px;
+    color: #{$usjr-dark-green} !important;
   }
 }
 
@@ -1780,4 +1996,470 @@ ion-badge {
   --color: #222;
   border-radius: 6px;
   margin-bottom: 8px;
+}
+/* =========================
+   ALUMNI TAB LAYOUT FIX PATCH
+   (Drop-in overrides – UI/SCSS only)
+   ========================= */
+
+/* Spacing and alignment at the top of the Alumni tab */
+.main-content .main-panel > [ng-reflect-ng-if] .panel-header + .search-filter-bar,
+.main-content .main-panel > div[*|ngIf="activeTab === 'alumni'"] .search-filter-bar,
+.main-content .main-panel .search-filter-bar {
+  align-items: center;
+  gap: 12px;
+}
+
+.search-filter-bar .search-bar {
+  --border-radius: 10px;
+  --background: #f3f5f7;
+  --color: #111827;
+  --placeholder-color: #6b7280;
+  height: 44px;
+}
+.search-filter-bar ion-button.filter-btn,
+.search-filter-bar ion-button.add-btn {
+  height: 44px;
+  --border-radius: 10px;
+  --padding-start: 14px;
+  --padding-end: 14px;
+}
+
+/* Ensure the table area scrolls horizontally on small screens (no broken layout) */
+.alumni-management-container .alumni-table-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Table fundamentals for consistent sizing */
+.alumni-management-container .alumni-table {
+  width: 100%;
+  min-width: 980px;         /* keeps columns from collapsing */
+  table-layout: fixed;       /* prevents jittery column widths */
+  border-collapse: separate; /* allow sticky header shadow to show */
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+/* Sticky header that stays visible; clean divider */
+.alumni-management-container .alumni-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #f8fafc;
+  box-shadow: inset 0 -1px 0 #e5e7eb;
+}
+.alumni-management-container .alumni-table thead th {
+  padding: 12px 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: #374151;
+}
+
+/* Updated column widths for new 7-column structure */
+.alumni-management-container .alumni-table thead th:nth-child(1),
+.alumni-management-container .alumni-table tbody td:nth-child(1) { width: 20%; } /* First Name */
+.alumni-management-container .alumni-table thead th:nth-child(2),
+.alumni-management-container .alumni-table tbody td:nth-child(2) { width: 15%; } /* Last Name */
+.alumni-management-container .alumni-table thead th:nth-child(3),
+.alumni-management-container .alumni-table tbody td:nth-child(3) { width: 12%; } /* ID Number */
+.alumni-management-container .alumni-table thead th:nth-child(4),
+.alumni-management-container .alumni-table tbody td:nth-child(4) { width: 20%; } /* Program */
+.alumni-management-container .alumni-table thead th:nth-child(5),
+.alumni-management-container .alumni-table tbody td:nth-child(5) { width: 12%; } /* Status */
+.alumni-management-container .alumni-table thead th:nth-child(6),
+.alumni-management-container .alumni-table tbody td:nth-child(6) { width: 12%; } /* Role */
+.alumni-management-container .alumni-table thead th:nth-child(7),
+.alumni-management-container .alumni-table tbody td:nth-child(7) { width: 9%; }  /* Action */
+
+/* Row and cell polish */
+.alumni-management-container .alumni-table tbody tr.alumni-row {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color .15s ease;
+}
+.alumni-management-container .alumni-table tbody tr.alumni-row:hover {
+  background: #f9fbfd;
+}
+.alumni-management-container .alumni-table tbody td {
+  padding: 12px 10px;
+  vertical-align: middle;
+}
+
+/* First Name column: avatar + name */
+.firstname-cell .name-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.firstname-cell .user-avatar-small {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  flex-shrink: 0;
+}
+.firstname-cell .user-avatar-small img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #{$usjr-gold};
+}
+.firstname-cell .user-avatar-small .status-dot {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  
+  &.verified {
+    background-color: #10b981;
+  }
+  
+  &.pending {
+    background-color: #f59e0b;
+  }
+}
+.firstname-cell .first-name {
+  font-weight: 600;
+  color: #{$usjr-deep-green};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Last Name column */
+.lastname-cell .last-name {
+  font-weight: 600;
+  color: #{$usjr-dark-green};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ID Number column */
+.id-cell .id-number {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #{$usjr-green};
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+/* Program column */
+.program-cell .program-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.program-cell .program-name {
+  font-weight: 600;
+  color: #{$usjr-deep-green};
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.program-cell .graduation-year {
+  font-size: 0.8rem;
+  color: #{$usjr-dark-green};
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+/* Status badge: vertically centered and compact */
+.status-cell .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #{$usjr-deep-green};
+  
+  &.verified {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    
+    ion-icon {
+      color: #15803d;
+    }
+  }
+  
+  &.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    
+    ion-icon {
+      color: #92400e;
+    }
+  }
+}
+
+/* Role select: fixed width, no overflowing popover space */
+.role-cell .role-select {
+  --background: #f8fafc;
+  --border-radius: 8px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --color: #{$usjr-deep-green};
+  min-width: 110px;
+  max-width: 120px;
+  width: 120px;
+}
+
+/* Ensure alumni table role select has proper text color */
+.alumni-management-container .alumni-table .role-cell .role-select {
+  --color: #{$usjr-deep-green} !important;
+  color: #{$usjr-deep-green} !important;
+}
+
+/* Ensure alumni table status badges have proper colors */
+.alumni-management-container .alumni-table .status-cell .status-badge {
+  color: #{$usjr-deep-green} !important;
+  
+  &.verified {
+    background-color: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1px solid #bbf7d0;
+    
+    ion-icon {
+      color: #15803d !important;
+    }
+    
+    span {
+      color: #15803d !important;
+    }
+  }
+  
+  &.pending {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a;
+    
+    ion-icon {
+      color: #92400e !important;
+    }
+    
+    span {
+      color: #92400e !important;
+    }
+  }
+}
+
+/* Actions: keep icons on a single line, same hitbox size */
+.actions-cell .action-buttons {
+  display: inline-flex;
+  gap: 4px;
+  white-space: nowrap;
+}
+.actions-cell .action-buttons .action-btn {
+  width: 30px;
+  height: 30px;
+  --padding-start: 0;
+  --padding-end: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.actions-cell .action-buttons .action-btn ion-icon { font-size: 16px; }
+
+/* Tighter table footer + consistent pagination spacing under Alumni table */
+.table-footer {
+  padding-top: 8px;
+}
+.table-footer .pagination ion-button {
+  min-width: 34px;
+  height: 34px;
+  --border-radius: 8px;
+}
+
+/* Make lists row above behave better on narrow screens (no overlap) */
+.lists-grid {
+  align-items: stretch;
+}
+.list-card ion-list ion-item {
+  margin: 12px 18px;
+}
+
+/* Responsive tweaks for new 7-column layout */
+@media (max-width: 1280px) {
+  .alumni-management-container .alumni-table { min-width: 1000px; }
+  .alumni-management-container .alumni-table thead th:nth-child(1),
+  .alumni-management-container .alumni-table tbody td:nth-child(1) { width: 18%; } /* First Name */
+  .alumni-management-container .alumni-table thead th:nth-child(2),
+  .alumni-management-container .alumni-table tbody td:nth-child(2) { width: 14%; } /* Last Name */
+  .alumni-management-container .alumni-table thead th:nth-child(4),
+  .alumni-management-container .alumni-table tbody td:nth-child(4) { width: 22%; } /* Program */
+}
+
+@media (max-width: 1024px) {
+  .search-filter-bar { flex-wrap: wrap; }
+  .search-filter-bar .search-bar { flex: 1 1 100%; }
+  .search-filter-bar ion-button.filter-btn,
+  .search-filter-bar ion-button.add-btn { flex: 0 0 auto; }
+}
+
+/* Ensure main panel uses full height for consistent start of Alumni table */
+.admin-layout .main-content {
+  display: flex; flex-direction: column;
+}
+.admin-layout .main-content .main-panel {
+  display: block;
+}
+/* =========================
+   ALUMNI PROFILE AVATAR FIX
+   ========================= */
+
+/* In the alumni table list */
+.user-avatar-circle img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50% !important; /* enforce circle */
+  object-fit: cover;
+  border: 3px solid #e5e7eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* In smaller avatar version (fallback old layout) */
+.user-avatar img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% !important;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+/* Profile modal avatar */
+.profile-section .profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50% !important;
+  object-fit: cover;
+  border: 3px solid #2c543f;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+// Modern Clean Animations
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes sidebarShimmer {
+  0%, 100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(200%);
+    opacity: 1;
+  }
+}
+
+// Mobile responsiveness for sidebar
+@media (max-width: 768px) {
+  .admin-layout {
+    .layout-container {
+      .sidebar {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: -100%;
+        z-index: 1000;
+        transition: left 0.3s ease;
+
+        &.mobile-open {
+          left: 0;
+        }
+
+        &-header {
+          padding: 24px 20px;
+
+          .sidebar-logo-img {
+            width: 70px;
+            height: 70px;
+          }
+
+          .logo-text {
+            font-size: 1.6rem;
+          }
+        }
+
+        .nav-links {
+          .nav-item {
+            padding: 14px 18px;
+            margin-bottom: 6px;
+
+            ion-icon {
+              font-size: 1.4rem;
+            }
+
+            span {
+              font-size: 0.95rem;
+            }
+          }
+        }
+      }
+
+      .main-content {
+        padding: 20px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-layout {
+    .layout-container {
+      .sidebar {
+        &-header {
+          padding: 20px 16px;
+
+          .sidebar-logo-img {
+            width: 60px;
+            height: 60px;
+          }
+
+          .logo-text {
+            font-size: 1.4rem;
+            letter-spacing: 0.5px;
+          }
+        }
+
+        .nav-links {
+          padding: 20px 16px;
+
+          .nav-item {
+            padding: 12px 16px;
+
+            ion-icon {
+              font-size: 1.3rem;
+              margin-right: 12px;
+            }
+
+            span {
+              font-size: 0.9rem;
+            }
+          }
+        }
+      }
+
+      .main-content {
+        padding: 16px;
+      }
+    }
+  }
 }
