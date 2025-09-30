@@ -22,6 +22,8 @@ export class AdminPage implements OnInit {
   adminName: string = 'Administrator';
   alumniList: any[] = [];
   filteredAlumniList: any[] = [];
+  originalAlumniList: any[] = []; // Store original unfiltered list
+  selectedProgram: string = ''; // Selected program filter
   loading: boolean = false;
 
   // Tab management
@@ -70,6 +72,13 @@ export class AdminPage implements OnInit {
   approvedToday: number = 0;
   declinedToday: number = 0;
   totalRegistryRequests: number = 0;
+
+  // Approval History properties
+  approvalHistory: any[] = [];
+  loadingApprovalHistory: boolean = false;
+  showApprovalHistory: boolean = false;
+  historyFilter: string = 'all'; // 'all', 'approved', 'declined'
+  filteredApprovalHistory: any[] = [];
 
   private afAuth = inject(AngularFireAuth);
   private router = inject(Router);
@@ -131,13 +140,33 @@ export class AdminPage implements OnInit {
       // Load users from main users collection
       this.firestore.collection('users').valueChanges({ idField: 'uid' }).subscribe(users => {
         console.log('Raw users from Firestore:', users);
+        console.log('Total users found:', users.length);
+        
+        // Check for specific user "lyka aton"
+        const lykaUser = users.find((user: any) => 
+          (user.fullName && user.fullName.toLowerCase().includes('lyka')) ||
+          (user.name && user.name.toLowerCase().includes('lyka')) ||
+          (user.firstName && user.firstName.toLowerCase().includes('lyka'))
+        );
+        if (lykaUser) {
+          console.log('Found Lyka user:', lykaUser);
+        } else {
+          console.log('Lyka user not found in raw data');
+        }
         
         // Filter for users with role 'user' (alumni) and exclude admin accounts
-        const filteredUsers = users.filter((user: any) => 
-          user.role === 'user' || (!user.role && user.fullName) // Include users without explicit role but with fullName
-        );
+        const filteredUsers = users.filter((user: any) => {
+          const hasUserRole = user.role === 'user';
+          const hasNoRoleButName = !user.role && (user.fullName || user.name);
+          const isNotAdmin = user.role !== 'admin';
+          
+          console.log(`User ${user.fullName || user.name}: role=${user.role}, hasUserRole=${hasUserRole}, hasNoRoleButName=${hasNoRoleButName}, isNotAdmin=${isNotAdmin}`);
+          
+          return (hasUserRole || hasNoRoleButName) && isNotAdmin;
+        });
         
         console.log('Filtered users:', filteredUsers);
+        console.log('Filtered users count:', filteredUsers.length);
         
         this.alumniList = filteredUsers.map((user: any) => ({
           id: user.idNumber || user.studentId || 'N/A',
@@ -156,6 +185,7 @@ export class AdminPage implements OnInit {
         }));
         
         console.log('Processed alumni list:', this.alumniList);
+        this.originalAlumniList = [...this.alumniList]; // Store original unfiltered list
         this.filteredAlumniList = [...this.alumniList];
         this.loading = false;
         this.loadStats(); // Update stats after alumni are loaded
@@ -184,15 +214,71 @@ export class AdminPage implements OnInit {
 
   searchUsers(event: any) {
     const searchTerm = event.target.value.toLowerCase();
+    let baseList = this.selectedProgram ? 
+      this.originalAlumniList.filter(user => user.program === this.selectedProgram) : 
+      this.originalAlumniList;
+      
     if (searchTerm && searchTerm.trim() !== '') {
-      this.filteredAlumniList = this.alumniList.filter(user => 
+      this.filteredAlumniList = baseList.filter(user => 
         user.name.toLowerCase().includes(searchTerm) ||
         user.email.toLowerCase().includes(searchTerm) ||
         user.id.toLowerCase().includes(searchTerm) ||
         user.program.toLowerCase().includes(searchTerm)
       );
     } else {
-      this.filteredAlumniList = [...this.alumniList];
+      this.filteredAlumniList = [...baseList];
+    }
+  }
+
+  filterByProgram(event: any) {
+    this.selectedProgram = event.detail.value;
+    
+    // Apply program filter
+    let filteredList = this.selectedProgram ? 
+      this.originalAlumniList.filter(user => user.program === this.selectedProgram) : 
+      [...this.originalAlumniList];
+    
+    this.alumniList = filteredList;
+    this.filteredAlumniList = [...filteredList];
+    
+    console.log(`Filtered by program: ${this.selectedProgram || 'All'}`, this.filteredAlumniList);
+  }
+
+  // Debug method to find specific user
+  async debugFindUser(searchName: string = 'lyka') {
+    try {
+      const users = await this.firestore.collection('users').get().toPromise();
+      const allUsers = users?.docs.map(doc => ({ uid: doc.id, ...(doc.data() as any) })) || [];
+      
+      console.log('=== DEBUG: All users in database ===');
+      console.log('Total users:', allUsers.length);
+      
+      const foundUsers = allUsers.filter((user: any) => 
+        (user.fullName && user.fullName.toLowerCase().includes(searchName.toLowerCase())) ||
+        (user.name && user.name.toLowerCase().includes(searchName.toLowerCase())) ||
+        (user.firstName && user.firstName.toLowerCase().includes(searchName.toLowerCase())) ||
+        (user.email && user.email.toLowerCase().includes(searchName.toLowerCase()))
+      );
+      
+      console.log(`Found ${foundUsers.length} users matching "${searchName}":`, foundUsers);
+      
+      foundUsers.forEach((user: any, index: number) => {
+        console.log(`User ${index + 1}:`, {
+          uid: user.uid,
+          name: user.fullName || user.name,
+          email: user.email,
+          role: user.role,
+          program: user.program || user.course,
+          verified: user.verified,
+          hasFullName: !!user.fullName,
+          hasName: !!user.name
+        });
+      });
+      
+      return foundUsers;
+    } catch (error) {
+      console.error('Error in debugFindUser:', error);
+      return [];
     }
   }
 
@@ -783,6 +869,11 @@ export class AdminPage implements OnInit {
       // Remove from registry-approval collection
       await this.firestore.collection('registry-approval').doc(request.id).delete();
 
+      // Refresh the approval history if it's currently shown
+      if (this.showApprovalHistory) {
+        await this.loadApprovalHistory();
+      }
+
       // Refresh the list
       await this.loadRegistryRequests();
 
@@ -825,6 +916,11 @@ export class AdminPage implements OnInit {
       // Remove from registry-approval collection
       await this.firestore.collection('registry-approval').doc(request.id).delete();
 
+      // Refresh the approval history if it's currently shown
+      if (this.showApprovalHistory) {
+        await this.loadApprovalHistory();
+      }
+
       // Refresh the list
       await this.loadRegistryRequests();
 
@@ -849,6 +945,109 @@ export class AdminPage implements OnInit {
     } finally {
       request.__busy = false;
     }
+  }
+
+  // Approval History Methods
+  async loadApprovalHistory() {
+    this.loadingApprovalHistory = true;
+    try {
+      // Load approved registrations from users collection
+      const approvedSnapshot = await this.firestore.collection('users', ref => 
+        ref.where('approvedAt', '!=', null)
+      ).get().toPromise();
+
+      const approvedRequests = approvedSnapshot?.docs.map(doc => {
+        const data = doc.data() as any;
+        return {
+          id: doc.id,
+          ...data,
+          status: 'approved',
+          processedAt: data.approvedAt,
+          processedBy: data.approvedBy
+        };
+      }) || [];
+
+      // Load declined registrations from registry-declined collection
+      const declinedSnapshot = await this.firestore.collection('registry-declined').get().toPromise();
+
+      const declinedRequests = declinedSnapshot?.docs.map(doc => {
+        const data = doc.data() as any;
+        return {
+          id: doc.id,
+          ...data,
+          status: 'declined',
+          processedAt: data.declinedAt,
+          processedBy: data.declinedBy
+        };
+      }) || [];
+
+      // Combine and sort by processedAt date (newest first)
+      this.approvalHistory = [...approvedRequests, ...declinedRequests]
+        .sort((a, b) => {
+          const dateA = a.processedAt?.toDate?.() || a.processedAt || new Date(0);
+          const dateB = b.processedAt?.toDate?.() || b.processedAt || new Date(0);
+          return dateB.getTime() - dateA.getTime();
+        });
+
+      this.filterApprovalHistory();
+
+    } catch (error) {
+      console.error('Error loading approval history:', error);
+      const toast = await this.toastController.create({
+        message: 'Error loading approval history',
+        duration: 3000,
+        color: 'danger',
+        position: 'top'
+      });
+      await toast.present();
+    } finally {
+      this.loadingApprovalHistory = false;
+    }
+  }
+
+  filterApprovalHistory() {
+    if (this.historyFilter === 'all') {
+      this.filteredApprovalHistory = [...this.approvalHistory];
+    } else {
+      this.filteredApprovalHistory = this.approvalHistory.filter(item => item.status === this.historyFilter);
+    }
+  }
+
+  onHistoryFilterChange() {
+    this.filterApprovalHistory();
+  }
+
+  toggleApprovalHistory() {
+    this.showApprovalHistory = !this.showApprovalHistory;
+    if (this.showApprovalHistory && this.approvalHistory.length === 0) {
+      this.loadApprovalHistory();
+    }
+  }
+
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'approved':
+        return 'success';
+      case 'declined':
+        return 'danger';
+      default:
+        return 'medium';
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'approved':
+        return 'checkmark-circle';
+      case 'declined':
+        return 'close-circle';
+      default:
+        return 'help-circle';
+    }
+  }
+
+  getFilteredCount(status: string): number {
+    return this.approvalHistory.filter(item => item.status === status).length;
   }
 
 }

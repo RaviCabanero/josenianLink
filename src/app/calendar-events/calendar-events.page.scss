@@ -545,8 +545,17 @@ $usjr-deep-green: #0f1f17;
         }
 
         ion-select {
-          --color: #1e293b;
+          --color: #000000 !important;
+          color: #000000 !important;
           font-weight: 500;
+
+          &::part(text) {
+            color: #000000 !important;
+          }
+
+          &::part(placeholder) {
+            color: #666666 !important;
+          }
         }
 
         ion-datetime {

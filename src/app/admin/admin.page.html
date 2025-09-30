@@ -305,6 +305,10 @@
               <p class="breadcrumb">Dashboard / Alumni Management</p>
             </div>
             <div class="header-actions">
+              <ion-button fill="outline" size="small" color="primary" (click)="loadAllUsers()">
+                <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                Refresh
+              </ion-button>
               <p class="role-label">Alumni Officer</p>
               <ion-button fill="clear" class="notification-btn">
                 <ion-icon name="notifications-outline"></ion-icon>
@@ -321,9 +325,29 @@
             debounce="300"
             (ionInput)="searchUsers($event)">
           </ion-searchbar>
+          
+          <!-- Program Selection Filter -->
+          <div class="program-filter">
+            <ion-select 
+              [(ngModel)]="selectedProgram" 
+              placeholder="All Programs" 
+              interface="popover"
+              (ionChange)="filterByProgram($event)"
+              class="program-select">
+              <ion-select-option value="">All Programs</ion-select-option>
+              <ion-select-option value="BSIT">BSIT - Information Technology</ion-select-option>
+              <ion-select-option value="BSBA">BSBA - Business Administration</ion-select-option>
+              <ion-select-option value="BSN">BSN - Nursing</ion-select-option>
+            </ion-select>
+          </div>
+          
           <ion-button class="filter-btn">
             <ion-icon name="filter-outline" slot="start"></ion-icon>
             Filters
+          </ion-button>
+          <ion-button fill="outline" color="warning" size="small" (click)="debugFindUser('lyka')">
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            Debug
           </ion-button>
           <ion-button color="primary" class="add-btn" routerLink="/register">
             <ion-icon name="add-outline" slot="start"></ion-icon>
@@ -425,10 +449,10 @@
             </table>
 
             <!-- Empty State -->
-            <div class="empty-alumni" *ngIf="filteredAlumniList.length === 0">
+            <div class="empty-alumni" *ngIf="filteredAlumniList.length === 0" style="color: #000000 !important;">
               <ion-icon name="people-outline"></ion-icon>
-              <h3>No Alumni Found</h3>
-              <p>No alumni match your current search criteria.</p>
+              <h3 style="color: #000000 !important;">No Alumni Found</h3>
+              <p style="color: #000000 !important;">No alumni match your current search criteria.</p>
             </div>
           </div>
         </div>
@@ -603,6 +627,101 @@
                 <ion-icon name="checkmark-circle-outline"></ion-icon>
                 <h3>No Pending Registrations</h3>
                 <p>All registration requests have been processed or no new requests have been submitted.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approval History Section -->
+          <div class="approval-history-section">
+            <div class="panel-subheader">
+              <h3>
+                <ion-icon name="time-outline"></ion-icon>
+                Approval History
+                <ion-button 
+                  fill="clear" 
+                  size="small" 
+                  (click)="toggleApprovalHistory()"
+                  class="toggle-history-btn">
+                  <ion-icon [name]="showApprovalHistory ? 'chevron-up' : 'chevron-down'" slot="end"></ion-icon>
+                  {{ showApprovalHistory ? 'Hide' : 'Show' }} History
+                </ion-button>
+              </h3>
+              <p class="muted">View all approved and declined registration requests.</p>
+            </div>
+
+            <div *ngIf="showApprovalHistory" class="history-content">
+              <!-- Filter Options -->
+              <div class="history-filters">
+                <ion-segment [(ngModel)]="historyFilter" (ionChange)="onHistoryFilterChange()">
+                  <ion-segment-button value="all">
+                    <ion-label>All ({{ approvalHistory.length }})</ion-label>
+                  </ion-segment-button>
+                  <ion-segment-button value="approved">
+                    <ion-label>Approved ({{ getFilteredCount('approved') }})</ion-label>
+                  </ion-segment-button>
+                  <ion-segment-button value="declined">
+                    <ion-label>Declined ({{ getFilteredCount('declined') }})</ion-label>
+                  </ion-segment-button>
+                </ion-segment>
+              </div>
+
+              <!-- Loading State -->
+              <div *ngIf="loadingApprovalHistory" class="loading-state">
+                <ion-spinner name="crescent"></ion-spinner>
+                <p>Loading approval history...</p>
+              </div>
+
+              <!-- History Table -->
+              <div class="history-table-container" *ngIf="!loadingApprovalHistory">
+                <table class="history-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Program</th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th>Processed Date</th>
+                      <th>Processed By</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let record of filteredApprovalHistory">
+                      <td>
+                        <div class="user-info-cell">
+                          <div class="user-avatar">
+                            <ion-icon name="person-circle" *ngIf="!record.photoURL"></ion-icon>
+                            <img [src]="record.photoURL" *ngIf="record.photoURL" alt="Profile">
+                          </div>
+                          <div class="user-details">
+                            <div class="user-name">{{ record.fullName || record.name || (record.firstName + ' ' + record.lastName) }}</div>
+                            <div class="user-id">{{ record.studentId }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{{ record.program }}</td>
+                      <td>{{ record.email }}</td>
+                      <td>
+                        <ion-chip [color]="getStatusColor(record.status)">
+                          <ion-icon [name]="getStatusIcon(record.status)" slot="start"></ion-icon>
+                          <ion-label>{{ record.status | titlecase }}</ion-label>
+                        </ion-chip>
+                      </td>
+                      <td>
+                        {{ record.processedAt?.toDate?.() ? (record.processedAt.toDate() | date:'short') : (record.processedAt | date:'short') }}
+                      </td>
+                      <td>{{ record.processedBy || 'Admin' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- Empty State for History -->
+                <div class="empty-history" *ngIf="filteredApprovalHistory.length === 0 && !loadingApprovalHistory">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  <h3>No History Records</h3>
+                  <p *ngIf="historyFilter === 'all'">No approval history records found.</p>
+                  <p *ngIf="historyFilter === 'approved'">No approved registrations found.</p>
+                  <p *ngIf="historyFilter === 'declined'">No declined registrations found.</p>
+                </div>
               </div>
             </div>
           </div>
