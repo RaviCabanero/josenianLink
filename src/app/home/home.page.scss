@@ -717,10 +717,6 @@ $usjr-deep-green: #0f1f17;
         height: 54px;
         min-width: 60px;
         transition: all 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
 
         @media (max-width: 768px) {
           height: 54px;
@@ -730,6 +726,15 @@ $usjr-deep-green: #0f1f17;
         @media (max-width: 480px) {
           height: 58px;
           min-width: 64px;
+        }
+
+        .nav-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          width: 100%;
         }
 
         ion-icon {
@@ -752,6 +757,7 @@ $usjr-deep-green: #0f1f17;
           font-weight: 500;
           opacity: 0.8;
           transition: all 0.3s ease;
+          margin-top: 2px;
 
           @media (max-width: 768px) {
             font-size: 9px;
@@ -799,12 +805,14 @@ $usjr-deep-green: #0f1f17;
           --background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
 
-          ion-icon {
-            transform: scale(1.1);
-          }
+          .nav-content {
+            ion-icon {
+              transform: scale(1.1);
+            }
 
-          .nav-label {
-            opacity: 1;
+            .nav-label {
+              opacity: 1;
+            }
           }
         }
 
@@ -813,14 +821,16 @@ $usjr-deep-green: #0f1f17;
           --background: rgba(255, 255, 255, 0.15);
           transform: translateY(-2px);
 
-          ion-icon {
-            transform: scale(1.1);
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-          }
+          .nav-content {
+            ion-icon {
+              transform: scale(1.1);
+              filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            }
 
-          .nav-label {
-            opacity: 1;
-            font-weight: 600;
+            .nav-label {
+              opacity: 1;
+              font-weight: 600;
+            }
           }
 
           &::after {

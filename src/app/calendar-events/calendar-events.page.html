@@ -47,7 +47,7 @@
                 [class.homecoming-card]="event.title.toLowerCase().includes('homecoming')"
                 *ngFor="let event of events$ | async">
         <div class="event-image">
-          <img [src]="event.image || 'assets/default-event.jpg'" alt="Event Image">
+          <img [src]="event.image || 'assets/advisers.jpg'" alt="Event Image">
           <div class="event-date-badge"
                [class.homecoming-badge]="event.title.toLowerCase().includes('homecoming')">
             <span class="day">{{ event.date | date:'dd' }}</span>
@@ -74,10 +74,66 @@
             </div>
             <div class="detail-item">
               <ion-icon name="location-outline"></ion-icon>
-              <span>{{ event.location }}</span>
+              <span>{{ event.venue || event.location || 'TBA' }}</span>
             </div>
           </div>
           <p class="event-description">{{ event.description || 'Join us for this exciting event!' }}</p>
+
+          <!-- RSVP Section -->
+          <div class="rsvp-section" *ngIf="event.rsvpEnabled">
+            <div class="rsvp-header">
+              <h4>Will you attend?</h4>
+              <div class="rsvp-counts" *ngIf="event.rsvpCounts">
+                <span class="count-item going">
+                  <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                  {{ event.rsvpCounts.going || 0 }}
+                </span>
+                <span class="count-item interested">
+                  <ion-icon name="heart" color="warning"></ion-icon>
+                  {{ event.rsvpCounts.interested || 0 }}
+                </span>
+                <span class="count-item not-going">
+                  <ion-icon name="close-circle" color="medium"></ion-icon>
+                  {{ event.rsvpCounts.notGoing || 0 }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="rsvp-buttons">
+              <ion-button 
+                fill="outline" 
+                size="small" 
+                color="success"
+                [class.selected]="getUserRSVPStatus(event.id) === 'going'"
+                (click)="updateRSVP(event.id, 'going')">
+                <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                Going
+              </ion-button>
+              <ion-button 
+                fill="outline" 
+                size="small" 
+                color="warning"
+                [class.selected]="getUserRSVPStatus(event.id) === 'interested'"
+                (click)="updateRSVP(event.id, 'interested')">
+                <ion-icon name="heart" slot="start"></ion-icon>
+                Interested
+              </ion-button>
+              <ion-button 
+                fill="outline" 
+                size="small" 
+                color="medium"
+                [class.selected]="getUserRSVPStatus(event.id) === 'notGoing'"
+                (click)="updateRSVP(event.id, 'notGoing')">
+                <ion-icon name="close-circle" slot="start"></ion-icon>
+                Can't Go
+              </ion-button>
+            </div>
+
+            <div class="rsvp-deadline" *ngIf="event.rsvpDeadline">
+              <ion-icon name="time-outline"></ion-icon>
+              RSVP by {{ event.rsvpDeadline | date:'MMM d, y' }}
+            </div>
+          </div>
 
           <div class="event-actions">
             <ion-button fill="outline" size="small" (click)="viewEvent(event)"
@@ -85,11 +141,11 @@
               <ion-icon name="eye-outline" slot="start"></ion-icon>
               View Details
             </ion-button>
-            <ion-button fill="solid" size="small"
+            <ion-button fill="solid" size="small" *ngIf="!event.rsvpEnabled"
                         [color]="event.title.toLowerCase().includes('homecoming') ? 'warning' : 'primary'"
                         [class.homecoming-btn]="event.title.toLowerCase().includes('homecoming')">
               <ion-icon name="calendar-outline" slot="start"></ion-icon>
-              RSVP
+              Add to Calendar
             </ion-button>
           </div>
         </ion-card-content>
@@ -281,24 +337,34 @@
   <ion-toolbar>
     <div class="footer-buttons">
       <ion-button fill="clear" routerLink="/home" class="footer-nav-btn">
-        <ion-icon name="home" slot="icon-only"></ion-icon>
-        <span class="nav-label"></span>
+        <div class="nav-content">
+          <ion-icon name="home"></ion-icon>
+          <span class="nav-label">Home</span>
+        </div>
       </ion-button>
       <ion-button fill="clear" routerLink="/events" class="footer-nav-btn active">
-        <ion-icon name="calendar" slot="icon-only"></ion-icon>
-        <span class="nav-label"></span>
+        <div class="nav-content">
+          <ion-icon name="calendar"></ion-icon>
+          <span class="nav-label">Events</span>
+        </div>
       </ion-button>
       <ion-button fill="clear" routerLink="/notifications" class="footer-nav-btn">
-        <ion-icon name="notifications" slot="icon-only"></ion-icon>
-        <span class="nav-label"></span>
+        <div class="nav-content">
+          <ion-icon name="notifications"></ion-icon>
+          <span class="nav-label">Notifications</span>
+        </div>
       </ion-button>
       <ion-button fill="clear" routerLink="/profile" class="footer-nav-btn">
-        <ion-icon name="person" slot="icon-only"></ion-icon>
-        <span class="nav-label"></span>
+        <div class="nav-content">
+          <ion-icon name="person"></ion-icon>
+          <span class="nav-label">Profile</span>
+        </div>
       </ion-button>
       <ion-button fill="clear" routerLink="/messages" class="footer-nav-btn">
-        <ion-icon name="chatbox-ellipses" slot="icon-only"></ion-icon>
-        <span class="nav-label"></span>
+        <div class="nav-content">
+          <ion-icon name="chatbox-ellipses"></ion-icon>
+          <span class="nav-label">Messages</span>
+        </div>
       </ion-button>
     </div>
   </ion-toolbar>

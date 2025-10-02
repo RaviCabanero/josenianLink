@@ -165,23 +165,38 @@
   </ng-template>
 </ion-modal>
 
-<ion-footer class="home-footer">
+<ion-footer class="modern-footer">
   <ion-toolbar>
     <div class="footer-buttons">
-      <ion-button fill="clear" routerLink="/home">
-        <ion-icon name="home" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" routerLink="/home" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="home"></ion-icon>
+          <span class="nav-label">Home</span>
+        </div>
       </ion-button>
-      <ion-button fill="clear" routerLink="/events">
-        <ion-icon name="calendar" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" routerLink="/events" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="calendar"></ion-icon>
+          <span class="nav-label">Events</span>
+        </div>
       </ion-button>
-      <ion-button fill="clear" routerLink="/notifications">
-        <ion-icon name="notifications" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" routerLink="/notifications" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="notifications"></ion-icon>
+          <span class="nav-label">Notifications</span>
+        </div>
       </ion-button>
-      <ion-button fill="clear" routerLink="/profile">
-        <ion-icon name="person" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" routerLink="/profile" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="person"></ion-icon>
+          <span class="nav-label">Profile</span>
+        </div>
       </ion-button>
-      <ion-button fill="clear" routerLink="/alumni" class="active">
-        <ion-icon name="people" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" routerLink="/messages" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="chatbox-ellipses"></ion-icon>
+          <span class="nav-label">Messages</span>
+        </div>
       </ion-button>
     </div>
   </ion-toolbar>

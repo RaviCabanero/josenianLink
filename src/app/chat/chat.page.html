@@ -1,0 +1,217 @@
+<!-- Individual Chat Conversation -->
+<ion-header class="modern-header">
+  <div class="header-container">
+    <div class="header-content">
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <div class="logo-wrapper">
+          <div class="university-seal">
+            <img src="assets/alumnilogo.webp" alt="USJR Seal" class="header-logo">
+            <div class="logo-glow"></div>
+          </div>
+          <div class="brand-text">
+            <h1 class="app-title">
+              <span class="josenian-text">JOSENIAN</span>
+              <span class="link-text">LINK</span>
+            </h1>
+            <p class="tagline">Chat</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat User Info Section -->
+      <div class="chat-info-section">
+        <div class="chat-header-info">
+          <div class="user-avatar-small">
+            <ion-avatar>
+              <img [src]="otherUser?.photoURL || 'assets/default-avatar.png'" 
+                   (error)="onImageError($event)" />
+            </ion-avatar>
+            <div class="online-indicator" *ngIf="isOtherUserOnline"></div>
+          </div>
+          <div class="user-details">
+            <h3>{{ otherUser?.fullName || otherUser?.name || 'Unknown User' }}</h3>
+            <p *ngIf="isOtherUserOnline">Online</p>
+            <p *ngIf="!isOtherUserOnline && otherUser?.lastSeen">
+              Last seen {{ getTimeAgo(otherUser?.lastSeen) }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Section -->
+      <div class="actions-section">
+        <div class="header-actions">
+          <ion-button fill="clear" class="action-btn" routerLink="/messages">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="action-btn" (click)="showChatOptions = true">
+            <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="chat-content">
+  <div class="messages-container" #messagesContainer>
+    <!-- Loading State -->
+    <div *ngIf="loadingMessages" class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading messages...</p>
+    </div>
+
+    <!-- Messages List -->
+    <div class="messages-list" *ngIf="!loadingMessages">
+      <div 
+        *ngFor="let message of messages; trackBy: trackByMessageId" 
+        class="message-wrapper"
+        [class.sent]="message.senderId === currentUserId"
+        [class.received]="message.senderId !== currentUserId">
+        
+        <!-- Date Separator -->
+        <div class="date-separator" *ngIf="shouldShowDateSeparator(message)">
+          <span>{{ getDateSeparator(message.timestamp) }}</span>
+        </div>
+        
+        <div class="message-bubble">
+          <!-- Text Message -->
+          <div *ngIf="message.type === 'text'" class="message-content">
+            <p>{{ message.text }}</p>
+          </div>
+          
+          <!-- Image Message -->
+          <div *ngIf="message.type === 'image'" class="message-content image-message">
+            <img [src]="message.imageUrl" 
+                 (click)="viewFullImage(message.imageUrl!)"
+                 (error)="onImageError($event)" />
+            <p *ngIf="message.text">{{ message.text }}</p>
+          </div>
+          
+          <!-- File Message -->
+          <div *ngIf="message.type === 'file'" class="message-content file-message">
+            <div class="file-info" (click)="downloadFile(message.fileUrl!, message.fileName!)">
+              <ion-icon name="document-outline"></ion-icon>
+              <div class="file-details">
+                <span class="file-name">{{ message.fileName }}</span>
+                <span class="file-action">Tap to download</span>
+              </div>
+            </div>
+            <p *ngIf="message.text">{{ message.text }}</p>
+          </div>
+          
+          <div class="message-meta">
+            <span class="message-time">{{ getMessageTime(message.timestamp) }}</span>
+            <ion-icon 
+              *ngIf="message.senderId === currentUserId" 
+              [name]="message.read ? 'checkmark-done' : 'checkmark'" 
+              [class.read]="message.read"
+              class="read-indicator">
+            </ion-icon>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty State -->
+      <div class="empty-messages" *ngIf="messages.length === 0 && !loadingMessages">
+        <ion-icon name="chatbubble-outline"></ion-icon>
+        <h3>No messages yet</h3>
+        <p>Start the conversation with {{ otherUser?.fullName || otherUser?.name }}!</p>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- Message Input -->
+<ion-footer>
+  <ion-toolbar class="message-input-toolbar">
+    <div class="message-input-container">
+      <!-- Attachment Button -->
+      <ion-button 
+        fill="clear" 
+        class="attachment-btn"
+        (click)="showAttachmentOptions = true">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+      
+      <!-- Text Input -->
+      <div class="input-wrapper">
+        <ion-textarea
+          [(ngModel)]="newMessage"
+          placeholder="Type a message..."
+          rows="1"
+          autoGrow
+          maxlength="1000"
+          class="message-textarea"
+          (keydown)="onEnterKey($event)"
+          #messageInput>
+        </ion-textarea>
+      </div>
+      
+      <!-- Send Button -->
+      <ion-button 
+        fill="clear" 
+        class="send-btn"
+        [disabled]="!newMessage.trim() || sendingMessage"
+        (click)="sendTextMessage()">
+        <ion-icon 
+          [name]="sendingMessage ? 'hourglass' : 'send'" 
+          slot="icon-only">
+        </ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>
+
+<!-- Attachment Options Modal -->
+<ion-action-sheet
+  [isOpen]="showAttachmentOptions"
+  header="Attach"
+  [buttons]="attachmentButtons"
+  (didDismiss)="showAttachmentOptions = false">
+</ion-action-sheet>
+
+<!-- Chat Options Modal -->
+<ion-action-sheet
+  [isOpen]="showChatOptions"
+  header="Chat Options"
+  [buttons]="chatOptionsButtons"
+  (didDismiss)="showChatOptions = false">
+</ion-action-sheet>
+
+<!-- Image Viewer Modal -->
+<ion-modal [isOpen]="showImageViewer" (didDismiss)="showImageViewer = false">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Image</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="showImageViewer = false">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="image-viewer-content">
+      <div class="image-container">
+        <img [src]="selectedImageUrl" />
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Hidden file input -->
+<input 
+  type="file" 
+  #fileInput 
+  (change)="onFileSelected($event)"
+  accept="image/*,.pdf,.doc,.docx,.txt"
+  style="display: none;">
+
+<input 
+  type="file" 
+  #imageInput 
+  (change)="onImageSelected($event)"
+  accept="image/*"
+  style="display: none;">

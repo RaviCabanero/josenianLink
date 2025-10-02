@@ -97,7 +97,7 @@ export class AdminPage implements OnInit {
           uid: 'admin',
           fullName: 'Administrator',
           email: result.userProfile?.email || 'admin@josenianlink.com',
-          photoURL: 'assets/images/admin-avatar.png',
+          photoURL: 'assets/alumnilogo.webp',
           role: 'admin',
           isAdmin: true
         };
@@ -154,15 +154,15 @@ export class AdminPage implements OnInit {
           console.log('Lyka user not found in raw data');
         }
         
-        // Filter for users with role 'user' (alumni) and exclude admin accounts
+        // Filter for alumni users - include all users with roles except system admins
         const filteredUsers = users.filter((user: any) => {
-          const hasUserRole = user.role === 'user';
-          const hasNoRoleButName = !user.role && (user.fullName || user.name);
-          const isNotAdmin = user.role !== 'admin';
+          // Exclude system admin accounts (those without student data)
+          const isSystemAdmin = user.role === 'admin' && (!user.idNumber && !user.studentId && !user.program && !user.course);
+          const hasValidUserData = user.fullName || user.name;
           
-          console.log(`User ${user.fullName || user.name}: role=${user.role}, hasUserRole=${hasUserRole}, hasNoRoleButName=${hasNoRoleButName}, isNotAdmin=${isNotAdmin}`);
+          console.log(`User ${user.fullName || user.name}: role=${user.role}, isSystemAdmin=${isSystemAdmin}, hasValidUserData=${hasValidUserData}`);
           
-          return (hasUserRole || hasNoRoleButName) && isNotAdmin;
+          return hasValidUserData && !isSystemAdmin;
         });
         
         console.log('Filtered users:', filteredUsers);
@@ -182,9 +182,16 @@ export class AdminPage implements OnInit {
           verified: user.verified || false,
           uid: user.uid,
           role: user.role || 'user'
-        }));
+        })).sort((a, b) => {
+          // Sort alphabetically by first name, then by last name
+          const firstNameComparison = a.firstName.localeCompare(b.firstName, undefined, { sensitivity: 'base' });
+          if (firstNameComparison !== 0) {
+            return firstNameComparison;
+          }
+          return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' });
+        });
         
-        console.log('Processed alumni list:', this.alumniList);
+        console.log('Processed and sorted alumni list:', this.alumniList);
         this.originalAlumniList = [...this.alumniList]; // Store original unfiltered list
         this.filteredAlumniList = [...this.alumniList];
         this.loading = false;
@@ -224,7 +231,14 @@ export class AdminPage implements OnInit {
         user.email.toLowerCase().includes(searchTerm) ||
         user.id.toLowerCase().includes(searchTerm) ||
         user.program.toLowerCase().includes(searchTerm)
-      );
+      ).sort((a, b) => {
+        // Maintain alphabetical sorting after search
+        const firstNameComparison = a.firstName.localeCompare(b.firstName, undefined, { sensitivity: 'base' });
+        if (firstNameComparison !== 0) {
+          return firstNameComparison;
+        }
+        return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' });
+      });
     } else {
       this.filteredAlumniList = [...baseList];
     }
@@ -237,6 +251,15 @@ export class AdminPage implements OnInit {
     let filteredList = this.selectedProgram ? 
       this.originalAlumniList.filter(user => user.program === this.selectedProgram) : 
       [...this.originalAlumniList];
+    
+    // Sort the filtered list alphabetically
+    filteredList.sort((a, b) => {
+      const firstNameComparison = a.firstName.localeCompare(b.firstName, undefined, { sensitivity: 'base' });
+      if (firstNameComparison !== 0) {
+        return firstNameComparison;
+      }
+      return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' });
+    });
     
     this.alumniList = filteredList;
     this.filteredAlumniList = [...filteredList];
@@ -423,8 +446,8 @@ export class AdminPage implements OnInit {
         authorId: 'admin', // Use admin as authorId
         authorName: 'Administrator',
         authorEmail: this.adminProfile.email || 'admin@josenianlink.com',
-        authorAvatar: this.adminProfile.photoURL || 'assets/images/admin-avatar.png',
-        authorPhoto: this.adminProfile.photoURL || 'assets/images/admin-avatar.png',
+        authorAvatar: 'assets/alumnilogo.webp',
+        authorPhoto: 'assets/alumnilogo.webp',
         authorProgram: 'Administration',
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         likes: 0,
@@ -765,7 +788,21 @@ export class AdminPage implements OnInit {
       venue: this.eventVenue,
       points: this.eventPoints,
       description: this.eventDescription,
-      createdAt: new Date()
+      createdAt: new Date(),
+      // RSVP tracking fields
+      rsvpEnabled: true,
+      rsvpCounts: {
+        going: 0,
+        interested: 0,
+        notGoing: 0
+      },
+      attendeesList: {
+        going: [],
+        interested: [],
+        notGoing: []
+      },
+      maxAttendees: null, // Optional limit
+      rsvpDeadline: null // Optional deadline
     };
 
     try {
@@ -1048,6 +1085,22 @@ export class AdminPage implements OnInit {
 
   getFilteredCount(status: string): number {
     return this.approvalHistory.filter(item => item.status === status).length;
+  }
+
+  getTotalResponses(event: any): number {
+    if (!event.rsvpCounts) return 0;
+    return (event.rsvpCounts.going || 0) + 
+           (event.rsvpCounts.interested || 0) + 
+           (event.rsvpCounts.notGoing || 0);
+  }
+
+  getProgressPercentage(count: number, total: number): number {
+    if (total === 0) return 0;
+    return Math.round((count / total) * 100);
+  }
+
+  trackEventById(index: number, event: any): any {
+    return event.id || index;
   }
 
 }

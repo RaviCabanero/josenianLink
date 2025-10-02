@@ -12,12 +12,10 @@ import { AlumniIdModalComponent } from '../components/alumni-id-modal/alumni-id-
   styleUrls: ['./calendar-events.page.scss']
 })
 export class CalendarEventsPage implements OnInit {
-  events$: Observable<any[]> = of([
-    { title: 'Alumni Homecoming', date: new Date(2025, 9, 15), location: 'USJR Main Campus' },
-    { title: 'Career Fair', date: new Date(2025, 10, 5), location: 'USJR Gymnasium' }
-  ]);
+  events$: Observable<any[]> = of([]);
 
   currentYear = new Date().getFullYear();
+  userRSVPs: { [eventId: string]: string } = {}; // Track user's RSVP status for each event
 
   alumniIdRequest = {
     firstName: '',
@@ -43,10 +41,26 @@ export class CalendarEventsPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Load events from Firestore
+    this.events$ = this.firestore.collection('events', ref => 
+      ref.orderBy('date', 'asc')
+    ).valueChanges({ idField: 'id' });
+
+    // Add debugging to see events data
+    this.events$.subscribe(events => {
+      console.log('Events loaded:', events);
+      events.forEach(event => {
+        console.log(`Event: ${event.title}, RSVP Enabled: ${event.rsvpEnabled}`);
+      });
+    });
+
     // Load user profile to check if they have alumni ID
     this.authService.getUserProfile().subscribe(profile => {
       this.userProfile = profile;
     });
+    
+    // Load user's RSVP data
+    this.loadUserRSVPs();
     
     // Check for existing alumni ID requests
     this.checkExistingRequest();
@@ -231,6 +245,120 @@ export class CalendarEventsPage implements OnInit {
         }
       });
       return await modal.present();
+    }
+  }
+
+  // RSVP Methods
+  async loadUserRSVPs() {
+    try {
+      const currentUser = await this.authService.getCurrentUser();
+      if (currentUser) {
+        this.firestore.collection('userRSVPs', ref => 
+          ref.where('userId', '==', currentUser.uid)
+        ).valueChanges({ idField: 'id' }).subscribe(rsvps => {
+          this.userRSVPs = {};
+          rsvps.forEach((rsvp: any) => {
+            this.userRSVPs[rsvp.eventId] = rsvp.status;
+          });
+        });
+      }
+    } catch (error) {
+      console.error('Error loading user RSVPs:', error);
+    }
+  }
+
+  getUserRSVPStatus(eventId: string): string {
+    const status = this.userRSVPs[eventId] || '';
+    console.log(`Getting RSVP status for event ${eventId}: ${status}`);
+    return status;
+  }
+
+  async updateRSVP(eventId: string, status: 'going' | 'interested' | 'notGoing') {
+    console.log(`Updating RSVP for event ${eventId} to status: ${status}`);
+    try {
+      const currentUser = await this.authService.getCurrentUser();
+      if (!currentUser) {
+        alert('Please log in to RSVP to events');
+        return;
+      }
+
+      console.log(`Current user: ${currentUser.uid}`);
+
+      const rsvpData = {
+        userId: currentUser.uid,
+        eventId: eventId,
+        status: status,
+        timestamp: new Date()
+      };
+
+      // Check if user already has RSVP for this event
+      const existingRSVP = await this.firestore.collection('userRSVPs', ref => 
+        ref.where('userId', '==', currentUser.uid)
+           .where('eventId', '==', eventId)
+           .limit(1)
+      ).get().toPromise();
+
+      if (existingRSVP && !existingRSVP.empty) {
+        // Update existing RSVP
+        const rsvpId = existingRSVP.docs[0].id;
+        await this.firestore.collection('userRSVPs').doc(rsvpId).update(rsvpData);
+        console.log(`Updated existing RSVP: ${rsvpId}`);
+      } else {
+        // Create new RSVP
+        const newRSVP = await this.firestore.collection('userRSVPs').add(rsvpData);
+        console.log(`Created new RSVP: ${newRSVP.id}`);
+      }
+
+      // Update local state
+      this.userRSVPs[eventId] = status;
+
+      // Update event RSVP counts
+      await this.updateEventRSVPCounts(eventId);
+
+      console.log(`RSVP updated successfully: ${status} for event ${eventId}`);
+    } catch (error) {
+      console.error('Error updating RSVP:', error);
+      alert('Error updating RSVP. Please try again.');
+    }
+  }
+
+  async updateEventRSVPCounts(eventId: string) {
+    try {
+      // Get all RSVPs for this event
+      const rsvps = await this.firestore.collection('userRSVPs', ref => 
+        ref.where('eventId', '==', eventId)
+      ).get().toPromise();
+
+      const counts = {
+        going: 0,
+        interested: 0,
+        notGoing: 0
+      };
+
+      const attendeesList = {
+        going: [] as string[],
+        interested: [] as string[],
+        notGoing: [] as string[]
+      };
+
+      if (rsvps && !rsvps.empty) {
+        rsvps.docs.forEach(doc => {
+          const rsvp = doc.data() as any;
+          if (rsvp.status && counts.hasOwnProperty(rsvp.status)) {
+            counts[rsvp.status as keyof typeof counts]++;
+            attendeesList[rsvp.status as keyof typeof attendeesList].push(rsvp.userId);
+          }
+        });
+      }
+
+      // Update event document
+      await this.firestore.collection('events').doc(eventId).update({
+        rsvpCounts: counts,
+        attendeesList: attendeesList
+      });
+
+    } catch (error) {
+      console.error('Error updating event RSVP counts:', error);
     }
   }
 

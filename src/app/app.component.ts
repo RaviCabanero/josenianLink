@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { filter, take } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +13,18 @@ import { filter, take } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   private hasCheckedInitialAuth = false;
 
-  constructor(private afAuth: AngularFireAuth, private router: Router) {}
+  constructor(
+    private afAuth: AngularFireAuth, 
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     // Only check auth state once on app initialization
     this.checkInitialAuthState();
+    
+    // Initialize online status tracking
+    this.authService.initializeOnlineStatus();
   }
 
   private checkInitialAuthState() {

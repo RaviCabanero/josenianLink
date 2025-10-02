@@ -76,6 +76,16 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'messages',
+    loadComponent: () => import('./messages/messages.page').then(m => m.MessagesPage),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'chat/:id',
+    loadComponent: () => import('./chat/chat.page').then(m => m.ChatPage),
+    canActivate: [AuthGuard]
+  },
+  {
     path: '**',
     redirectTo: 'login'
   }

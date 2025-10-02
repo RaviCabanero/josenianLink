@@ -1,0 +1,208 @@
+<!-- Messages Page -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Messages</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="showNewChatModal = true">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="messages-content">
+  <div class="messages-container">
+    <!-- Search Bar -->
+    <div class="search-section">
+      <ion-searchbar 
+        [(ngModel)]="searchQuery" 
+        (ionInput)="onSearchChange($event)"
+        placeholder="Search conversations..."
+        debounce="300"
+        class="custom-searchbar">
+      </ion-searchbar>
+    </div>
+
+    <!-- Chat Tabs -->
+    <div class="chat-tabs">
+      <ion-segment [(ngModel)]="activeTab" (ionChange)="onTabChange()">
+        <ion-segment-button value="chats">
+          <ion-label>Chats</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="online">
+          <ion-label>Online</ion-label>
+          <ion-badge color="success" *ngIf="onlineUsers.length > 0">{{ onlineUsers.length }}</ion-badge>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Chats Tab -->
+    <div *ngIf="activeTab === 'chats'" class="chats-tab">
+      <!-- Loading State -->
+      <div *ngIf="loadingChats" class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading conversations...</p>
+      </div>
+
+      <!-- Chat List -->
+      <div class="chat-list" *ngIf="!loadingChats">
+        <div 
+          *ngFor="let chat of filteredChats" 
+          class="chat-item" 
+          (click)="openChat(chat)">
+          <div class="chat-avatar">
+            <ion-avatar>
+              <img [src]="chat.otherUser?.photoURL || 'assets/default-avatar.png'" 
+                   (error)="onImageError($event)" />
+            </ion-avatar>
+            <div class="online-indicator" *ngIf="isUserOnline(chat.otherUser?.uid)"></div>
+          </div>
+          
+          <div class="chat-info">
+            <div class="chat-header">
+              <h3 class="chat-name">{{ chat.otherUser?.fullName || chat.otherUser?.name || 'Unknown User' }}</h3>
+              <span class="chat-time">{{ getTimeAgo(chat.lastMessage?.timestamp) }}</span>
+            </div>
+            <div class="chat-preview">
+              <p class="last-message" [class.unread]="chat.unreadCount > 0">
+                <span *ngIf="chat.lastMessage?.senderId === currentUserId" class="sent-indicator">You: </span>
+                {{ chat.lastMessage?.text || 'No messages yet' }}
+              </p>
+              <ion-badge color="primary" *ngIf="chat.unreadCount > 0">{{ chat.unreadCount }}</ion-badge>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-chats" *ngIf="filteredChats.length === 0 && !loadingChats">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
+          <h3>No Conversations</h3>
+          <p>Start a conversation with fellow Josenians!</p>
+          <ion-button fill="outline" (click)="showNewChatModal = true">
+            <ion-icon name="add" slot="start"></ion-icon>
+            New Chat
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Online Users Tab -->
+    <div *ngIf="activeTab === 'online'" class="online-tab">
+      <div class="online-users-list">
+        <div 
+          *ngFor="let user of filteredOnlineUsers" 
+          class="online-user-item" 
+          (click)="startChatWithUser(user)">
+          <div class="user-avatar">
+            <ion-avatar>
+              <img [src]="user.photoURL || 'assets/default-avatar.png'" 
+                   (error)="onImageError($event)" />
+            </ion-avatar>
+            <div class="online-indicator"></div>
+          </div>
+          
+          <div class="user-info">
+            <h3>{{ user.fullName || user.name || 'Unknown User' }}</h3>
+            <p>{{ user.program || 'Alumni' }}</p>
+          </div>
+          
+          <ion-button fill="clear" size="small">
+            <ion-icon name="chatbubble-outline"></ion-icon>
+          </ion-button>
+        </div>
+
+        <!-- Empty Online State -->
+        <div class="empty-online" *ngIf="onlineUsers.length === 0">
+          <ion-icon name="people-outline"></ion-icon>
+          <h3>No One Online</h3>
+          <p>No Josenians are currently online.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- New Chat Modal -->
+<ion-modal [isOpen]="showNewChatModal" (didDismiss)="showNewChatModal = false">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>New Chat</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="showNewChatModal = false">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-searchbar 
+        [(ngModel)]="userSearchQuery" 
+        (ionInput)="searchUsers($event)"
+        placeholder="Search alumni..."
+        debounce="300">
+      </ion-searchbar>
+
+      <div class="user-results">
+        <div 
+          *ngFor="let user of searchResults" 
+          class="user-result-item" 
+          (click)="startChatWithUser(user); showNewChatModal = false">
+          <ion-avatar>
+            <img [src]="user.photoURL || 'assets/default-avatar.png'" />
+          </ion-avatar>
+          <div class="user-details">
+            <h3>{{ user.fullName || user.name }}</h3>
+            <p>{{ user.program }}</p>
+          </div>
+          <div class="online-status" *ngIf="isUserOnline(user.uid)">
+            <div class="online-dot"></div>
+            <span>Online</span>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Footer Navigation -->
+<ion-footer class="modern-footer">
+  <ion-toolbar>
+    <div class="footer-buttons">
+      <ion-button fill="clear" routerLink="/home" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="home"></ion-icon>
+          <span class="nav-label">Home</span>
+        </div>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/events" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="calendar"></ion-icon>
+          <span class="nav-label">Events</span>
+        </div>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/notifications" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="notifications"></ion-icon>
+          <span class="nav-label">Notifications</span>
+        </div>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/profile" class="footer-nav-btn">
+        <div class="nav-content">
+          <ion-icon name="person"></ion-icon>
+          <span class="nav-label">Profile</span>
+        </div>
+      </ion-button>
+      <ion-button fill="clear" routerLink="/messages" class="footer-nav-btn active">
+        <div class="nav-content">
+          <ion-icon name="chatbox-ellipses"></ion-icon>
+          <span class="nav-label">Messages</span>
+        </div>
+        <div class="notification-badge" *ngIf="getTotalUnreadCount() > 0">{{ getTotalUnreadCount() }}</div>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

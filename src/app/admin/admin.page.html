@@ -68,6 +68,37 @@
             </div>
           </div>
 
+           <!-- ====== USJR Campus Gallery ====== -->
+          <div class="campus-gallery-section">
+            <div class="gallery-header">
+              <h3><ion-icon name="images-outline"></ion-icon> USJR Campus</h3>
+              <p class="gallery-subtitle">University of San Jose - Recoletos Campus</p>
+            </div>
+            <div class="campus-gallery">
+              <div class="campus-image-card">
+                <img src="assets/usjr.png" alt="USJR Main Campus" class="campus-image">
+                <div class="image-overlay">
+                  <h4>Main Campus</h4>
+                  <p>University of San Jose - Recoletos</p>
+                </div>
+              </div>
+              <div class="campus-image-card">
+                <img src="assets/san.webp" alt="USJR San Campus" class="campus-image">
+                <div class="image-overlay">
+                  <h4>San Campus</h4>
+                  <p>USJR San Facility</p>
+                </div>
+              </div>
+              <div class="campus-image-card">
+                <img src="assets/sann.webp" alt="USJR Sann Campus" class="campus-image">
+                <div class="image-overlay">
+                  <h4>Sann Campus</h4>
+                  <p>USJR Sann Facility</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- ====== Stats Row ====== -->
           <div class="stats-grid">
             <div class="stat-card">
@@ -99,6 +130,8 @@
               </div>
             </div>
           </div>
+
+         
 
           <!-- ====== Lists Row (3 cards) ====== -->
           <div class="lists-grid">
@@ -779,7 +812,7 @@
           <ion-card class="create-post-card">
             <div class="create-post-header">
               <ion-avatar class="post-avatar">
-                <img [src]="adminProfile?.photoURL || 'assets/default-avatar.png'" />
+                <img src="assets/alumnilogo.webp" alt="Admin Profile" />
               </ion-avatar>
               <ion-button fill="outline" class="post-prompt" (click)="focusPostInput()">
                 Share something with Josenians...
@@ -919,49 +952,134 @@
         <div *ngIf="activeTab === 'events'" class="events-content">
           <div class="panel-header">
             <div>
-              <h2>Events</h2>
-              <p class="breadcrumb">Dashboard / Events</p>
+              <h2>Events Management</h2>
+              <p class="breadcrumb">Dashboard / Events Management</p>
+            </div>
+            <div class="header-actions">
+              <ion-button fill="outline" size="small" color="primary" (click)="loadEventsList()">
+                <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                Refresh
+              </ion-button>
+              <ion-button color="success" size="small" (click)="isEventQrCodeModalOpen = true">
+                <ion-icon name="add-outline" slot="start"></ion-icon>
+                Create Event
+              </ion-button>
             </div>
           </div>
-          <div class="events-list-card">
-    <div class="list-card-header dark-header">
-      <h3>
-        <ion-icon name="calendar-outline"></ion-icon>
-        Events
-      </h3>
-      <ion-button size="small" fill="clear">View all</ion-button>
-    </div>
-    <ion-list lines="none">
-      <ion-item *ngFor="let e of eventsList">
-        <ion-label>
-          <div class="event-row1">
-            <span class="event-name">{{ e.title }}</span>
-            <ion-badge *ngIf="e.department">{{ e.department }}</ion-badge>
+
+          <!-- Modern Events Grid -->
+          <div class="modern-events-container">
+            <div class="events-grid" *ngIf="eventsList && eventsList.length > 0">
+              <div class="modern-event-card" *ngFor="let e of eventsList; trackBy: trackEventById">
+                <!-- Event Header -->
+                <div class="event-card-header">
+                  <div class="event-date-circle">
+                    <span class="event-day">{{ e.date | date:'dd' }}</span>
+                    <span class="event-month">{{ e.date | date:'MMM' }}</span>
+                  </div>
+                  <div class="event-main-info">
+                    <h3 class="event-title">{{ e.title }}</h3>
+                    <div class="event-meta">
+                      <span class="event-time">
+                        <ion-icon name="time-outline"></ion-icon>
+                        {{ e.time || 'TBA' }}
+                      </span>
+                      <span class="event-venue">
+                        <ion-icon name="location-outline"></ion-icon>
+                        {{ e.venue || 'TBA' }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="event-actions">
+                    <ion-button fill="clear" size="small" color="primary" (click)="editEvent(e)">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" size="small" color="danger" (click)="deleteEvent(e.id)">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+
+                <!-- Event Content -->
+                <div class="event-card-content">
+                  <p class="event-description" *ngIf="e.description">{{ e.description }}</p>
+                  
+                  <!-- Event Stats -->
+                  <div class="event-stats">
+                    <div class="stat-item" *ngIf="e.points">
+                      <ion-icon name="star" color="warning"></ion-icon>
+                      <span>{{ e.points }} points</span>
+                    </div>
+                    <div class="stat-item" *ngIf="e.department">
+                      <ion-icon name="business" color="primary"></ion-icon>
+                      <span>{{ e.department }}</span>
+                    </div>
+                  </div>
+
+                  <!-- RSVP Statistics -->
+                  <div class="rsvp-section" *ngIf="e.rsvpEnabled">
+                    <div class="rsvp-header">
+                      <h4>RSVP Statistics</h4>
+                      <span class="total-count">{{ getTotalResponses(e) }} responses</span>
+                    </div>
+                    
+                    <div class="rsvp-progress-bars">
+                      <div class="rsvp-progress-item going">
+                        <div class="progress-label">
+                          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                          <span>Going</span>
+                          <strong>{{ e.rsvpCounts?.going || 0 }}</strong>
+                        </div>
+                        <div class="progress-bar">
+                          <div class="progress-fill going" [style.width.%]="getProgressPercentage(e.rsvpCounts?.going || 0, getTotalResponses(e))"></div>
+                        </div>
+                      </div>
+                      
+                      <div class="rsvp-progress-item interested">
+                        <div class="progress-label">
+                          <ion-icon name="heart" color="warning"></ion-icon>
+                          <span>Interested</span>
+                          <strong>{{ e.rsvpCounts?.interested || 0 }}</strong>
+                        </div>
+                        <div class="progress-bar">
+                          <div class="progress-fill interested" [style.width.%]="getProgressPercentage(e.rsvpCounts?.interested || 0, getTotalResponses(e))"></div>
+                        </div>
+                      </div>
+                      
+                      <div class="rsvp-progress-item not-going">
+                        <div class="progress-label">
+                          <ion-icon name="close-circle" color="medium"></ion-icon>
+                          <span>Can't Go</span>
+                          <strong>{{ e.rsvpCounts?.notGoing || 0 }}</strong>
+                        </div>
+                        <div class="progress-bar">
+                          <div class="progress-fill not-going" [style.width.%]="getProgressPercentage(e.rsvpCounts?.notGoing || 0, getTotalResponses(e))"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="capacity-info" *ngIf="e.maxAttendees">
+                      <ion-icon name="people" color="primary"></ion-icon>
+                      <span>Capacity: {{ getTotalResponses(e) }} / {{ e.maxAttendees }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modern Empty State -->
+            <div *ngIf="!eventsList || eventsList.length === 0" class="modern-empty-state">
+              <div class="empty-illustration">
+                <ion-icon name="calendar-clear-outline"></ion-icon>
+              </div>
+              <h3>No Events Created Yet</h3>
+              <p>Get started by creating your first event for the alumni community</p>
+              <ion-button color="success" shape="round" (click)="isEventQrCodeModalOpen = true">
+                <ion-icon name="add-outline" slot="start"></ion-icon>
+                Create Your First Event
+              </ion-button>
+            </div>
           </div>
-          <div class="event-row2">
-            {{ e.date }} {{ e.time }}
-            • {{ e.venue || 'TBA' }}
-          </div>
-          <div class="event-description" *ngIf="e.description">
-            {{ e.description }}
-          </div>
-          <div class="event-points" *ngIf="e.points">
-            <strong>Points:</strong> {{ e.points }}
-          </div>
-        </ion-label>
-        <ion-button fill="clear" color="primary" (click)="editEvent(e)">
-          <ion-icon name="create-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" color="danger" (click)="deleteEvent(e.id)">
-          <ion-icon name="trash-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-      <div *ngIf="(eventsList?.length || 0) === 0" class="empty-state">
-        <ion-icon name="calendar-clear-outline"></ion-icon>
-        <p>No events posted.</p>
-      </div>
-    </ion-list>
-  </div>
 
   <!-- QR Code Generator Card -->
   <div class="event-qr-code-container" style="margin-top:24px;">

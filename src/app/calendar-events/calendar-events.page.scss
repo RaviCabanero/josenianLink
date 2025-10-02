@@ -937,32 +937,37 @@ $usjr-deep-green: #0f1f17;
         height: 54px;
         min-width: 60px;
         transition: all 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
 
         @media (max-width: 768px) {
-          height: 50px;
-          min-width: 55px;
+          height: 54px;
+          min-width: 60px;
         }
 
         @media (max-width: 480px) {
-          height: 46px;
-          min-width: 50px;
+          height: 58px;
+          min-width: 64px;
+        }
+
+        .nav-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          width: 100%;
         }
 
         ion-icon {
-          font-size: 1.5rem;
+          font-size: 1.8rem;
           transition: all 0.3s ease;
           margin-bottom: 2px;
 
           @media (max-width: 768px) {
-            font-size: 1.4rem;
+            font-size: 1.8rem;
           }
 
           @media (max-width: 480px) {
-            font-size: 1.3rem;
+            font-size: 2.0rem;
             margin-bottom: 1px;
           }
         }
@@ -1180,6 +1185,133 @@ $usjr-deep-green: #0f1f17;
         font-size: 13px;
         line-height: 1.4;
         flex: 1;
+      }
+    }
+  }
+}
+
+// RSVP Section Styles
+.rsvp-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+
+  .rsvp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    h4 {
+      margin: 0;
+      color: $usjr-green;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .rsvp-counts {
+      display: flex;
+      gap: 12px;
+
+      .count-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 500;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .rsvp-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    ion-button {
+      flex: 1;
+      --border-radius: 8px;
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 12px;
+      height: 32px;
+
+      &.selected {
+        --background: var(--ion-color-primary);
+        --color: white;
+        
+        &[color="success"].selected {
+          --background: var(--ion-color-success);
+        }
+        
+        &[color="warning"].selected {
+          --background: var(--ion-color-warning);
+        }
+        
+        &[color="medium"].selected {
+          --background: var(--ion-color-medium);
+        }
+      }
+
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .rsvp-deadline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ion-color-medium);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
+
+    ion-icon {
+      font-size: 12px;
+    }
+  }
+}
+
+// Responsive RSVP styles
+@media (max-width: 480px) {
+  .rsvp-section {
+    padding: 12px;
+
+    .rsvp-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+
+      .rsvp-counts {
+        gap: 8px;
+
+        .count-item {
+          font-size: 11px;
+        }
+      }
+    }
+
+    .rsvp-buttons {
+      gap: 6px;
+
+      ion-button {
+        font-size: 11px;
+        height: 28px;
+        --padding-start: 6px;
+        --padding-end: 6px;
+
+        ion-icon {
+          font-size: 12px;
+        }
       }
     }
   }

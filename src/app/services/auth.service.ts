@@ -4,6 +4,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import firebase from 'firebase/compat/app';
 
 @Injectable({
   providedIn: 'root'
@@ -14,12 +15,17 @@ export class AuthService {
   constructor(private afAuth: AngularFireAuth, private firestore: AngularFirestore, private router: Router) {}
 
   logout() {
-    return this.afAuth.signOut().then(() => {
-      this.router.navigate(['/login']);
+    return this.afAuth.currentUser.then(user => {
+      if (user) {
+        this.setUserOffline(user.uid);
+      }
+      return this.afAuth.signOut().then(() => {
+        this.router.navigate(['/login']);
+      });
     });
   }
 
-  getCurrentUser() {
+  getCurrentUser(): Promise<firebase.User | null> {
     return this.afAuth.currentUser;
   }
 
@@ -519,5 +525,51 @@ export class AuthService {
     } catch (error) {
       console.error('Test - Firebase connection error:', error);
     }
+  }
+
+  // Online Status Management Methods
+  async setUserOnline(uid: string): Promise<void> {
+    try {
+      await this.firestore.collection('users').doc(uid).update({
+        isOnline: true,
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Error setting user online:', error);
+    }
+  }
+
+  async setUserOffline(uid: string): Promise<void> {
+    try {
+      await this.firestore.collection('users').doc(uid).update({
+        isOnline: false,
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Error setting user offline:', error);
+    }
+  }
+
+  // Initialize online status tracking
+  initializeOnlineStatus(): void {
+    this.afAuth.authState.subscribe(async user => {
+      if (user) {
+        await this.setUserOnline(user.uid);
+        
+        // Set up offline detection
+        window.addEventListener('beforeunload', () => {
+          this.setUserOffline(user.uid);
+        });
+        
+        // Handle visibility change
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            this.setUserOffline(user.uid);
+          } else {
+            this.setUserOnline(user.uid);
+          }
+        });
+      }
+    });
   }
 }
